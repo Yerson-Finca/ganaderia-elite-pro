@@ -3,8 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#030303">
+    <meta name="description" content="Sistema profesional de gestión ganadera">
     <title>GANADERO ÉLITE PRO</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="styles.css">
 </head>
@@ -16,25 +19,23 @@
 <div class="app">
     <header id="mainHeader">
         <h1><i class="fa-solid fa-crown"></i> GANADERO ÉLITE</h1>
-        <div class="config-btn" onclick="goPage('config')"><i class="fa-solid fa-gear"></i></div>
+        <button class="config-btn" onclick="goPage('config')" aria-label="Configuración"><i class="fa-solid fa-gear"></i></button>
     </header>
-
-    <!-- VISTAS PRINCIPALES -->
-    <div id="v-inicio" class="page"></div>
-    <div id="v-lotes" class="page hidden"></div>
-    <div id="v-animales" class="page hidden"></div>
-    <div id="v-insumos" class="page hidden"></div>
-    <div id="v-config" class="page hidden"></div>
-    <div id="v-perfil" class="page hidden"></div>
+    
+    <main id="v-inicio" class="page"></main>
+    <main id="v-lotes" class="page hidden"></main>
+    <main id="v-animales" class="page hidden"></main>
+    <main id="v-insumos" class="page hidden"></main>
+    <main id="v-config" class="page hidden"></main>
+    <main id="v-perfil" class="page hidden"></main>
 </div>
 
-<!-- MENÚ DE NAVEGACIÓN FLOTANTE -->
-<nav class="bottom-nav">
-    <div class="nav-item" data-page="insumos"><i class="fa-solid fa-boxes-stacked"></i><span>Insumos</span></div>
-    <div class="nav-item" data-page="lotes"><i class="fa-solid fa-layer-group"></i><span>Lotes</span></div>
-    <button class="nav-center" onclick="showAddAnimalModal()"><i class="fa-solid fa-plus"></i></button>
-    <div class="nav-item active" data-page="animales"><i class="fa-solid fa-cow"></i><span>Animales</span></div>
-    <div class="nav-item" data-page="inicio"><i class="fa-solid fa-house"></i><span>Inicio</span></div>
+<nav class="bottom-nav" role="navigation" aria-label="Menú principal">
+    <button class="nav-item" data-p="insumos" aria-label="Insumos"><i class="fa-solid fa-boxes-stacked"></i><span>Insumos</span></button>
+    <button class="nav-item" data-p="lotes" aria-label="Lotes"><i class="fa-solid fa-layer-group"></i><span>Lotes</span></button>
+    <button class="nav-center" onclick="showAddAnimalModal()" aria-label="Agregar animal"><i class="fa-solid fa-plus"></i></button>
+    <button class="nav-item active" data-p="animales" aria-label="Animales"><i class="fa-solid fa-cow"></i><span>Animales</span></button>
+    <button class="nav-item" data-p="inicio" aria-label="Inicio"><i class="fa-solid fa-house"></i><span>Inicio</span></button>
 </nav>
 
 <script src="app.js"></script>
