@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="es-CO">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>GANADERO ÉLITE PRO</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="aurora"></div>
+<div id="toastContainer"></div>
+<div id="modalContainer"></div>
+<div class="app">
+    <header id="mainHeader">
+        <h1><i class="fa-solid fa-crown"></i> GANADERO ÉLITE</h1>
+        <div class="config-btn" onclick="goPage('config')"><i class="fa-solid fa-gear"></i></div>
+    </header>
+    <div id="v-inicio" class="page"></div>
+    <div id="v-lotes" class="hidden page"></div>
+    <div id="v-animales" class="hidden page"></div>
+    <div id="v-insumos" class="hidden page"></div>
+    <div id="v-config" class="hidden page"></div>
+    <div id="v-perfil" class="hidden page"></div>
+</div>
+
+<nav class="bottom-nav">
+    <div class="nav-item" data-p="insumos"><i class="fa-solid fa-boxes-stacked"></i><span>Insumos</span></div>
+    <div class="nav-item" data-p="lotes"><i class="fa-solid fa-layer-group"></i><span>Lotes</span></div>
+    <button class="nav-center" onclick="showAddAnimalModal()"><i class="fa-solid fa-plus"></i></button>
+    <div class="nav-item active" data-p="animales"><i class="fa-solid fa-cow"></i><span>Animales</span></div>
+    <div class="nav-item" data-p="inicio"><i class="fa-solid fa-house"></i><span>Inicio</span></div>
+</nav>
+
+<script src="app.js"></script>
+</body>
+</html>
