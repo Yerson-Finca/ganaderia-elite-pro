@@ -12,25 +12,29 @@
 <div class="aurora"></div>
 <div id="toastContainer"></div>
 <div id="modalContainer"></div>
+
 <div class="app">
     <header id="mainHeader">
         <h1><i class="fa-solid fa-crown"></i> GANADERO ÉLITE</h1>
         <div class="config-btn" onclick="goPage('config')"><i class="fa-solid fa-gear"></i></div>
     </header>
+
+    <!-- VISTAS PRINCIPALES -->
     <div id="v-inicio" class="page"></div>
-    <div id="v-lotes" class="hidden page"></div>
-    <div id="v-animales" class="hidden page"></div>
-    <div id="v-insumos" class="hidden page"></div>
-    <div id="v-config" class="hidden page"></div>
-    <div id="v-perfil" class="hidden page"></div>
+    <div id="v-lotes" class="page hidden"></div>
+    <div id="v-animales" class="page hidden"></div>
+    <div id="v-insumos" class="page hidden"></div>
+    <div id="v-config" class="page hidden"></div>
+    <div id="v-perfil" class="page hidden"></div>
 </div>
 
+<!-- MENÚ DE NAVEGACIÓN FLOTANTE -->
 <nav class="bottom-nav">
-    <div class="nav-item" data-p="insumos"><i class="fa-solid fa-boxes-stacked"></i><span>Insumos</span></div>
-    <div class="nav-item" data-p="lotes"><i class="fa-solid fa-layer-group"></i><span>Lotes</span></div>
+    <div class="nav-item" data-page="insumos"><i class="fa-solid fa-boxes-stacked"></i><span>Insumos</span></div>
+    <div class="nav-item" data-page="lotes"><i class="fa-solid fa-layer-group"></i><span>Lotes</span></div>
     <button class="nav-center" onclick="showAddAnimalModal()"><i class="fa-solid fa-plus"></i></button>
-    <div class="nav-item active" data-p="animales"><i class="fa-solid fa-cow"></i><span>Animales</span></div>
-    <div class="nav-item" data-p="inicio"><i class="fa-solid fa-house"></i><span>Inicio</span></div>
+    <div class="nav-item active" data-page="animales"><i class="fa-solid fa-cow"></i><span>Animales</span></div>
+    <div class="nav-item" data-page="inicio"><i class="fa-solid fa-house"></i><span>Inicio</span></div>
 </nav>
 
 <script src="app.js"></script>
