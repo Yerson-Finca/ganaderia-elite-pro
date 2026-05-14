@@ -375,6 +375,7 @@ const importData = () => document.getElementById('importFile').click();
 const handleImport = (e) => { const f = e.target.files[0]; if(!f) return; const r = new FileReader(); r.onload = (ev) => { try { const d = JSON.parse(ev.target.result); if(d.animales && d.precios) { DB = d; if(!DB.lotes) DB.lotes=[{id:'lot_general',nombre:'General',color:'#ffb900'}]; DB.animales.forEach(a => { if(!a.loteId) a.loteId='lot_general'; }); save(); showToast('✅ Datos importados'); goPage('inicio'); } else showToast('⚠️ Archivo inválido'); } catch { showToast('⚠️ Error al leer archivo'); } }; r.readAsText(f); };
 
 // ✅ PERFIL COMPLETO RESTAURADO
+// ==================== PERFIL CORREGIDO ====================
 const showProfile = (id) => {
     const a = DB.animales.find(x => x.id === id); if(!a) return;
     const p = a.historial[a.historial.length-1].peso, rep = calcRepro(a), et = getEtapa(p, rep);
@@ -463,7 +464,7 @@ const showProfile = (id) => {
     // Construir HTML completo del perfil
     let html = `<div class="sp-wrapper"><div class="sp-banner"><button class="sp-back" onclick="closeProfile()"><i class="fa-solid fa-arrow-left"></i></button></div>
         <div class="sp-header"><div class="sp-avatar">${et.icono}</div><div class="sp-name">${a.nombre}</div>
-        <div class="sp-badges"><span class="sp-badge" style="background:${et.color}">${et.nombre}</span><span class="sp-badge">${getLoteName(a.loteId)}</span><span class="sp-badge">${a.proposito==='carne'?'🥩':'🥛'}</span></div>
+        <div class="sp-badges"><span class="sp-badge" style="background:${et.color}">${et.nombre}</span><span class="sp-badge">${getLoteName(a.loteId)}</span><span class="sp-badge">${a.proposito==='carne'?'🥩':''}</span></div>
         <div class="sp-meta">${fm(p)} kg · ${r.texto} · Último pesaje: ${getDiasDesde(a.historial[a.historial.length-1].fecha)}d · En sistema: ${diasSistema}d</div></div>
         <div class="sp-stats"><div class="sp-stat"><div class="val">${fm(p)}</div><div class="lbl">Peso</div></div><div class="sp-stat"><div class="val">$${fm(valA)}</div><div class="lbl">Valor</div></div><div class="sp-stat"><div class="val">${gmd.toFixed(2)}</div><div class="lbl">GMD</div></div><div class="sp-stat"><div class="val">$${fm(ckp)}</div><div class="lbl">Costo/kg</div></div></div>
         <div class="stage-progress-container"><div class="stage-progress-labels"><span>Etapa Actual</span><span>Meta: ${et.siguiente}</span></div><div class="stage-progress-bar"><div class="stage-progress-fill" style="width:${progPct}%;background:${et.color}"><span class="stage-progress-text">${faltaKg<=0?'✅ VENDIBLE':fm(faltaKg)+' kg faltan'}</span></div></div></div>
@@ -479,11 +480,19 @@ const showProfile = (id) => {
         <div class="sp-actions-bar"><button class="btn btn-gold" onclick="updateWeight(${id})"><i class="fa-solid fa-gauge-high"></i> PESAJE</button><button class="btn btn-purple" onclick="openAplicarProducto(${id})"><i class="fa-solid fa-syringe"></i> SANIDAD</button><button class="btn btn-danger" onclick="deleteAnimal(${id})"><i class="fa-solid fa-trash-can"></i></button></div>
     </div>`;
 
-    // Ocultar todo y mostrar solo perfil
-    document.querySelectorAll('main').forEach(el => el.classList.add('hidden'));
+    // === CORRECCIÓN DEL BUG AQUÍ ===
+    // Usamos '.page' en lugar de 'main' para ocultar las vistas de fondo correctamente
+    document.querySelectorAll('.page').forEach(el => el.classList.add('hidden'));
+    
     document.getElementById('v-perfil').classList.remove('hidden');
     document.getElementById('v-perfil').innerHTML = html;
     document.querySelector('header').classList.add('hidden');
+};
+
+const closeProfile = () => {
+    document.getElementById('v-perfil').classList.add('hidden');
+    document.querySelector('header').classList.remove('hidden');
+    goPage('animales');
 };
 
 const showAddAnimalModal = () => { let opts = DB.lotes.map(l => `<option value="${l.id}">${l.nombre}</option>`).join(''); showModal(`<div style="font-weight:700;margin-bottom:14px;color:var(--accent-text);font-size:1.05rem"><i class="fa-solid fa-cow"></i> NUEVO ANIMAL</div><div class="flex-col gap10"><input id="addN" type="text" placeholder="Nombre / Número"><input id="addW" type="number" placeholder="Peso Inicial (kg)" min="20" max="2000"><select id="addLote">${opts}</select><div class="grid"><select id="addProp"><option value="carne">🥩 CARNE</option><option value="leche">🥛 LECHE</option></select><select id="addOrig" onchange="document.getElementById('addPriceWrap').classList.toggle('hidden',this.value!=='comprado')"><option value="nacimiento">🐄 Nacimiento</option><option value="comprado">💰 Comprado</option></select></div><div id="addPriceWrap" class="hidden"><input id="addPrice" type="number" placeholder="Valor de compra ($)"></div><button class="btn btn-gold mt12" onclick="guardarNuevoAnimal()"><i class="fa-solid fa-check"></i> REGISTRAR</button><button class="btn btn-gray" onclick="document.querySelector('.modal-overlay').remove()">CANCELAR</button></div>`); };
