@@ -9,8 +9,10 @@
     <meta name="description" content="Gestión ganadera profesional 100% offline">
     <title>GANADERO ÉLITE PRO</title>
     
+    <!-- PWA -->
     <link rel="manifest" href="./manifest.json">
     <link rel="apple-touch-icon" href="./assets/icons/icon-192x192.png">
+    
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
@@ -193,7 +195,7 @@
 
 <script>
 // ==================== CONFIGURACIÓN GLOBAL ====================
-const APP_VERSION = '3.8';
+const APP_VERSION = '3.9';
 const STORAGE_KEY = 'ganadero_elite_v' + APP_VERSION.replace('.','_');
 let DB = {}, lastSaveTime = null, autoSaveTimer = null, insumoTab = 'alimentos';
 
@@ -246,28 +248,148 @@ const initDB = () => {
 };
 DB = initDB(); if(DB._lastSave) lastSaveTime = DB._lastSave;
 
-// ==================== MOTOR DE NEGOCIO ====================
+// ==================== MOTOR DE NEGOCIO (ACTUALIZADO) ====================
 const getDiet = (pv, prop, estado) => { 
     if (pv < 20) return { pasto:0,salvado:0,melaza:0,urea:0,bicarb:0,sal:0,levadura:0 };
-    var base = pv * 0.03, pasto = base*0.90, salvado = base*0.10, levadura = (pv*0.05)/1000;
-    var m, u, b, s, p = prop||'carne', st = estado||'auto';
-    if (st==='venta'||st==='descarte') { m=base*0.05; u=(pv*0.11)/1000; b=(pv*0.15)/1000; s=(pv*0.20)/1000; }
-    else if (p==='carne') {
-        if (pv<150) { m=base*0.02; u=0; b=(pv*0.10)/1000; s=(pv*0.15)/1000; }
-        else if (pv<350) { m=base*0.03; u=(pv*0.11)/1000; b=(pv*0.125)/1000; s=(pv*0.20)/1000; }
-        else { m=base*0.05; u=(pv*0.11)/1000; b=(pv*0.15)/1000; s=(pv*0.20)/1000; }
-    } else {
-        if (st==='seca'||pv<350) { m=base*0.01; u=(pv*0.05)/1000; b=(pv*0.10)/1000; s=(pv*0.25)/1000; }
-        else if (st==='parida') { m=base*0.03; u=(pv*0.08)/1000; b=(pv*0.20)/1000; s=(pv*0.50)/1000; }
-        else { m=base*0.01; u=(pv*0.05)/1000; b=(pv*0.10)/1000; s=(pv*0.25)/1000; }
+    
+    // Ecuaciones Base
+    const consumoTotal = pv * 0.03; // 3% del Peso Vivo
+    const pasto = consumoTotal * 0.90;
+    const salvado = consumoTotal * 0.10;
+    const levadura = (pv * 0.05); // Gramos
+    
+    let m = 0, u = 0, b = 0, s = 0;
+    let p = prop || 'carne';
+    let st = estado || 'auto';
+
+    // 🔒 CANDADO DE SEGURIDAD: Ternera
+    const esTernera = pv < 150; 
+
+    if (p === 'carne') {
+        if (esTernera) {
+            // Ternera: Urea 0, Melaza 2%
+            m = consumoTotal * 0.02; 
+            u = 0; 
+            b = consumoTotal * 0.10; 
+            s = consumoTotal * 0.15;
+        } else if (st === 'venta' || st === 'descarte') {
+            // Engorde/Venta: Melaza 5%, Urea Max
+            m = consumoTotal * 0.05; 
+            u = consumoTotal * 0.11; 
+            b = consumoTotal * 0.15; 
+            s = consumoTotal * 0.20;
+        } else {
+            // Levante (Transición): Intermedio seguro
+            m = consumoTotal * 0.03; 
+            u = consumoTotal * 0.11; 
+            b = consumoTotal * 0.125; 
+            s = consumoTotal * 0.20;
+        }
+    } else if (p === 'leche') {
+        if (st === 'parida') {
+            // Vaca Parida: Alta Sal (0.50)
+            m = consumoTotal * 0.03; 
+            u = consumoTotal * 0.08; 
+            b = consumoTotal * 0.20; 
+            s = consumoTotal * 0.50;
+        } else if (st === 'seca') {
+            // Vaca Seca: Dieta baja energía
+            m = consumoTotal * 0.01; 
+            u = consumoTotal * 0.05; 
+            b = consumoTotal * 0.10; 
+            s = consumoTotal * 0.20;
+        } else {
+            // Novilla: Proteccion de ubre (Melaza 1%)
+            m = consumoTotal * 0.01; 
+            u = consumoTotal * 0.05; 
+            b = consumoTotal * 0.10; 
+            s = consumoTotal * 0.25;
+        }
     }
-    if (pv<150) u=0; u=Math.min(u,(pv*0.11)/1000);
-    if ((p==='leche'&&pv<350)||st==='novilla') m=Math.min(m,base*0.02);
-    return { pasto, salvado, melaza:m, urea:u, bicarb:b, sal:s, levadura }; 
+
+    // 🔒 VALIDACIÓN FINAL DE LÍMITES
+    // Límite Urea Max: Nunca superar 0.11 g/kg
+    u = Math.min(u, consumoTotal * 0.11);
+    
+    // Límite Novilla: Si es leche y no ha parido, no subir melaza de 2%
+    if (p === 'leche' && (st === 'novilla' || esTernera)) {
+        m = Math.min(m, consumoTotal * 0.02);
+    }
+
+    return { 
+        pasto, salvado, melaza: m, urea: u, bicarb: b, sal: s, levadura 
+    }; 
 };
-const getGMD = (h) => { if(h.length < 2) return 0; var last = h[h.length-1], prev = h[h.length-2]; function parseFecha(f) { var partes = f.split('/'); return new Date(partes[2], partes[1]-1, partes[0]); } var diffDias = (parseFecha(last.fecha) - parseFecha(prev.fecha)) / (1000 * 60 * 60 * 24); return diffDias > 0 ? (last.peso - prev.peso) / diffDias : 0; };
+
+const getGMD = (h) => { 
+    // ✅ Requiere al menos 3 pesajes para cálculo confiable
+    if(h.length < 3) return 0; 
+    
+    let totalGanancia = 0, totalDias = 0;
+    
+    // Calcular ganancia y días REALES entre cada par consecutivo de pesajes
+    for(let i = 1; i < h.length; i++) {
+        const actual = h[i], anterior = h[i-1];
+        
+        // Parsear fecha formato DD/MM/YYYY
+        function parseFecha(f) { 
+            if(!f || typeof f !== 'string') return new Date(0);
+            const partes = f.split('/'); 
+            if(partes.length !== 3) return new Date(0);
+            return new Date(parseInt(partes[2]), parseInt(partes[1])-1, parseInt(partes[0])); 
+        }
+        
+        const fechaActual = parseFecha(actual.fecha);
+        const fechaAnterior = parseFecha(anterior.fecha);
+        const diffMs = fechaActual - fechaAnterior;
+        const diffDias = diffMs / (1000 * 60 * 60 * 24);
+        
+        // Solo considerar intervalos válidos (positivos y razonables: 1-365 días)
+        if(diffDias >= 1 && diffDias <= 365) {
+            totalGanancia += (actual.peso - anterior.peso);
+            totalDias += diffDias;
+        }
+    }
+    
+    // ✅ GMD = Ganancia total / Días totales REALES
+    return totalDias > 0 ? totalGanancia / totalDias : 0;
+};
+
 const getRendimiento = (h) => { if(h.length<2) return {nivel:'azul',texto:'Registre más pesajes',cm:0,color:'azul'}; var a=h[h.length-1].peso,b=h[h.length-2].peso,c=((a-b)/b)*100; if(a<b) return {nivel:'gris',texto:'Pérdida',cm:c,color:'gris'}; if(c>=5) return {nivel:'verde',texto:'Excelente',cm:c,color:'verde'}; if(c>=3.5) return {nivel:'azul',texto:'Bueno',cm:c,color:'azul'}; if(c>=2.5) return {nivel:'naranja',texto:'Regular',cm:c,color:'naranja'}; return {nivel:'rojo',texto:'Bajo',cm:c,color:'rojo'}; };
-const calcRepro = (a) => { if(a.proposito!=='leche'&&!a.fechaUltimoParto) return null; if(!a.fechaUltimoParto) return {diasPP:0,diasParaParto:999,fechaProxParto:null,semaforo:{color:'#6b7280',txt:'📅 Sin registro'},estadoLactancia:'novilla'}; var hoy=new Date(),parto=new Date(a.fechaUltimoParto.split('/').reverse().join('-')),diasPP=Math.max(0,Math.floor((hoy-parto)/86400000)); var fpp=new Date(parto);fpp.setDate(parto.getDate()+285);var dpp=Math.floor((fpp-hoy)/86400000); var est=(a.estadoReproductivo==='seca')?'seca':'parida',sem; if(dpp<=60&&dpp>0){est='seca';sem={color:'#3b82f6',txt:'🔵 Secado ('+dpp+'d)'};} else if(diasPP<=60) sem={color:'#22c55e',txt:'🟢 Recup. posparto'}; else if(diasPP<=150) sem={color:'#f59e0b',txt:'🟡 Ventana preñez'}; else sem={color:'#ef4444',txt:'🔴 ALERTA vaca vacía'}; return {diasPP,diasParaParto:dpp,fechaProxParto:fpp.toLocaleDateString('es-CO'),semaforo:sem,estadoLactancia:est}; };
+
+const calcRepro = (a) => {
+    if(a.proposito!=='leche' && !a.fechaUltimoParto) return null;
+    if(!a.fechaUltimoParto) return {diasPP:0, diasParaParto:999, fechaProxParto:null, semaforo:{color:'#6b7280',txt:'📅 Sin registro', tipo:'gris'}, estadoLactancia:'novilla', avisoSecado:false};
+    
+    var hoy = new Date();
+    var parto = new Date(a.fechaUltimoParto.split('/').reverse().join('-'));
+    var diasPP = Math.max(0, Math.floor((hoy - parto) / 86400000)); // Días Post-Parto
+    
+    // Próximo parto estimado (Gestación 285 días)
+    var fpp = new Date(parto); 
+    fpp.setDate(parto.getDate() + 285); 
+    var dpp = Math.floor((fpp - hoy) / 86400000); // Días Para Parto
+    
+    // Notificación de Secado (60 días antes del parto)
+    var avisoSecado = (dpp <= 60 && dpp > 0);
+
+    // 🚦 LÓGICA SEMÁFORO CRIOLLO
+    var sem, est = a.estadoReproductivo || 'parida';
+    
+    if (avisoSecado) {
+        sem = {color:'#3b82f6', txt:'🔵 Secado Próximo ('+dpp+'d)', tipo:'secado'};
+        est = 'seca'; 
+    } else if (diasPP <= 60) {
+        sem = {color:'#22c55e', txt:'🟢 Recuperación (0-60d)', tipo:'verde'};
+    } else if (diasPP <= 150) {
+        sem = {color:'#f59e0b', txt:'🟡 Ventana Monta (61-150d)', tipo:'amarillo'};
+    } else {
+        sem = {color:'#ef4444', txt:'🔴 ALERTA: Vaca Vacía (>150d)', tipo:'rojo'};
+    }
+
+    return {diasPP, diasParaParto:dpp, fechaProxParto:fpp.toLocaleDateString('es-CO'), semaforo:sem, estadoLactancia:est, avisoSecado};
+};
+
 const getEtapa = (pv,rep) => { var e=rep?rep.estadoLactancia:'auto'; if(e==='seca')return{nombre:'Vaca Seca',clase:'etapa-madurez',icono:'🥛',min:300,max:600,ureaBloqueada:false,color:'#3b82f6',siguiente:'Venta'}; if(e==='parida')return{nombre:'Producción',clase:'etapa-ceba',icono:'🐄',min:400,max:800,ureaBloqueada:false,color:'#22c55e',siguiente:'Venta'}; if(pv<150)return{nombre:'Cría',clase:'etapa-inicio',icono:'🐮',min:0,max:150,ureaBloqueada:true,color:'#ffb900',siguiente:'Levante'}; if(pv<350)return{nombre:'Levante',clase:'etapa-desarrollo',icono:'🐂',min:150,max:350,ureaBloqueada:false,color:'#60a5fa',siguiente:'Ceba'}; return{nombre:'Ceba/Finalización',clase:'etapa-madurez',icono:'🐃',min:350,max:500,ureaBloqueada:false,color:'#fb923c',siguiente:'Venta'}; };
 const getProgresoEtapa = (pv,e) => Math.min(100, Math.max(0, ((pv-e.min)/(e.max-e.min))*100));
 const getCostoDiario = (pv,prop,estado) => { var d=getDiet(pv,prop,estado),pr=DB.precios; return (d.pasto*pr.pasto)+(d.salvado*pr.salvado)+(d.melaza*pr.melaza)+(d.levadura*pr.levadura)+(d.bicarb*pr.bicarb)+(d.sal*pr.sal)+(d.urea*pr.urea); };
@@ -330,7 +452,6 @@ const renderLotes = () => { let html = `<div class="card"><div style="display:fl
 
 const renderAnimales = () => { let filtered = DB.animales; if(animalFilterLote!=='all') filtered = filtered.filter(a => a.loteId === animalFilterLote); if(animalSearch) filtered = filtered.filter(a => a.nombre.toLowerCase().includes(animalSearch.toLowerCase())); let html = `<div class="card" style="padding:12px 16px"><input id="animSearch" type="text" placeholder="🔍 Buscar animal..." value="${animalSearch}" style="padding:10px 14px;font-size:.85rem"></div>`; html += `<div class="filter-chips"><div class="chip ${animalFilterLote==='all'?'active':''}" onclick="animalFilterLote='all';renderAnimales()">Todos</div>`; DB.lotes.forEach(l => html += `<div class="chip ${animalFilterLote===l.id?'active':''}" onclick="animalFilterLote='${l.id}';renderAnimales()">${l.nombre}</div>`); html += '</div><div class="grid">'; if(!filtered.length) html += '<div style="grid-column:1/-1;text-align:center;padding:30px;color:var(--muted)"><i class="fa-solid fa-cow" style="font-size:2rem;margin-bottom:10px;display:block"></i>No hay animales registrados</div>'; filtered.forEach(a => { const p = a.historial[a.historial.length-1].peso, rep = calcRepro(a), estAct = rep?.estadoLactancia || 'auto'; const et = getEtapa(p, rep), r = getRendimiento(a.historial), gmd = getGMD(a.historial); const lm = {verde:'ml-g',azul:'ml-b',naranja:'ml-o',rojo:'ml-r',gris:'ml-x'}; let ret = false; for(let j=DB.aplicaciones.length-1;j>=0;j--){ if(DB.aplicaciones[j].animalId===a.id){ const pr = getAllSanidad().find(x=>x.id===DB.aplicaciones[j].productoId); if(pr?.retiro>0 && getDiasDesde(DB.aplicaciones[j].fecha)<pr.retiro){ret=true;break} } } html += `<div class="animal-card" onclick="showProfile(${a.id})"><div class="mini-led ${lm[r.nivel]}"></div>${et.ureaBloqueada?'<div class="lock-icon"><i class="fa-solid fa-lock"></i></div>':''}<span style="font-size:1.5rem">${et.icono}</span><div class="name">${a.nombre}</div><span class="etapa-tag ${et.clase}">${et.nombre}</span><div style="font-size:.6rem;color:var(--muted);margin-top:2px">${getLoteName(a.loteId)}</div><div class="weight">${fm(p)} kg</div>${ret?'<div class="retiro-badge">🚫 VEDA</div>':''}<div class="cm" style="color:${r.cm>=0?'#22c55e':'#ef4444'}">${r.cm>=0?'+':''}${r.cm.toFixed(1)}%</div></div>`; }); html += '</div>'; document.getElementById('v-animales').innerHTML = html; const searchInput = document.getElementById('animSearch'); if(searchInput) searchInput.addEventListener('input', (e) => { clearTimeout(searchTimeout); searchTimeout = setTimeout(() => { animalSearch = e.target.value; renderAnimales(); queueAutoSave(); }, 250); }); };
 
-// ✅ INSUMOS FUSIONADOS CON TABS Y PERSONALIZADOS
 const renderInsumos = () => {
     const html = `<div class="insumos-tabs">
         <button class="insumo-tab ${insumoTab==='alimentos'?'active':''}" onclick="insumoTab='alimentos';renderInsumos()"><i class="fa-solid fa-wheat-awn"></i> Alimentos</button>
@@ -447,14 +568,23 @@ const showProfile = (id) => {
     });
     feedHTML += '</div>';
 
-    // 3. Dieta
+    // 3. Dieta con Candados
     const d = getDiet(p, a.proposito, rep?.estadoLactancia || 'auto');
-    let dietHTML = '<div class="sp-card"><div class="sp-card-title"><i class="fa-solid fa-mortar-pestle"></i> DIETA DIARIA</div>';
+    let dietHTML = '<div class="sp-card"><div class="sp-card-title"><i class="fa-solid fa-mortar-pestle"></i> DIETA DINÁMICA</div>';
+    // Indicador de Bloqueo de Urea
+    const ureaBloqueada = d.urea === 0 && a.proposito !== 'leche'; 
+    if(ureaBloqueada) {
+        dietHTML += `<div style="background:rgba(239,68,68,.1); color:#f87171; padding:8px; border-radius:8px; font-size:.75rem; margin-bottom:10px; display:flex; align-items:center; gap:8px;">
+            <i class="fa-solid fa-lock"></i> <b>Candado Urea:</b> Animal < 150kg. Urea bloqueada por seguridad.
+        </div>`;
+    }
     AL.forEach(k => {
-        const val = d[k], unit = (k==='pasto'||k==='salvado') ? ' kg' : ' g';
-        const display = (k==='pasto'||k==='salvado') ? val.toFixed(1) : Math.round(val*1000);
-        const bl = (k==='urea') && et.ureaBloqueada;
-        dietHTML += `<div class="row"><span class="row-label"><i class="fa-solid ${IC[k]}"></i> ${NM[k]}</span><span class="row-val" style="${bl?'color:#6b7280;text-decoration:line-through':''}">${bl?'0 (🔒)':display+unit}</span></div>`;
+        const val = d[k];
+        const unit = (k==='pasto'||k==='salvado') ? ' kg' : ' g';
+        const display = (k==='pasto'||k==='salvado') ? val.toFixed(1) : Math.round(val);
+        const isUreaRow = k === 'urea';
+        const rowStyle = (isUreaRow && ureaBloqueada) ? 'opacity:0.5; text-decoration:line-through;' : '';
+        dietHTML += `<div class="row" style="${rowStyle}"><span class="row-label"><i class="fa-solid ${IC[k]}"></i> ${NM[k]}</span><span class="row-val">${isUreaRow && ureaBloqueada ? '0 (Bloqueado)' : display+unit}</span></div>`;
     });
     const cdC = getCostoAlimentosCustom(id, p);
     if(DB.asignacionesAlimentos[id]?.length) {
@@ -471,40 +601,49 @@ const showProfile = (id) => {
     }
     dietHTML += '</div>';
 
-    // 4. Repro & Sanidad
+    // 4. Repro & Sanidad (Con Semáforo)
     let reproHTML = '';
     if(a.proposito === 'leche' && rep) {
-        reproHTML = `<div class="sp-card" style="border-left:4px solid ${rep.semaforo.color}"><div class="sp-card-title"><i class="fa-solid fa-calendar-days"></i> CICLO REPRODUCTIVO</div>
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><span class="traffic-light" style="background:${rep.semaforo.color}"></span><span style="font-size:.82rem;font-weight:600">${rep.semaforo.txt}</span></div>
-        <div class="row"><span class="row-label"><i class="fa-solid fa-clock"></i> Días posparto</span><span class="row-val">${rep.diasPP}</span></div>
+        const sem = rep.semaforo;
+        reproHTML = `<div class="sp-card" style="border-left:4px solid ${sem.color}"><div class="sp-card-title"><i class="fa-solid fa-calendar-days"></i> ESTADO REPRODUCTIVO</div>
+        <div style="text-align:center; padding:10px; background:${sem.color}20; border-radius:12px; margin-bottom:12px;">
+            <div style="font-size:1.5rem; font-weight:800; color:${sem.color}">${sem.txt}</div>
+            <div style="font-size:.7rem; color:var(--muted)">Días post-parto: ${rep.diasPP}</div>
+        </div>
         <div class="row"><span class="row-label"><i class="fa-solid fa-baby"></i> Próximo parto</span><span class="row-val">${rep.fechaProxParto}</span></div>
+        <div class="row"><span class="row-label"><i class="fa-solid fa-hourglass-end"></i> Días para parto</span><span class="row-val">${rep.diasParaParto}d</span></div>
+        ${rep.avisoSecado ? '<div style="margin-top:10px; background:rgba(59,130,246,.1); color:#60a5fa; padding:8px; border-radius:8px; font-size:.75rem; text-align:center;">💧 <b>Activar Dieta Seca:</b> Faltan 60 días para el parto.</div>' : ''}
         <button class="btn btn-sm btn-purple mt8" onclick="showReproModal(${id})"><i class="fa-solid fa-pen"></i> Registrar Evento</button></div>`;
     }
 
-    // 5. Proyecciones & Finanzas
-    const proy60 = p + (gmd*60), proy90 = p + (gmd*90);
+    // 5. Proyecciones & Finanzas (Basadas en GMD real)
+    const gmdValido = a.historial.length >= 3 && gmd > 0.05 ? gmd : 0;
+    const proy15 = gmdValido > 0 ? p + (gmdValido * 15) : p;
+    const proy60 = gmdValido > 0 ? p + (gmdValido * 60) : p;
     const cd = getCostoDiario(p, a.proposito, rep?.estadoLactancia || 'auto');
     const csd = getCostoSanidadDiario(id);
-    const ckp = gmd > 0 ? (cd + cdC + csd) / gmd : 999999;
-    const gananciaMensual = (gmd * 30 * DB.precioKG) - ((cd + cdC + csd) * 30);
+    const costoDiarioTotal = cd + cdC + csd;
+    const ckp = gmdValido > 0 ? costoDiarioTotal / gmdValido : null;
+    const gananciaMensual = gmdValido > 0 ? (gmdValido * 30 * DB.precioKG) - (costoDiarioTotal * 30) : null;
     
     const finHTML = `<div class="sp-card"><div class="sp-card-title"><i class="fa-solid fa-chart-line"></i> PROYECCIÓN & RENTABILIDAD</div>
         <div class="sp-projection">
-            <div class="sp-proj-box"><div class="sp-proj-d">30 DÍAS</div><div class="sp-proj-w">${fm(proy30)} kg</div><div class="sp-proj-g" style="color:#22c55e">+$${fm(proy30*DB.precioKG-valA)}</div></div>
-            <div class="sp-proj-box"><div class="sp-proj-d">60 DÍAS</div><div class="sp-proj-w">${fm(proy60)} kg</div><div class="sp-proj-g" style="color:#22c55e">+$${fm(proy60*DB.precioKG-valA)}</div></div>
-            <div class="sp-proj-box"><div class="sp-proj-d">90 DÍAS</div><div class="sp-proj-w">${fm(proy90)} kg</div><div class="sp-proj-g" style="color:#22c55e">+$${fm(proy90*DB.precioKG-valA)}</div></div>
+            <div class="sp-proj-box"><div class="sp-proj-d">15 DÍAS</div><div class="sp-proj-w">${fm(proy15)} kg</div><div class="sp-proj-g" style="color:${gmdValido>0?'#22c55e':'#6b7280'}">${gmdValido>0 ? '+$'+fm((proy15-p)*DB.precioKG) : '--'}</div></div>
+            <div class="sp-proj-box"><div class="sp-proj-d">30 DÍAS</div><div class="sp-proj-w">${fm(proy30)} kg</div><div class="sp-proj-g" style="color:${gmdValido>0?'#22c55e':'#6b7280'}">${gmdValido>0 ? '+$'+fm((proy30-p)*DB.precioKG) : '--'}</div></div>
+            <div class="sp-proj-box"><div class="sp-proj-d">60 DÍAS</div><div class="sp-proj-w">${fm(proy60)} kg</div><div class="sp-proj-g" style="color:${gmdValido>0?'#22c55e':'#6b7280'}">${gmdValido>0 ? '+$'+fm((proy60-p)*DB.precioKG) : '--'}</div></div>
         </div>
         <div style="margin-top:12px;padding-top:10px;border-top:1px solid rgba(255,255,255,.04)">
-            <div class="row"><span class="row-label"><i class="fa-solid fa-receipt"></i> Costo diario total</span><span class="row-val">$ ${fm(cd+cdC+csd)}</span></div>
-            <div class="row"><span class="row-label"><i class="fa-solid fa-chart-pie"></i> Costo/kg ganado</span><span class="row-val" style="color:${ckp<DB.precioKG?'#22c55e':'#ef4444'}">$ ${fm(ckp)}</span></div>
-            <div class="row"><span class="row-label"><i class="fa-solid fa-sack-dollar"></i> Ganancia neta/mes</span><span class="row-val" style="color:${gananciaMensual>=0?'#22c55e':'#ef4444'}">$ ${fm(gananciaMensual)}</span></div>
+            <div class="row"><span class="row-label"><i class="fa-solid fa-receipt"></i> Costo diario total</span><span class="row-val">$ ${fm(costoDiarioTotal)}</span></div>
+            <div class="row"><span class="row-label"><i class="fa-solid fa-chart-pie"></i> Costo/kg ganado</span><span class="row-val" style="color:${ckp!==null && ckp<DB.precioKG?'#22c55e':'#ef4444'}">${ckp !== null ? '$ '+fm(ckp) : '--'}</span></div>
+            <div class="row"><span class="row-label"><i class="fa-solid fa-sack-dollar"></i> Ganancia neta/mes</span><span class="row-val" style="color:${gananciaMensual!==null && gananciaMensual>=0?'#22c55e':'#ef4444'}">${gananciaMensual !== null ? '$ '+fm(gananciaMensual) : '--'}</span></div>
         </div></div>`;
 
     let html = `<div class="sp-wrapper"><div class="sp-banner"><button class="sp-back" onclick="closeProfile()"><i class="fa-solid fa-arrow-left"></i></button></div>
         <div class="sp-header"><div class="sp-avatar">${et.icono}</div><div class="sp-name">${a.nombre}</div>
-        <div class="sp-badges"><span class="sp-badge" style="background:${et.color}">${et.nombre}</span><span class="sp-badge">${getLoteName(a.loteId)}</span><span class="sp-badge">${a.proposito==='carne'?'🥩':'🥛'}</span></div>
+        <div class="sp-badges"><span class="sp-badge" style="background:${et.color}">${et.nombre}</span><span class="sp-badge">${getLoteName(a.loteId)}</span><span class="sp-badge">${a.proposito==='carne'?'🥩':''}</span></div>
         <div class="sp-meta">${fm(p)} kg · ${r.texto} · Sistema: ${diasSistema}d</div></div>
-        <div class="sp-stats"><div class="sp-stat"><div class="val">${fm(p)}</div><div class="lbl">Peso</div></div><div class="sp-stat"><div class="val">$${fm(valA)}</div><div class="lbl">Valor</div></div><div class="sp-stat"><div class="val">${gmd.toFixed(2)}</div><div class="lbl">GMD</div></div><div class="sp-stat"><div class="val">$${fm(ckp)}</div><div class="lbl">Costo/kg</div></div></div>
+        <div class="sp-stats"><div class="sp-stat"><div class="val">${fm(p)}</div><div class="lbl">Peso</div></div><div class="sp-stat"><div class="val">$${fm(valA)}</div><div class="lbl">Valor</div></div><div class="sp-stat"><div class="val">${a.historial.length >= 3 ? gmd.toFixed(2) : '--'}</div><div class="lbl">GMD <span style="font-size:.45rem;color:var(--muted)">(${a.historial.length} pesajes)</span></div></div><div class="sp-stat"><div class="val">${ckp !== null ? '$'+fm(ckp) : '--'}</div><div class="lbl">Costo/kg</div></div></div>
+        ${a.historial.length < 3 ? `<div style="font-size:.65rem;color:var(--warning);text-align:center;margin:8px 0;padding:8px;background:rgba(245,158,11,.08);border-radius:10px;border:1px solid rgba(245,158,11,.15)"><i class="fa-solid fa-circle-info"></i> Se necesitan 3 pesajes para calcular GMD y costo/kg</div>` : ''}
         <div class="stage-progress-container"><div class="stage-progress-labels"><span>Etapa Actual</span><span>Meta: ${et.siguiente}</span></div><div class="stage-progress-bar"><div class="stage-progress-fill" style="width:${progPct}%;background:${et.color}"><span class="stage-progress-text">${faltaKg<=0?'✅ VENDIBLE':fm(faltaKg)+' kg faltan'}</span></div></div></div>
         <div class="sp-scroll">
             ${alertHTML}
@@ -530,7 +669,30 @@ const guardarLote = () => { const n = document.getElementById('nlNombre').value.
 const showEditLoteColor = (lid) => { const l = DB.lotes.find(x => x.id===lid); if(!l) return; showModal(`<div style="font-weight:700;margin-bottom:12px;color:var(--accent-text)"><i class="fa-solid fa-palette"></i> COLOR DEL LOTE</div><div class="flex-col gap10"><input id="elColor" type="color" value="${l.color}" style="width:100%;height:50px;border-radius:10px;border:none"><button class="btn btn-green mt8" onclick="guardarColorLote('${lid}')"><i class="fa-solid fa-check"></i> GUARDAR</button><button class="btn btn-gray" onclick="document.querySelector('.modal-overlay').remove()">CANCELAR</button></div>`); };
 const guardarColorLote = (lid) => { const l = DB.lotes.find(x => x.id===lid); if(l) l.color = document.getElementById('elColor').value; save(); document.querySelector('.modal-overlay').remove(); renderLotes(); showToast('✅ Color actualizado'); };
 const deleteLote = (lid) => { if(lid==='lot_general') return showToast('⚠️ No puedes eliminar el lote General'); if(!confirm('¿Eliminar este lote? Los animales pasarán a "General"')) return; DB.animales.forEach(a => { if(a.loteId===lid) a.loteId='lot_general'; }); DB.lotes = DB.lotes.filter(l => l.id!==lid); save(); renderLotes(); showToast('✅ Lote eliminado'); };
-const updateWeight = (id) => { const p = prompt('⚖️ Nuevo pesaje (kg):'); if(!p) return; const peso = parseFloat(p); if(isNaN(peso)||peso<20||peso>2000) return showToast('⚠️ Peso inválido'); const a = DB.animales.find(x => x.id===id); if(a) { a.historial.push({fecha:new Date().toLocaleDateString(), peso}); save(); showProfile(id); } };
+
+// ✅ ACTUALIZACIÓN CON MODAL DE 150KG
+const updateWeight = (id) => { 
+    const a = DB.animales.find(x => x.id===id); if(!a) return;
+    const oldWeight = a.historial[a.historial.length-1].peso;
+    const p = prompt(`⚖️ Nuevo pesaje (kg): (Actual: ${oldWeight})`); 
+    if(!p) return; 
+    const peso = parseFloat(p); 
+    if(isNaN(peso)||peso<20||peso>2000) return showToast('⚠️ Peso inválido'); 
+    
+    a.historial.push({fecha:new Date().toLocaleDateString(), peso}); 
+    
+    // 🔔 Trigger de 150kg
+    if(oldWeight < 150 && peso >= 150) {
+        showModal(`<div style="font-weight:700;margin-bottom:14px;color:var(--accent-text);font-size:1.05rem"><i class="fa-solid fa-bullhorn"></i> ¡${a.nombre} alcanzó 150kg!</div>
+        <p style="color:var(--muted);margin-bottom:16px;font-size:.9rem">El animal ha entrado en etapa de Levante. ¿Cuál es el plan?</p>
+        <button class="btn btn-gold" onclick="document.querySelector('.modal-overlay').remove();showToast('✅ Plan: Leche');showProfile(${id})"><i class="fa-solid fa-droplet"></i> Seguir para Leche (Novilla)</button>
+        <button class="btn btn-purple" onclick="document.querySelector('.modal-overlay').remove();showToast('✅ Plan: Engorde');showProfile(${id})"><i class="fa-solid fa-drumstick-bite"></i> Engorde para Venta</button>
+        <button class="btn btn-gray mt8" onclick="document.querySelector('.modal-overlay').remove();showProfile(${id})">Cancelar</button>`);
+    } else {
+        save(); showProfile(id);
+    }
+};
+
 const deleteAnimal = (id) => { if(confirm('⚠️ ¿Eliminar animal y su historial?')) { DB.animales = DB.animales.filter(x => x.id!==id); delete DB.asignacionesAlimentos[id]; save(); closeProfile(); } };
 const closeProfile = () => { document.getElementById('v-perfil').classList.add('hidden'); document.querySelector('header').classList.remove('hidden'); goPage('animales'); };
 const openAplicarProducto = (animalId) => { const a = DB.animales.find(x => x.id===animalId); if(!a) return; const p = a.historial[a.historial.length-1].peso; let opts = getAllSanidad().map(pr => `<option value="${pr.id}">${pr.nombre} (${pr.diasEfecto}d)</option>`).join(''); const m = showModal(`<div style="font-weight:700;margin-bottom:12px;color:var(--accent-text)">💉 APLICAR A ${a.nombre}</div><div class="flex-col gap10"><select id="aplProducto" onchange="calcDosisModal(${p})">${opts}</select><div id="dosisInfo" style="font-size:.7rem;color:var(--muted)"></div><input id="aplML" type="number" placeholder="ml aplicados" step=".1"><button class="btn btn-green mt8" onclick="aplicarProducto(${animalId})"><i class="fa-solid fa-check"></i> CONFIRMAR</button><button class="btn btn-gray" onclick="document.querySelector('.modal-overlay').remove()">CANCELAR</button></div>`); setTimeout(() => calcDosisModal(p), 100); };
