@@ -1,32 +1,19 @@
 {
   "name": "Ganadero Élite Pro",
   "short_name": "GanaderoElite",
-  "description": "Sistema profesional de gestión ganadera. Control de animales, lotes, dieta, sanidad y finanzas 100% offline.",
+  "description": "Gestión ganadera profesional 100% offline",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
   "background_color": "#030303",
   "theme_color": "#ffb900",
-  "orientation": "portrait",
-  "dir": "ltr",
-  "lang": "es-CO",
-  "categories": ["productivity", "utilities", "business", "agriculture"],
+  "orientation": "any",
   "icons": [
-    {"src": "./assets/icons/icon-72x72.png", "sizes": "72x72", "type": "image/png", "purpose": "any maskable"},
-    {"src": "./assets/icons/icon-96x96.png", "sizes": "96x96", "type": "image/png", "purpose": "any maskable"},
-    {"src": "./assets/icons/icon-128x128.png", "sizes": "128x128", "type": "image/png", "purpose": "any maskable"},
-    {"src": "./assets/icons/icon-144x144.png", "sizes": "144x144", "type": "image/png", "purpose": "any maskable"},
-    {"src": "./assets/icons/icon-152x152.png", "sizes": "152x152", "type": "image/png", "purpose": "any maskable"},
-    {"src": "./assets/icons/icon-192x192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable"},
-    {"src": "./assets/icons/icon-384x384.png", "sizes": "384x384", "type": "image/png", "purpose": "any maskable"},
-    {"src": "./assets/icons/icon-512x512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable"}
-  ],
-  "screenshots": [
-    {"src": "./assets/screenshots/dashboard.png", "sizes": "1280x720", "type": "image/png", "form_factor": "narrow", "label": "Panel Principal"},
-    {"src": "./assets/screenshots/animales.png", "sizes": "1280x720", "type": "image/png", "form_factor": "narrow", "label": "Gestión de Animales"}
-  ],
-  "prefer_related_applications": false,
-  "launch_handler": {
-    "client_mode": "focus-existing"
-  }
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect fill='%23ffb900' width='512' height='512' rx='80'/%3E%3Ctext x='50%25' y='52%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial' font-size='280' font-weight='bold' fill='%23030303'%3E🐄%3C/text%3E%3C/svg%3E",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
 }
