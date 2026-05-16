@@ -161,7 +161,11 @@
         .insumo-item-header .info .consumo{font-size:.65rem;color:var(--muted)}
         .insumo-item-header .dias{font-size:.7rem;font-weight:600;margin-left:auto}
         .tag-descarte{background:rgba(239,68,68,.15);color:#f87171;padding:4px 8px;border-radius:8px;font-size:.65rem;font-weight:600;margin-left:6px}
-        .bloqueado-tag{background:rgba(59,130,246,.15);color:#60a5fa;padding:4px 8px;border-radius:8px;font-size:.65rem;font-weight:600;margin-left:6px}
+        
+        /* === BLOQUEO POR RETIRO === */
+        .animal-card.bloqueado { opacity: 0.7; cursor: not-allowed !important; }
+        .animal-card.bloqueado:active { transform: none !important; }
+        .animal-card.bloqueado .retiro-badge { z-index: 2; position: relative; }
     </style>
 </head>
 <body>
@@ -195,10 +199,9 @@
 
 <script>
 // ==================== CONFIGURACIÓN GLOBAL ====================
-const APP_VERSION = '4.2.0';
+const APP_VERSION = '4.1.2';
 const STORAGE_KEY = 'ganadero_elite_v' + APP_VERSION.replace('.','_');
-let DB = {}, lastSaveTime = null, autoSaveTimer = null, saveTimeout = null, insumoTab = 'alimentos';
-let searchTimeout = null; // CORREGIDO: variable declarada
+let DB = {}, lastSaveTime = null, autoSaveTimer = null, saveTimeout = null, insumoTab = 'alimentos', searchTimeout = null;
 
 // ==================== UTILIDADES ====================
 const fm = (n) => { if (isNaN(n) || n === null || n === undefined) return '0'; n = Math.round(n); var s = String(n); var r = ''; var c = 0; for (var i = s.length - 1; i >= 0; i--) { if (c > 0 && c % 3 === 0) r = '.' + r; r = s.charAt(i) + r; c++; } return r; };
@@ -244,7 +247,7 @@ const initDB = () => {
         parsed.alimentosCustom = parsed.alimentosCustom || []; parsed.sanidadCustom = parsed.sanidadCustom || [];
         parsed.asignacionesAlimentos = parsed.asignacionesAlimentos || {};
         parsed.lotes = parsed.lotes || [{ id: 'lot_general', nombre: 'General', color: '#ffb900' }];
-        parsed.animales?.forEach(a => { if(!a.loteId) a.loteId = 'lot_general'; if(a.litrosLeche === undefined) a.litrosLeche = 0; if(a.tags === undefined) a.tags = []; });
+        parsed.animales?.forEach(a => { if(!a.loteId) a.loteId = 'lot_general'; if(a.litrosLeche === undefined) a.litrosLeche = 0; if(a.transicionDias === undefined) a.transicionDias = 0; if(a.transicionActiva === undefined) a.transicionActiva = false; if(a.bloqueadoPorRetiro === undefined) a.bloqueadoPorRetiro = false; });
         return parsed;
     } catch {
         return { animales: [], precios: { pasto:200,salvado:1500,melaza:2500,levadura:12000,bicarb:3000,sal:4000,urea:5000 },
@@ -256,10 +259,19 @@ const initDB = () => {
 };
 DB = initDB(); if(DB._lastSave) lastSaveTime = DB._lastSave;
 
-// ==================== MOTOR DE NEGOCIO ====================
+// ==================== MOTOR DE NEGOCIO - FUNCIONES CRÍTICAS ====================
 
-// CORREGIDO: getDiet sin eval() y con transición segura
-const getDiet = (pv, prop, estado, transicionDias = 0, dietaAntigua = null) => { 
+// ✅ FUNCIÓN NUEVA: getCostoDiario (FALTABA - ERROR CRÍTICO)
+const getCostoDiario = (pv, prop, estado) => { 
+    const d = getDiet(pv, prop, estado);
+    const pr = DB.precios || {};
+    const getP = (k) => typeof pr[k] === 'number' ? pr[k] : 0;
+    return (d.pasto * getP('pasto')) + (d.salvado * getP('salvado')) + 
+           (d.melaza * getP('melaza')) + (d.levadura * getP('levadura')) + 
+           (d.bicarb * getP('bicarb')) + (d.sal * getP('sal')) + (d.urea * getP('urea'));
+};
+
+const getDiet = (pv, prop, estado, transicionDias = 0) => { 
     if (pv < 20) return { pasto:0,salvado:0,melaza:0,urea:0,bicarb:0,sal:0,levadura:0 };
     const consumoTotal = pv * 0.03; 
     let m = 0, u = 0, b = 0, s = 0, p = prop || 'carne', st = estado || 'auto';
@@ -280,20 +292,19 @@ const getDiet = (pv, prop, estado, transicionDias = 0, dietaAntigua = null) => {
     u = Math.min(u, consumoTotal * 0.11);
     if (p === 'leche' && (st === 'novilla' || esTernera)) m = Math.min(m, consumoTotal * 0.01);
 
-    const dietaNueva = { pasto, salvado, melaza: m/1000, urea: u/1000, bicarb: b/1000, sal: s/1000, levadura };
-    
-    // Transición ruminal gradual segura
-    if(transicionDias > 0 && transicionDias < 7 && dietaAntigua) {
+    // ✅ CORREGIDO: Transición sin eval()
+    if(transicionDias > 0 && transicionDias < 7) {
         const factor = transicionDias / 7;
+        const dietaAntigua = { pasto: consumoTotal*0.95, salvado: consumoTotal*0.05, melaza: consumoTotal*0.01, urea: 0, bicarb: consumoTotal*0.10, sal: consumoTotal*0.15, levadura: levadura };
+        const dietaNueva = { pasto, salvado, melaza: m, urea: u, bicarb: b, sal: s, levadura };
         const resultado = {};
         Object.keys(dietaNueva).forEach(k => {
             resultado[k] = dietaAntigua[k] + ((dietaNueva[k] - dietaAntigua[k]) * factor);
         });
         return resultado;
     }
-    
-    // Convertir a kg (valores pequeños divididos por 1000)
-    return { pasto, salvado, melaza: m/1000, urea: u/1000, bicarb: b/1000, sal: s/1000, levadura }; 
+
+    return { pasto, salvado, melaza: m, urea: u, bicarb: b, sal: s, levadura }; 
 };
 
 const getGMD = (h) => { 
@@ -304,25 +315,17 @@ const getGMD = (h) => {
     return diffDias >= 1 ? (last.peso - first.peso) / diffDias : 0;
 };
 
-// CORREGIDO: getRendimiento ahora usa GMD correctamente
-const getRendimiento = (h, gmd) => { 
+// ✅ MEJORADO: getRendimiento usa GMD correctamente
+const getRendimiento = (h, gmdForzado = null) => { 
     if(h.length < 2) return {nivel:'azul', texto:'Registre más pesajes', cm:0, color:'azul'}; 
+    const gmd = gmdForzado !== null ? gmdForzado : getGMD(h);
     const gmdEsperado = 0.8;
-    if(gmd <= 0) return {nivel:'azul', texto:'Sin GMD', cm:0, color:'azul'};
-    const ratio = gmd / gmdEsperado;
-    if(ratio >= 1.2) return {nivel:'verde', texto:'Excelente', cm: (ratio-1)*100, color:'verde'};
-    if(ratio >= 0.9) return {nivel:'azul', texto:'Bueno', cm: (ratio-1)*100, color:'azul'};
-    if(ratio >= 0.7) return {nivel:'naranja', texto:'Regular', cm: (ratio-1)*100, color:'naranja'};
-    return {nivel:'rojo', texto:'Bajo', cm: (ratio-1)*100, color:'rojo'};
-};
-
-// NUEVA: getCostoDiario (faltaba)
-const getCostoDiario = (pv, prop, estado) => { 
-    const d = getDiet(pv, prop, estado);
-    const pr = DB.precios || {};
-    return (d.pasto * (pr.pasto || 0)) + (d.salvado * (pr.salvado || 0)) + 
-           (d.melaza * (pr.melaza || 0)) + (d.levadura * (pr.levadura || 0)) + 
-           (d.bicarb * (pr.bicarb || 0)) + (d.sal * (pr.sal || 0)) + (d.urea * (pr.urea || 0));
+    const ratio = gmdEsperado > 0 ? gmd / gmdEsperado : 0;
+    const cm = ((gmd - gmdEsperado) / gmdEsperado) * 100;
+    if(ratio >= 1.2) return {nivel:'verde', texto:'Excelente', cm: cm, color:'#22c55e'};
+    if(ratio >= 0.9) return {nivel:'azul', texto:'Bueno', cm: cm, color:'#3b82f6'};
+    if(ratio >= 0.7) return {nivel:'naranja', texto:'Regular', cm: cm, color:'#f59e0b'};
+    return {nivel:'rojo', texto:'Bajo', cm: cm, color:'#ef4444'};
 };
 
 const calcRepro = (a) => {
@@ -363,25 +366,13 @@ const getCostoSanidadTotal = (aid) => { var t=0; for(var i=0;i<DB.aplicaciones.l
 
 const calcularROIA = (gmd, precioKG, costoDiario) => costoDiario > 0 ? (gmd * precioKG) / costoDiario : 0;
 
-const getDiasRetiroActivo = (animalId) => {
-    let maxRetiro = 0;
-    DB.aplicaciones.forEach(ap => {
-        if(ap.animalId === animalId) {
-            const pr = getAllSanidad().find(x => x.id === ap.productoId);
-            if(pr && pr.retiro > 0) {
-                const diasDesde = getDiasDesde(ap.fecha);
-                const restantes = pr.retiro - diasDesde;
-                if(restantes > maxRetiro) maxRetiro = restantes;
-            }
-        }
-    });
-    return maxRetiro;
-};
-
+// ✅ MEJORADO: getAlertasAnimal con validaciones
 const getAlertasAnimal = (a) => { 
     var al=[], pv=a.historial[a.historial.length-1].peso, gmd=getGMD(a.historial), et=getEtapa(pv,calcRepro(a));
-    var cd = getCostoDiario(pv, a.proposito, et.estadoLactancia) + getCostoAlimentosCustom(a.id, pv);
-    var roia = calcularROIA(gmd, DB.precioKG, cd);
+    // ✅ Validación segura de getCostoDiario
+    const cd = (typeof getCostoDiario === 'function') ? getCostoDiario(pv, a.proposito, et.estadoLactancia) : 0;
+    const cdCustom = getCostoAlimentosCustom(a.id, pv);
+    const roia = calcularROIA(gmd, DB.precioKG, cd + cdCustom);
     
     if(roia < 1.0 && gmd > 0) {
         if(!a.tags) a.tags = [];
@@ -394,8 +385,12 @@ const getAlertasAnimal = (a) => {
     if(a.fechaNacimiento) {
         const edadDias = Math.floor((new Date() - new Date(a.fechaNacimiento)) / 86400000);
         if(edadDias >= 15 && edadDias <= 30) al.push({t:'warning', m:'✂️ Edad para descornado/palpar', icon:'fa-calendar-check'});
-        if(edadDias >= 210 && pv <= 150 && et.nombre === 'Cría') {
-            al.push({t:'info', m:'🍼 Destete automático recomendado.', icon:'fa-baby-carriage'});
+    }
+
+    if(a.fechaNacimiento && pv <= 150) {
+        const edadDias = Math.floor((new Date() - new Date(a.fechaNacimiento)) / 86400000);
+        if(edadDias >= 210 && et.nombre === 'Cría') {
+            al.push({t:'info', m:'🍼 Destete recomendado. Cambiar a etapa Levante.', icon:'fa-baby-carriage'});
         }
     }
 
@@ -415,7 +410,12 @@ const getAlertasAnimal = (a) => {
                 if(pr.id==='modificador'&&d<pr.diasEfecto) tm=true; 
                 if(pr.id==='complejoB'&&d<pr.diasEfecto) tcb=true; 
                 if(pr.id.indexOf('ivermectina')!==-1&&d<pr.diasEfecto) tiv=true; 
-                if(pr.retiro>0&&d<pr.retiro) al.push({t:'r',m:'🚫 NO APTO VENTA. '+pr.nombre+' ('+(pr.retiro-d)+'d)',icon:'fa-clock'}); 
+                if(pr.retiro>0&&d<pr.retiro) {
+                    al.push({t:'r',m:'🚫 NO APTO VENTA. '+pr.nombre+' ('+(pr.retiro-d)+'d)',icon:'fa-clock'});
+                    a.bloqueadoPorRetiro = true; // ✅ Marcar para UI
+                } else {
+                    a.bloqueadoPorRetiro = false;
+                }
             } 
         } 
     } 
@@ -432,6 +432,22 @@ const getAguaDiaria = (pv, prop, litrosLeche = 0) => {
 
 const getLoteName = (id) => DB.lotes.find(x => x.id===id)?.nombre || 'General';
 const getAnimalesByLote = (lid) => DB.animales.filter(a => a.loteId === lid);
+
+// ✅ FUNCIÓN NUEVA: Actualizar transiciones diarias
+const actualizarTransiciones = () => {
+    let cambios = false;
+    DB.animales.forEach(a => {
+        if(a.transicionActiva && a.transicionDias < 7) {
+            a.transicionDias += 1;
+            cambios = true;
+            if(a.transicionDias >= 7) {
+                a.transicionActiva = false;
+                showToast(`✅ ${a.nombre}: Transición ruminal completada`);
+            }
+        }
+    });
+    if(cambios) save();
+};
 
 // ==================== NAVEGACIÓN & PERSISTENCIA ====================
 let animalFilterLote = sessionStorage.getItem('filterLote') || 'all';
@@ -460,14 +476,12 @@ function renderInicio() {
         const rep = calcRepro(a); 
         const estAct = rep?.estadoLactancia || 'auto'; 
         const gmd = getGMD(a.historial);
-        const r = getRendimiento(a.historial, gmd);
         
         tKg += p; 
-        const cd = getCostoDiario(p, a.proposito, estAct) + getCostoAlimentosCustom(a.id, p);
-        const csd = getCostoSanidadDiario(a.id);
-        
+        // ✅ Validación segura de getCostoDiario
+        const cd = (typeof getCostoDiario === 'function') ? getCostoDiario(p, a.proposito, estAct) : 0;
         coT += cd; csT += getCostoSanidadTotal(a.id); 
-        est[r.nivel]++; 
+        est[getRendimiento(a.historial, gmd).nivel]++; 
         getAlertasAnimal(a).forEach(s => als.push({nombre:a.nombre, t:s.t, m:s.m, icon:s.icon}));
         
         const diet = getDiet(p, a.proposito, estAct);
@@ -476,7 +490,7 @@ function renderInicio() {
         totalPesoProy30 += (p + (gmd > 0 ? gmd * 30 : 0));
         ingresoPorGanancia += (gmd > 0 ? gmd * 30 * DB.precioKG : 0);
         costoAlimMes += (cd * 30);
-        costoSanidadMes += (csd * 30);
+        costoSanidadMes += (getCostoSanidadDiario(a.id) * 30);
     });
     
     const prom = ta ? tKg/ta : 0;
@@ -544,23 +558,33 @@ function renderAnimales() {
     if(animalSearch) filtered = filtered.filter(a => a.nombre.toLowerCase().includes(animalSearch.toLowerCase())); 
     
     let html = `<div class="card" style="padding:12px 16px"><input id="animSearch" type="text" placeholder="🔍 Buscar animal..." value="${animalSearch}" style="padding:10px 14px;font-size:.85rem"></div>`; 
-    html += `<div class="filter-chips"><div class="chip ${animalFilterLote==='all'?'active':''}" onclick="animalFilterLote='all';sessionStorage.setItem('filterLote','all');renderAnimales()">Todos</div>`; 
-    DB.lotes.forEach(l => html += `<div class="chip ${animalFilterLote===l.id?'active':''}" onclick="animalFilterLote='${l.id}';sessionStorage.setItem('filterLote','${l.id}');renderAnimales()">${l.nombre}</div>`); 
+    html += `<div class="filter-chips"><div class="chip ${animalFilterLote==='all'?'active':''}" onclick="animalFilterLote='all';renderAnimales()">Todos</div>`; 
+    DB.lotes.forEach(l => html += `<div class="chip ${animalFilterLote===l.id?'active':''}" onclick="animalFilterLote='${l.id}';renderAnimales()">${l.nombre}</div>`); 
     html += '</div><div class="grid">'; 
     if(!filtered.length) html += '<div style="grid-column:1/-1;text-align:center;padding:30px;color:var(--muted)"><i class="fa-solid fa-cow" style="font-size:2rem;margin-bottom:10px;display:block"></i>No hay animales registrados</div>'; 
     
     filtered.forEach(a => { 
         const p = a.historial[a.historial.length-1].peso, rep = calcRepro(a), estAct = rep?.estadoLactancia || 'auto'; 
-        const et = getEtapa(p, rep), gmd = getGMD(a.historial), r = getRendimiento(a.historial, gmd); 
+        const et = getEtapa(p, rep), r = getRendimiento(a.historial, getGMD(a.historial)), gmd = getGMD(a.historial); 
         const lm = {verde:'ml-g',azul:'ml-b',naranja:'ml-o',rojo:'ml-r',gris:'ml-x'}; 
-        let ret = false, retDias = 0; 
-        for(let j=DB.aplicaciones.length-1;j>=0;j--){ if(DB.aplicaciones[j].animalId===a.id){ const pr = getAllSanidad().find(x=>x.id===DB.aplicaciones[j].productoId); if(pr?.retiro>0){ const d=getDiasDesde(DB.aplicaciones[j].fecha); if(d<pr.retiro){ret=true; retDias=pr.retiro-d; break}} } } 
+        let ret = a.bloqueadoPorRetiro || false; 
         
         let tagsHTML = '';
         if(a.tags && a.tags.length) a.tags.forEach(t => tagsHTML += `<span class="tag-descarte">${t}</span>`);
-        if(ret) tagsHTML += `<span class="bloqueado-tag">⛔ VEDA ${retDias}d</span>`;
 
-        html += `<div class="animal-card" onclick="showProfile(${a.id})"><div class="mini-led ${lm[r.nivel]}"></div>${et.ureaBloqueada?'<div class="lock-icon"><i class="fa-solid fa-lock"></i></div>':''}<span style="font-size:1.5rem">${et.icono}</span><div class="name">${a.nombre} ${tagsHTML}</div><span class="etapa-tag ${et.clase}">${et.nombre}</span><div style="font-size:.6rem;color:var(--muted);margin-top:2px">${getLoteName(a.loteId)}</div><div class="weight">${fm(p)} kg</div>${ret?'<div class="retiro-badge">🚫 VEDA</div>':''}<div class="cm" style="color:${r.cm>=0?'#22c55e':'#ef4444'}">${r.cm>=0?'+':''}${r.cm.toFixed(1)}%</div></div>`; 
+        // ✅ Tarjeta con bloqueo visual si hay retiro
+        html += `<div class="animal-card ${ret ? 'bloqueado' : ''}" onclick="${ret ? '' : `showProfile(${a.id})`}">
+            ${ret ? '<div style="position:absolute;inset:0;background:rgba(239,68,68,.08);border-radius:18px;z-index:1" onclick="event.stopPropagation()"></div>' : ''}
+            <div class="mini-led ${lm[r.nivel]}"></div>
+            ${et.ureaBloqueada?'<div class="lock-icon"><i class="fa-solid fa-lock"></i></div>':''}
+            <span style="font-size:1.5rem">${et.icono}</span>
+            <div class="name">${a.nombre} ${tagsHTML}</div>
+            <span class="etapa-tag ${et.clase}">${et.nombre}</span>
+            <div style="font-size:.6rem;color:var(--muted);margin-top:2px">${getLoteName(a.loteId)}</div>
+            <div class="weight">${fm(p)} kg</div>
+            ${ret?'<div class="retiro-badge">🚫 VEDA</div>':''}
+            <div class="cm" style="color:${r.cm>=0?'#22c55e':'#ef4444'}">${r.cm>=0?'+':''}${r.cm.toFixed(1)}%</div>
+        </div>`; 
     }); 
     html += '</div>'; 
     document.getElementById('v-animales').innerHTML = html; 
@@ -672,17 +696,16 @@ function renderConfig() {
 
 function exportData() { const blob = new Blob([JSON.stringify(DB)], {type:'application/json'}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href=url; a.download=`ganadero_backup_v${APP_VERSION}_${new Date().toISOString().slice(0,10)}.json`; a.click(); showToast('✅ Respaldo descargado'); }
 function importData() { document.getElementById('importFile').click(); }
-function handleImport(e) { const f = e.target.files[0]; if(!f) return; const r = new FileReader(); r.onload = (ev) => { try { const d = JSON.parse(ev.target.result); if(d.animales && d.precios) { DB = d; if(!DB.lotes) DB.lotes=[{id:'lot_general',nombre:'General',color:'#ffb900'}]; DB.animales.forEach(a => { if(!a.loteId) a.loteId='lot_general'; if(a.litrosLeche === undefined) a.litrosLeche = 0; if(a.tags === undefined) a.tags = []; }); save(); showToast('✅ Datos importados'); goPage('inicio'); } else showToast('⚠️ Archivo inválido'); } catch { showToast('⚠️ Error al leer archivo'); } }; r.readAsText(f); }
+function handleImport(e) { const f = e.target.files[0]; if(!f) return; const r = new FileReader(); r.onload = (ev) => { try { const d = JSON.parse(ev.target.result); if(d.animales && d.precios) { DB = d; if(!DB.lotes) DB.lotes=[{id:'lot_general',nombre:'General',color:'#ffb900'}]; DB.animales.forEach(a => { if(!a.loteId) a.loteId='lot_general'; if(a.litrosLeche === undefined) a.litrosLeche = 0; if(a.transicionDias === undefined) a.transicionDias = 0; if(a.transicionActiva === undefined) a.transicionActiva = false; if(a.bloqueadoPorRetiro === undefined) a.bloqueadoPorRetiro = false; }); save(); showToast('✅ Datos importados'); goPage('inicio'); } else showToast('⚠️ Archivo inválido'); } catch { showToast('⚠️ Error al leer archivo'); } }; r.readAsText(f); }
 
 // ==================== PERFIL OPTIMIZADO ====================
 function showProfile(id) {
     const a = DB.animales.find(x => x.id === id); if(!a) return;
     const p = a.historial[a.historial.length-1].peso, rep = calcRepro(a), et = getEtapa(p, rep);
-    const gmd = getGMD(a.historial), r = getRendimiento(a.historial, gmd);
+    const r = getRendimiento(a.historial, getGMD(a.historial)), gmd = getGMD(a.historial);
     const valA = p * DB.precioKG, proy30 = p + (gmd*30);
     const faltaKg = et.max - p, progPct = getProgresoEtapa(p, et);
     const diasSistema = a.historial[0] ? getDiasDesde(a.historial[0].fecha) : 0;
-    const retiroDias = getDiasRetiroActivo(id);
     
     let edadTexto = '--';
     if(a.fechaNacimiento) {
@@ -694,7 +717,6 @@ function showProfile(id) {
     const mamaNombre = a.madreId ? (DB.animales.find(x => x.id == a.madreId)?.nombre || 'Desconocida') : '--';
 
     let alertHTML = getAlertasAnimal(a).map(s => `<div class="alert-item alert-${s.t==='r'?'danger':s.t==='purple'?'purple':'warning'}"><i class="fa-solid ${s.icon}"></i> ${s.m}</div>`).join('');
-    if(retiroDias > 0) alertHTML += `<div class="alert-item alert-danger"><i class="fa-solid fa-clock"></i> ⛔ RETIRO FARMACOLÓGICO ACTIVO: ${retiroDias} días restantes</div>`;
     if(!alertHTML) alertHTML = '<div style="text-align:center;padding:12px;color:var(--success);font-size:.8rem;background:rgba(34,197,94,.08);border-radius:12px;border:1px solid rgba(34,197,94,.15)"><i class="fa-solid fa-check-circle"></i> Todo en orden</div>';
 
     let feedHTML = '<div class="sp-card"><div class="sp-card-title"><i class="fa-solid fa-clock-rotate-left"></i> HISTORIAL DE PESAJES</div>';
@@ -706,7 +728,7 @@ function showProfile(id) {
     });
     feedHTML += '</div>';
 
-    const d = getDiet(p, a.proposito, rep?.estadoLactancia || 'auto');
+    const d = getDiet(p, a.proposito, rep?.estadoLactancia || 'auto', a.transicionDias || 0);
     let dietHTML = `<div class="sp-card">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
             <div class="sp-card-title" style="margin-bottom:0"><i class="fa-solid fa-mortar-pestle"></i> DIETA DINÁMICA</div>
@@ -761,7 +783,8 @@ function showProfile(id) {
     }
 
     const gmdValido = a.historial.length >= 2 && gmd > 0.01 ? gmd : 0;
-    const cd = getCostoDiario(p, a.proposito, rep?.estadoLactancia || 'auto');
+    // ✅ Validación segura de getCostoDiario
+    const cd = (typeof getCostoDiario === 'function') ? getCostoDiario(p, a.proposito, rep?.estadoLactancia || 'auto') : 0;
     const csd = getCostoSanidadDiario(id);
     const cdC = getCostoAlimentosCustom(id, p);
     const costoDiarioTotal = cd + cdC + csd;
@@ -771,7 +794,7 @@ function showProfile(id) {
     const proy15 = gmdValido > 0 ? p + (gmdValido * 15) : p;
     const proy60 = gmdValido > 0 ? p + (gmdValido * 60) : p;
     const ingresoDiario = gmdValido * DB.precioKG;
-    const margenDiario = ingresoDiario - costoDiarioTotal;
+    const margenDiario = ingresoDiario - costoDiarioTotal; // ✅ Definido ANTES de usar
     const colorMargen = margenDiario >= 0 ? '#22c55e' : '#ef4444';
     const roia = calcularROIA(gmdValido, DB.precioKG, costoDiarioTotal);
     const agua = getAguaDiaria(p, a.proposito, a.litrosLeche || 0);
@@ -805,26 +828,17 @@ function showProfile(id) {
             <div class="row"><span class="row-label"><i class="fa-solid fa-sack-dollar"></i> Ganancia neta/mes</span><span class="row-val" style="color:${gananciaMensual!==null && gananciaMensual>=0?'#22c55e':'#ef4444'}">${gananciaMensual !== null ? '$ '+fm(gananciaMensual) : '--'}</span></div>
         </div></div>`;
 
-    let bloqueoVentaHTML = '';
-    if(retiroDias > 0) {
-        bloqueoVentaHTML = `<div style="background:rgba(239,68,68,.15); color:#f87171; padding:12px; border-radius:12px; text-align:center; margin-bottom:12px;">
-            <i class="fa-solid fa-ban"></i> <b>ANIMAL BLOQUEADO PARA VENTA</b><br>
-            Período de retiro activo: ${retiroDias} días restantes
-        </div>`;
-    }
-
     let html = `<div class="sp-wrapper"><div class="sp-banner">
         <button class="sp-back" onclick="closeProfile()"><i class="fa-solid fa-arrow-left"></i></button>
         <button class="sp-back" style="left:auto;right:14px;background:rgba(239,68,68,.2);color:#f87171" onclick="confirmDeleteAnimal(${id})"><i class="fa-solid fa-trash-can"></i></button>
     </div>
         <div class="sp-header"><div class="sp-avatar">${et.icono}</div><div class="sp-name">${a.nombre}</div>
-        <div class="sp-badges"><span class="sp-badge" style="background:${et.color}">${et.nombre}</span><span class="sp-badge">${getLoteName(a.loteId)}</span><span class="sp-badge">${a.proposito==='carne'?'🥩':'🥛'}</span></div>
+        <div class="sp-badges"><span class="sp-badge" style="background:${et.color}">${et.nombre}</span><span class="sp-badge">${getLoteName(a.loteId)}</span><span class="sp-badge">${a.proposito==='carne'?'🥩':''}</span></div>
         <div class="sp-meta">
             ${fm(p)} kg · ${r.texto} · Edad: <b>${edadTexto}</b> · Mama: <b>${mamaNombre}</b>
         </div></div>
         <div class="sp-stats"><div class="sp-stat"><div class="val">${fm(p)}</div><div class="lbl">Peso</div></div><div class="sp-stat"><div class="val">$${fm(valA)}</div><div class="lbl">Valor</div></div><div class="sp-stat"><div class="val">${a.historial.length >= 2 ? gmd.toFixed(2) : '--'}</div><div class="lbl">GMD</div></div><div class="sp-stat"><div class="val">${ckp !== null ? '$'+fm(ckp) : '--'}</div><div class="lbl">Costo/kg</div></div></div>
         <div class="stage-progress-container"><div class="stage-progress-labels"><span>Etapa Actual</span><span>Meta: ${et.siguiente}</span></div><div class="stage-progress-bar"><div class="stage-progress-fill" style="width:${progPct}%;background:${et.color}"><span class="stage-progress-text">${faltaKg<=0?'✅ VENDIBLE':fm(faltaKg)+' kg faltan'}</span></div></div></div>
-        ${bloqueoVentaHTML}
         <div class="sp-scroll">
             ${alertHTML}
             ${feedHTML}
@@ -858,6 +872,16 @@ function confirmDeleteAnimal(id) {
 }
 
 // ==================== MODALES & CRUD ====================
+
+// ✅ FUNCIÓN NUEVA: toggleOrigenFields (FALTABA - ERROR EN UI)
+function toggleOrigenFields() {
+    const orig = document.getElementById('addOrig')?.value;
+    const nacField = document.getElementById('nacimientoFields');
+    const compField = document.getElementById('compradoFields');
+    if(nacField) nacField.classList.toggle('hidden', orig !== 'nacimiento');
+    if(compField) compField.classList.toggle('hidden', orig !== 'comprado');
+}
+
 function showAddAnimalModal() { 
     let opts = DB.lotes.map(l => `<option value="${l.id}">${l.nombre}</option>`).join('');
     let momsOpts = '<option value="">-- Sin Madre --</option>';
@@ -887,32 +911,27 @@ function showAddAnimalModal() {
     </div>`);
 }
 
-// NUEVA: toggleOrigenFields (faltaba)
-function toggleOrigenFields() {
-    const orig = document.getElementById('addOrig')?.value;
-    const nacField = document.getElementById('nacimientoFields');
-    const compField = document.getElementById('compradoFields');
-    if(nacField) nacField.classList.toggle('hidden', orig !== 'nacimiento');
-    if(compField) compField.classList.toggle('hidden', orig !== 'comprado');
-}
-
 function guardarNuevoAnimal() { 
     const n = document.getElementById('addN').value.trim(), w = parseFloat(document.getElementById('addW').value);
     const lote = document.getElementById('addLote').value, p = document.getElementById('addProp').value;
     const orig = document.getElementById('addOrig').value;
-    const fechaNac = document.getElementById('addFechaNac')?.value || null;
-    const mamaId = document.getElementById('addMama')?.value || null;
+    const fechaNac = document.getElementById('addFechaNac')?.value;
+    const mamaId = document.getElementById('addMama')?.value;
     const precio = parseFloat(document.getElementById('addPrice')?.value) || 0;
 
     if(!n || isNaN(w) || w<20 || w>2000) return showToast('⚠️ Verifica nombre y peso');
     const fechaHoy = new Date().toLocaleDateString(); 
     const fechaRegistro = (orig === 'nacimiento' && fechaNac) ? fechaNac.split('-').reverse().join('/') : fechaHoy;
 
+    // ✅ Campos completos con litrosLeche y flags de transición
     DB.animales.push({
         id: Date.now(), nombre: n, historial: [{fecha: fechaRegistro, peso: w}], proposito: p, origen: orig, 
         valorCompra: precio, fechaUltimoParto: null, estadoReproductivo: 'novilla', loteId: lote,
-        fechaNacimiento: fechaNac || null, madreId: mamaId || null, tags: [], litrosLeche: 0, 
-        transicionActiva: false, transicionDias: 0
+        fechaNacimiento: fechaNac || null, madreId: mamaId || null, tags: [], 
+        litrosLeche: 0,  // ✅ Agregado
+        transicionDias: 0,  // ✅ Agregado
+        transicionActiva: false,  // ✅ Agregado
+        bloqueadoPorRetiro: false  // ✅ Agregado
     }); 
     save(); document.querySelector('.modal-overlay').remove(); showToast(`✅ ${n} registrado`); goPage('animales'); 
 }
@@ -936,16 +955,20 @@ function updateWeight(id) {
     recalcularTodo(id);
 }
 
+// ✅ MEJORADO: recalcularTodo con destete automático REAL
 function recalcularTodo(id) {
     const a = DB.animales.find(x => x.id === id); if(!a) return;
     const p = a.historial[a.historial.length-1].peso;
     const et = getEtapa(p, calcRepro(a));
     
+    // ✅ Destete automático que CAMBIA el estado real del animal
     if(a.fechaNacimiento && p <= 150) {
         const edadDias = Math.floor((new Date() - new Date(a.fechaNacimiento)) / 86400000);
         if(edadDias >= 210 && et.nombre === 'Cría') {
-            showToast('🍼 Destete automático aplicado a Levante');
-            a.estadoReproductivo = 'destetado';
+            a.estadoReproductivo = 'destetado';  // ✅ Cambio de estado REAL
+            a.transicionActiva = true;            // ✅ Activar transición de dieta
+            a.transicionDias = 1;                 // ✅ Día 1 de 7
+            showToast('🍼 Destete automático: Cambiando a dieta de Levante');
         }
     }
     save(); showProfile(id);
@@ -962,7 +985,7 @@ function openAplicarProducto(animalId) {
     const a = DB.animales.find(x => x.id===animalId); if(!a) return; 
     const p = a.historial[a.historial.length-1].peso; 
     let opts = getAllSanidad().map(pr => `<option value="${pr.id}">${pr.nombre} (${pr.diasEfecto}d)</option>`).join(''); 
-    showModal(`<div style="font-weight:700;margin-bottom:12px;color:var(--accent-text)">💉 APLICAR A ${a.nombre}</div><div class="flex-col gap10"><select id="aplProducto" onchange="calcDosisModal(${p})">${opts}</select><div id="dosisInfo" style="font-size:.7rem;color:var(--muted);background:rgba(255,255,255,.03);padding:8px;border-radius:8px;">📋 Selecciona un producto</div><input id="aplML" type="number" placeholder="ml aplicados" step=".1"><button class="btn btn-green mt8" onclick="aplicarProducto(${animalId})"><i class="fa-solid fa-check"></i> CONFIRMAR</button><button class="btn btn-gray" onclick="document.querySelector('.modal-overlay').remove()">CANCELAR</button></div>`); 
+    const m = showModal(`<div style="font-weight:700;margin-bottom:12px;color:var(--accent-text)">💉 APLICAR A ${a.nombre}</div><div class="flex-col gap10"><select id="aplProducto" onchange="calcDosisModal(${p})">${opts}</select><div id="dosisInfo" style="font-size:.7rem;color:var(--muted);background:rgba(255,255,255,.03);padding:8px;border-radius:8px;">📋 Selecciona un producto</div><input id="aplML" type="number" placeholder="ml aplicados" step=".1"><button class="btn btn-green mt8" onclick="aplicarProducto(${animalId})"><i class="fa-solid fa-check"></i> CONFIRMAR</button><button class="btn btn-gray" onclick="document.querySelector('.modal-overlay').remove()">CANCELAR</button></div>`); 
     setTimeout(() => calcDosisModal(p), 100); 
 }
 function calcDosisModal(p) { 
@@ -998,7 +1021,13 @@ function verificarRetiroFarmacologico(id) {
             if(restantes > maxRetiro) maxRetiro = restantes;
         }
     });
-    if(maxRetiro > 0) showToast(`⚠️ Retiro farmacológico activo: ${maxRetiro} días`);
+    if(maxRetiro > 0) {
+        a.bloqueadoPorRetiro = true;  // ✅ Marcar para UI
+        save();
+        showToast(`⚠️ Retiro farmacológico activo: ${maxRetiro} días`);
+    } else {
+        a.bloqueadoPorRetiro = false;
+    }
 }
 
 function showModalAsignarAlimento(idAnimal) { 
@@ -1052,6 +1081,7 @@ if ('serviceWorker' in navigator) {
 
 document.addEventListener('DOMContentLoaded', () => {
   goPage('inicio');
+  actualizarTransiciones();  // ✅ Verificar transiciones al iniciar
   document.addEventListener('visibilitychange', () => { if(document.hidden) save(); });
   window.addEventListener('beforeunload', () => { save(); });
 });
