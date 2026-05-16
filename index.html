@@ -160,12 +160,6 @@
         .insumo-item-header .info .name{font-weight:600;font-size:.85rem}
         .insumo-item-header .info .consumo{font-size:.65rem;color:var(--muted)}
         .insumo-item-header .dias{font-size:.7rem;font-weight:600;margin-left:auto}
-        
-        /* === DIETA TOTAL GRID === */
-        .diet-total-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
-        .diet-item{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.05);border-radius:12px;padding:12px;text-align:center}
-        .diet-item .val{font-weight:700;color:var(--accent-text);font-size:1rem}
-        .diet-item .lbl{font-size:.65rem;color:var(--muted);margin-top:2px}
     </style>
 </head>
 <body>
@@ -199,7 +193,7 @@
 
 <script>
 // ==================== CONFIGURACIÓN GLOBAL ====================
-const APP_VERSION = '3.9';
+const APP_VERSION = '3.9.1';
 const STORAGE_KEY = 'ganadero_elite_v' + APP_VERSION.replace('.','_');
 let DB = {}, lastSaveTime = null, autoSaveTimer = null, insumoTab = 'alimentos';
 
@@ -329,72 +323,77 @@ document.querySelectorAll('.nav-item').forEach(n => n.addEventListener('click', 
 
 // ==================== RENDERS ====================
 const renderInicio = () => {
-    const pr=DB.precioKG, ta=DB.animales.length;
-    let tKg=0, coT=0, csT=0, est={verde:0,azul:0,naranja:0,rojo:0,gris:0}, als=[];
-    
-    // Cálculos globales
+    const ta = DB.animales.length;
+    let tKg = 0, coT = 0, csT = 0, est = {verde:0,azul:0,naranja:0,rojo:0,gris:0}, als = [];
     let totalDiet = { pasto:0, salvado:0, melaza:0, urea:0, bicarb:0, sal:0, levadura:0 };
-    let totalGMD = 0, totalProj30 = 0, totalProj60 = 0, totalProj90 = 0;
-    let totalCostoDiario = 0;
+    
+    // Variables financieras correctas
+    let totalPesoProy30 = 0, ingresoPorGanancia = 0, costoAlimMes = 0, costoSanidadMes = 0;
 
     DB.animales.forEach(a => { 
-        const p = a.historial[a.historial.length-1].peso, rep = calcRepro(a), estAct = rep?.estadoLactancia || 'auto'; 
+        const p = a.historial[a.historial.length-1].peso;
+        const rep = calcRepro(a); 
+        const estAct = rep?.estadoLactancia || 'auto'; 
+        const gmd = getGMD(a.historial);
+        
         tKg += p; 
         const cd = getCostoDiario(p, a.proposito, estAct) + getCostoAlimentosCustom(a.id, p);
-        coT += cd; 
-        csT += getCostoSanidadTotal(a.id); 
-        totalCostoDiario += cd;
+        const csd = getCostoSanidadDiario(a.id);
+        
+        coT += cd; csT += getCostoSanidadTotal(a.id); 
         est[getRendimiento(a.historial).nivel]++; 
         getAlertasSanidad(a).forEach(s => als.push({nombre:a.nombre, t:s.t, m:s.m, icon:s.icon}));
         
-        // Dieta total
+        // Suma dieta
         const diet = getDiet(p, a.proposito, estAct);
         Object.keys(totalDiet).forEach(k => totalDiet[k] += diet[k] || 0);
         
-        // Proyecciones
-        const gmd = getGMD(a.historial);
-        if(gmd > 0) { totalGMD += gmd; totalProj30 += (p + gmd*30); totalProj60 += (p + gmd*60); totalProj90 += (p + gmd*90); }
-        else { totalProj30 += p; totalProj60 += p; totalProj90 += p; }
+        // Cálculos financieros reales
+        totalPesoProy30 += (p + (gmd > 0 ? gmd * 30 : 0));
+        ingresoPorGanancia += (gmd > 0 ? gmd * 30 * DB.precioKG : 0);
+        costoAlimMes += (cd * 30);
+        costoSanidadMes += (csd * 30);
     });
     
-    const prom = ta ? tKg/ta : 0, gmdL = ta ? totalGMD/ta : 0;
-    const gan = (gmdL*30*pr*ta) - (coT*30) - (csT/12), pctB = ta ? ((est.verde+est.azul)/ta)*100 : 0;
+    const prom = ta ? tKg/ta : 0;
+    const gananciaNeta = ingresoPorGanancia - costoAlimMes - costoSanidadMes;
+    const pctB = ta ? ((est.verde+est.azul)/ta)*100 : 0;
 
     let html = `<div class="card" style="background:linear-gradient(135deg,rgba(255,185,0,.1),rgba(255,185,0,.02));border-color:rgba(255,185,0,.2)">
         <div class="row-label mb6" style="font-weight:600;color:var(--accent-text)"><i class="fa-solid fa-coins"></i> PRECIO KG EN PIE</div>
         <div style="display:flex;align-items:center;gap:6px"><span style="font-size:1.2rem;font-weight:800;color:var(--accent-text)">$</span>
-        <input id="inpPKG" type="number" value="${pr}" style="font-size:1.2rem;font-weight:700;text-align:center;background:transparent;border:none;color:var(--accent-text);padding:8px;width:100%"><span style="font-size:.7rem;color:var(--muted)">COP</span></div>
+        <input id="inpPKG" type="number" value="${DB.precioKG}" style="font-size:1.2rem;font-weight:700;text-align:center;background:transparent;border:none;color:var(--accent-text);padding:8px;width:100%"><span style="font-size:.7rem;color:var(--muted)">COP</span></div>
         <button class="btn btn-green mt8" onclick="DB.precioKG=parseFloat(document.getElementById('inpPKG').value)||0;save();renderInicio();showToast('✅ Precio actualizado')"><i class="fa-solid fa-check"></i> ACTUALIZAR</button></div>
     <div class="card"><div class="row-label mb6" style="font-weight:600"><i class="fa-solid fa-chart-pie"></i> RESUMEN GENERAL</div><div class="stats-grid">
         <div class="stat-item"><div class="row-label"><i class="fa-solid fa-users"></i> Cabezas</div><div class="row-val">${ta}</div></div>
         <div class="stat-item"><div class="row-label"><i class="fa-solid fa-layer-group"></i> Lotes</div><div class="row-val">${DB.lotes.length}</div></div>
         <div class="stat-item"><div class="row-label"><i class="fa-solid fa-weight-scale"></i> Peso Total</div><div class="row-val">${fm(tKg)} kg</div></div>
         <div class="stat-item"><div class="row-label"><i class="fa-solid fa-calculator"></i> Promedio</div><div class="row-val">${fm(prom)} kg</div></div></div></div>
-    <div class="card"><div class="capital-value" style="font-size:1.6rem;color:var(--accent-text)">$ ${fm(tKg*pr)}</div><div class="row-label" style="font-size:.7rem;color:var(--muted)"><i class="fa-solid fa-sack-dollar"></i> Valor total del hato</div></div>
+    <div class="card"><div class="capital-value" style="font-size:1.6rem;color:var(--accent-text)">$ ${fm(tKg*DB.precioKG)}</div><div class="row-label" style="font-size:.7rem;color:var(--muted)"><i class="fa-solid fa-sack-dollar"></i> Valor total del hato</div></div>
     <div class="card"><div style="font-weight:700;font-size:.7rem;margin-bottom:10px;color:var(--muted)"><i class="fa-solid fa-chart-simple"></i> ESTADO DEL HATO</div>
         <div class="estado-simple"><div class="estado-pildora e"><div class="num">${est.verde}</div><div class="lbl">Excelente</div></div><div class="estado-pildora b"><div class="num">${est.azul}</div><div class="lbl">Bueno</div></div><div class="estado-pildora r"><div class="num">${est.naranja}</div><div class="lbl">Regular</div></div><div class="estado-pildora m"><div class="num">${est.rojo}</div><div class="lbl">Bajo</div></div></div>
         <div class="progress"><div class="progress-fill" style="width:${pctB}%;background:var(--info)"></div></div></div>`;
 
-    // ✅ DIETA TOTAL DEL HATO
+    // ✅ DIETA TOTAL DEL HATO (FORMATO LISTA)
     if(ta > 0) {
-        html += `<div class="card"><div style="font-weight:700;font-size:.7rem;margin-bottom:12px;color:var(--muted)"><i class="fa-solid fa-wheat-awn"></i> DIETA DIARIA TOTAL (HATO)</div>
-        <div class="diet-total-grid">
-            ${AL.map(k => `<div class="diet-item"><div class="val">${(k==='pasto'||k==='salvado') ? totalDiet[k].toFixed(1)+' kg' : Math.round(totalDiet[k]*1000)+' g'}</div><div class="lbl">${NM[k]}</div></div>`).join('')}
-        </div></div>`;
+        html += `<div class="card"><div style="font-weight:700;font-size:.7rem;margin-bottom:12px;color:var(--muted)"><i class="fa-solid fa-wheat-awn"></i> DIETA DIARIA TOTAL (HATO)</div>`;
+        AL.forEach(k => {
+            const val = totalDiet[k];
+            const unit = (k==='pasto'||k==='salvado') ? ' kg' : ' g';
+            const display = (k==='pasto'||k==='salvado') ? val.toFixed(1) : Math.round(val);
+            html += `<div class="row"><span class="row-label"><i class="fa-solid ${IC[k]}"></i> ${NM[k]}</span><span class="row-val">${display}${unit}</span></div>`;
+        });
+        html += '</div>';
     }
 
-    // ✅ PROYECCIÓN Y FINANZAS GLOBALES
+    // ✅ FINANZAS CORREGIDAS
     if(ta > 0) {
-        const costoMensualTotal = totalCostoDiario * 30;
-        const ingresoProyectado = (totalProj30 * pr);
-        const gananciaProyectada = ingresoProyectado - costoMensualTotal - (csT/12);
-        html += `<div class="card"><div style="font-weight:700;font-size:.7rem;margin-bottom:12px;color:var(--muted)"><i class="fa-solid fa-chart-line"></i> PROYECCIÓN & FINANZAS (30 DÍAS)</div>
-        <div class="stats-grid">
-            <div class="stat-item"><div class="row-label"><i class="fa-solid fa-arrow-trend-up"></i> Peso Proyectado</div><div class="row-val">${fm(totalProj30)} kg</div></div>
-            <div class="stat-item"><div class="row-label"><i class="fa-solid fa-sack-dollar"></i> Valor Proyectado</div><div class="row-val">$ ${fm(ingresoProyectado)}</div></div>
-            <div class="stat-item"><div class="row-label"><i class="fa-solid fa-receipt"></i> Costo Alim./Mes</div><div class="row-val">$ ${fm(costoMensualTotal)}</div></div>
-            <div class="stat-item"><div class="row-label"><i class="fa-solid fa-piggy-bank"></i> Ganancia Neta</div><div class="row-val" style="color:${gananciaProyectada>=0?'#22c55e':'#ef4444'}">$ ${fm(gananciaProyectada)}</div></div>
-        </div></div>`;
+        html += `<div class="card"><div style="font-weight:700;font-size:.7rem;margin-bottom:12px;color:var(--muted)"><i class="fa-solid fa-calculator"></i> PROYECCIÓN & FINANZAS (30 DÍAS)</div>
+        <div class="row"><span class="row-label"><i class="fa-solid fa-weight-scale"></i> Peso proyectado</span><span class="row-val">${fm(totalPesoProy30)} kg</span></div>
+        <div class="row"><span class="row-label"><i class="fa-solid fa-arrow-trend-up"></i> Ingreso por ganancia</span><span class="row-val" style="color:#22c55e">$ ${fm(ingresoPorGanancia)}</span></div>
+        <div class="row"><span class="row-label"><i class="fa-solid fa-wheat-awn"></i> Costo alimentación</span><span class="row-val" style="color:#ef4444">$ ${fm(costoAlimMes)}</span></div>
+        <div class="row"><span class="row-label"><i class="fa-solid fa-syringe"></i> Costo sanidad</span><span class="row-val" style="color:#ef4444">$ ${fm(costoSanidadMes)}</span></div>
+        <div class="row" style="border-top:1px solid rgba(255,255,255,.1);padding-top:10px;margin-top:4px"><span class="row-label" style="font-weight:600;color:#fff"><i class="fa-solid fa-piggy-bank"></i> GANANCIA NETA</span><span class="row-val" style="font-size:1rem;color:${gananciaNeta>=0?'#22c55e':'#ef4444'}">$ ${fm(gananciaNeta)}</span></div></div>`;
     }
 
     if(als.length) { html += `<div class="card"><div style="font-weight:700;font-size:.7rem;margin-bottom:8px;color:var(--muted)"><i class="fa-solid fa-bell"></i> ALERTAS RECIENTES</div>`; als.slice(0,5).forEach(a => { const cls = a.t==='r'?'alert-danger':a.t==='purple'?'alert-purple':'alert-warning'; html += `<div class="alert-item ${cls}"><i class="fa-solid ${a.icon}"></i><div><b>${a.nombre||''}</b>: ${a.m}</div></div>`; }); html += '</div>'; }
@@ -577,9 +576,8 @@ const showProfile = (id) => {
         <button class="btn btn-sm btn-purple mt8" onclick="showReproModal(${id})"><i class="fa-solid fa-pen"></i> Registrar Evento</button></div>`;
     }
 
-    const gmdValido = a.historial.length >= 3 && gmd > 0.05 ? gmd : 0;
-    const proy15 = gmdValido > 0 ? p + (gmdValido * 15) : p;
-    const proy60 = gmdValido > 0 ? p + (gmdValido * 60) : p;
+    // ✅ COSTO/KG CORREGIDO
+    const gmdValido = a.historial.length >= 3 && gmd > 0.01 ? gmd : 0;
     const cd = getCostoDiario(p, a.proposito, rep?.estadoLactancia || 'auto');
     const csd = getCostoSanidadDiario(id);
     const cdC = getCostoAlimentosCustom(id, p);
@@ -587,6 +585,9 @@ const showProfile = (id) => {
     const ckp = gmdValido > 0 ? costoDiarioTotal / gmdValido : null;
     const gananciaMensual = gmdValido > 0 ? (gmdValido * 30 * DB.precioKG) - (costoDiarioTotal * 30) : null;
     
+    const proy15 = gmdValido > 0 ? p + (gmdValido * 15) : p;
+    const proy60 = gmdValido > 0 ? p + (gmdValido * 60) : p;
+
     const finHTML = `<div class="sp-card"><div class="sp-card-title"><i class="fa-solid fa-chart-line"></i> PROYECCIÓN & RENTABILIDAD</div>
         <div class="sp-projection">
             <div class="sp-proj-box"><div class="sp-proj-d">15 DÍAS</div><div class="sp-proj-w">${fm(proy15)} kg</div><div class="sp-proj-g" style="color:${gmdValido>0?'#22c55e':'#6b7280'}">${gmdValido>0 ? '+$'+fm((proy15-p)*DB.precioKG) : '--'}</div></div>
@@ -599,7 +600,6 @@ const showProfile = (id) => {
             <div class="row"><span class="row-label"><i class="fa-solid fa-sack-dollar"></i> Ganancia neta/mes</span><span class="row-val" style="color:${gananciaMensual!==null && gananciaMensual>=0?'#22c55e':'#ef4444'}">${gananciaMensual !== null ? '$ '+fm(gananciaMensual) : '--'}</span></div>
         </div></div>`;
 
-    // ✅ HEADER CON BOTÓN ELIMINAR A LA DERECHA
     let html = `<div class="sp-wrapper"><div class="sp-banner">
         <button class="sp-back" onclick="closeProfile()"><i class="fa-solid fa-arrow-left"></i></button>
         <button class="sp-back" style="left:auto;right:14px;background:rgba(239,68,68,.2);color:#f87171" onclick="confirmDeleteAnimal(${id})"><i class="fa-solid fa-trash-can"></i></button>
@@ -630,7 +630,6 @@ const showProfile = (id) => {
     document.querySelector('header').classList.add('hidden');
 };
 
-// ✅ FUNCIÓN DE CONFIRMACIÓN PARA ELIMINAR
 const confirmDeleteAnimal = (id) => {
     const a = DB.animales.find(x => x.id === id);
     showModal(`<div style="text-align:center;padding:10px 0">
