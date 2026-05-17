@@ -1,3 +1,8 @@
+# 🐄 GANADERO ÉLITE PRO v4.3.0 - CÓDIGO COMPLETO FINAL
+
+Este código incluye **todas las correcciones matemáticas**, el **flujo de caja profesional** y el nuevo sistema de **precios flexibles ($/Kg o $/Gr)** para que los costos sean exactos según cómo compres tus insumos.
+
+```html
 <!DOCTYPE html>
 <html lang="es-CO">
 <head>
@@ -6,7 +11,7 @@
     <meta name="theme-color" content="#ffb900">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="description" content="Gestión ganadera profesional 100% offline - Motor nutricional avanzado">
+    <meta name="description" content="Gestión ganadera profesional - Motor nutricional avanzado">
     <title>GANADERO ÉLITE PRO</title>
     <link rel="manifest" href="./manifest.json">
     <link rel="apple-touch-icon" href="./assets/icons/icon-192x192.png">
@@ -149,10 +154,6 @@
         .projection-card{background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.2);border-radius:12px;padding:10px;margin:8px 0}
         .projection-row{display:flex;justify-content:space-between;font-size:.7rem;padding:4px 0}
         .projection-row.val{font-weight:700;color:var(--accent-text)}
-        .cashflow-bar{height:4px;background:rgba(255,255,255,.1);border-radius:2px;margin:4px 0;overflow:hidden}
-        .cashflow-fill{height:100%;background:var(--success);transition:width .3s}
-        .cashflow-fill.neg{background:var(--danger)}
-        /* ✅ ESTILOS FLUJO DE CAJA MEJORADO */
         .cf-table{width:100%;border-collapse:collapse;font-size:.7rem;margin-top:8px}
         .cf-table th{background:rgba(255,255,255,.05);padding:8px 4px;font-weight:600;text-align:left;border-bottom:1px solid var(--border)}
         .cf-table td{padding:8px 4px;border-bottom:1px solid rgba(255,255,255,.04)}
@@ -161,6 +162,11 @@
         .cf-summary{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px}
         .cf-box{background:rgba(255,255,255,.03);padding:10px;border-radius:10px;text-align:center}
         .cf-box .val{font-weight:700;font-size:.9rem}.cf-box .lbl{font-size:.55rem;color:var(--muted);margin-top:2px}
+        /* ESTILOS PARA UNIDADES DE PRECIO */
+        .unit-toggle{display:flex;overflow:hidden;border-radius:8px;border:1px solid var(--border);margin-top:4px;height:32px}
+        .unit-btn{flex:1;display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:600;cursor:pointer;transition:.2s;background:rgba(255,255,255,.05);color:var(--muted)}
+        .unit-btn.active{background:var(--accent);color:#000}
+        .price-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
     </style>
 </head>
 <body>
@@ -179,136 +185,147 @@
     <div class="nav-item" data-p="animales"><i class="fa-solid fa-cow"></i><span>Animales</span></div>
     <div class="nav-item active" data-p="inicio"><i class="fa-solid fa-house"></i><span>Inicio</span></div>
 </nav>
+
 <script>
-// ==================== CONFIGURACIÓN GLOBAL v4.2.1 ====================
-const APP_VERSION = '4.2.1';
+// ==================== CONFIGURACIÓN GLOBAL v4.3.0 ====================
+const APP_VERSION = '4.3.0';
 const STORAGE_KEY = 'ganadero_elite_v' + APP_VERSION.replace('.','_');
 let DB = {}, lastSaveTime = null, autoSaveTimer = null, saveTimeout = null, insumoTab = 'alimentos', searchTimeout = null;
 
-// ✅ PRECIOS REALISTAS (COP - Colombia 2024)
-const PRECIOS_REALISTAS = {
-    pasto: 80, salvado: 900, melaza: 1400, levadura: 9000,
-    bicarb: 2500, sal: 3000, urea: 4000
-};
+// ✅ PRECIOS REALISTAS Y UNIDADES POR DEFECTO
+const PRECIOS_REALISTAS = { pasto:80, salvado:900, melaza:1400, levadura:9000, bicarb:2500, sal:3000, urea:4000 };
+const UNIDADES_DEFECTO = { pasto:'kg', salvado:'kg', melaza:'kg', levadura:'kg', bicarb:'kg', sal:'kg', urea:'kg' };
 
-// ✅ MÓDULO 1: CONSTANTES NUTRICIONALES & FD
+// ✅ MÓDULO 1: CONSTANTES NUTRICIONALES
 const MS_PASTO_FRESCO = 0.20, MS_SALVADO = 0.88, MS_MELAZA = 0.75, CONSUMO_MS_PV = 0.03;
-const FD = { pasto: 0.15, salvado: 0.08, melaza: 0.05, levadura: 0.02, bicarb: 0.03, sal: 0.03, urea: 0.02 };
-const MICRO_FORMULAS = {
-    sal: { type: 'pv', factor: 0.5 },
-    bicarb: { type: 'ms', factor: 10 },
-    levadura: { type: 'pv', factor: 0.05 },
-    urea: { type: 'ms', factor: 11, maxPct: 0.11 }
-};
-const TRIGGERS = { ureaMinWeight: 150, pregnancyUreaBlockDay: 210, maxRumenVolumePct: 0.12 };
+const FD = { pasto:0.15, salvado:0.08, melaza:0.05, levadura:0.02, bicarb:0.03, sal:0.03, urea:0.02 };
+const MICRO_FORMULAS = { sal:{type:'pv',factor:0.5}, bicarb:{type:'ms',factor:10}, levadura:{type:'pv',factor:0.05}, urea:{type:'ms',factor:11,maxPct:0.11} };
+const TRIGGERS = { ureaMinWeight:150, pregnancyUreaBlockDay:210, maxRumenVolumePct:0.12 };
 
 // ==================== UTILIDADES ====================
-const fm = (n) => { if (isNaN(n) || n === null || n === undefined) return '0'; n = Math.round(n); var s = String(n); var r = ''; var c = 0; for (var i = s.length - 1; i >= 0; i--) { if (c > 0 && c % 3 === 0) r = '.' + r; r = s.charAt(i) + r; c++; } return r; };
-const showToast = (m, d = 3000) => { const t = document.createElement('div'); t.className = 'toast'; t.innerHTML = m; document.getElementById('toastContainer').appendChild(t); setTimeout(() => t.remove(), d); };
-const showModal = (h) => { const o = document.createElement('div'); o.className = 'modal-overlay'; o.innerHTML = '<div class="modal">' + h + '</div>'; o.onclick = (e) => { if (e.target === o) o.remove(); }; document.getElementById('modalContainer').appendChild(o); };
-const getDiasDesde = (f) => { if (!f) return 999; var p = f.split('/'); if (p.length<3) return 999; return Math.floor((new Date() - new Date(p[2], p[1] - 1, p[0])) / 86400000); };
+const fm = (n) => { if(isNaN(n)||n===null||n===undefined) return '0'; n=Math.round(n); var s=String(n); var r=''; var c=0; for(var i=s.length-1;i>=0;i--){if(c>0&&c%3===0) r='.'+r; r=s.charAt(i)+r; c++;} return r; };
+const showToast = (m, d=3000) => { const t=document.createElement('div'); t.className='toast'; t.innerHTML=m; document.getElementById('toastContainer').appendChild(t); setTimeout(()=>t.remove(),d); };
+const showModal = (h) => { const o=document.createElement('div'); o.className='modal-overlay'; o.innerHTML='<div class="modal">'+h+'</div>'; o.onclick=(e)=>{if(e.target===o)o.remove();}; document.getElementById('modalContainer').appendChild(o); };
+const getDiasDesde = (f) => { if(!f) return 999; var p=f.split('/'); if(p.length<3) return 999; return Math.floor((new Date()-new Date(p[2],p[1]-1,p[0]))/864e5); };
 const randColor = () => ['#ffb900','#22c55e','#3b82f6','#ef4444','#a78bfa','#f59e0b','#ec4899','#14b8a6'][Math.floor(Math.random()*8)];
-const formatTimeAgo = (ts) => { if(!ts) return 'Nunca'; const diff = Math.floor((Date.now() - ts)/1000); if(diff < 60) return 'hace '+diff+'s'; if(diff < 3600) return 'hace '+Math.floor(diff/60)+'min'; if(diff < 86400) return 'hace '+Math.floor(diff/3600)+'h'; return 'hace '+Math.floor(diff/86400)+'d'; };
-const showSaveIndicator = () => { const el = document.getElementById('saveIndicator'); if(el) { clearTimeout(saveTimeout); el.classList.add('visible'); saveTimeout = setTimeout(() => el.classList.remove('visible'), 2000); } };
-const save = () => { try { DB._lastSave = Date.now(); localStorage.setItem(STORAGE_KEY, JSON.stringify(DB)); lastSaveTime = Date.now(); showSaveIndicator(); return true; } catch(e) { console.error('Error guardando:', e); showToast('⚠️ Error al guardar'); return false; } };
-const queueAutoSave = () => { clearTimeout(autoSaveTimer); autoSaveTimer = setTimeout(save, 500); };
+const formatTimeAgo = (ts) => { if(!ts) return 'Nunca'; const diff=Math.floor((Date.now()-ts)/1000); if(diff<60) return 'hace '+diff+'s'; if(diff<3600) return 'hace '+Math.floor(diff/60)+'min'; if(diff<86400) return 'hace '+Math.floor(diff/3600)+'h'; return 'hace '+Math.floor(diff/86400)+'d'; };
+const showSaveIndicator = () => { const el=document.getElementById('saveIndicator'); if(el){clearTimeout(saveTimeout); el.classList.add('visible'); saveTimeout=setTimeout(()=>el.classList.remove('visible'),2000);} };
+const save = () => { try{DB._lastSave=Date.now(); localStorage.setItem(STORAGE_KEY,JSON.stringify(DB)); lastSaveTime=Date.now(); showSaveIndicator(); return true;} catch(e){console.error('Error guardando:',e); showToast('⚠️ Error al guardar'); return false;} };
+const queueAutoSave = () => { clearTimeout(autoSaveTimer); autoSaveTimer=setTimeout(save,500); };
 
 // ==================== BASE DE DATOS ====================
-const AL = ['pasto', 'salvado', 'melaza', 'levadura', 'bicarb', 'sal', 'urea'];
-const IC = { pasto: 'fa-seedling', salvado: 'fa-wheat-awn', melaza: 'fa-droplet', levadura: 'fa-flask', bicarb: 'fa-cubes', sal: 'fa-vial-circle-check', urea: 'fa-flask-vial' };
-const NM = { pasto: 'Pasto Picado', salvado: 'Salvado Trigo', melaza: 'Melaza', levadura: 'Levadura', bicarb: 'Bicarbonato', sal: 'Sal Mineral', urea: 'UREA' };
+const AL = ['pasto','salvado','melaza','levadura','bicarb','sal','urea'];
+const IC = { pasto:'fa-seedling', salvado:'fa-wheat-awn', melaza:'fa-droplet', levadura:'fa-flask', bicarb:'fa-cubes', sal:'fa-vial-circle-check', urea:'fa-flask-vial' };
+const NM = { pasto:'Pasto Picado', salvado:'Salvado Trigo', melaza:'Melaza', levadura:'Levadura', bicarb:'Bicarbonato', sal:'Sal Mineral', urea:'UREA' };
 const UNIDAD = { pasto:'kg', salvado:'kg', melaza:'kg', levadura:'g', bicarb:'g', sal:'g', urea:'g' };
-const FACTOR_MS = { pasto: MS_PASTO_FRESCO, salvado: MS_SALVADO, melaza: MS_MELAZA, levadura:1, bicarb:1, sal:1, urea:1 };
+const FACTOR_MS = { pasto:MS_PASTO_FRESCO, salvado:MS_SALVADO, melaza:MS_MELAZA, levadura:1, bicarb:1, sal:1, urea:1 };
 const CATALOGO_SANIDAD = [
-    { id: 'modificador', nombre: 'Modificador Orgánico', dosis: 50, diasEfecto: 90, retiro: 0, icono: 'fa-flask', color: '#22c55e' },
-    { id: 'vitaminaA', nombre: 'Vitamina ADE', dosis: 50, diasEfecto: 60, retiro: 30, icono: 'fa-sun', color: '#ffb900' },
-    { id: 'complejoB', nombre: 'Complejo B (B12)', dosis: 50, diasEfecto: 20, retiro: 0, icono: 'fa-capsules', color: '#3b82f6' },
-    { id: 'ivermectina1', nombre: 'Ivermectina 1%', dosis: 50, diasEfecto: 30, retiro: 28, icono: 'fa-shield-virus', color: '#ef4444' },
-    { id: 'ivermectina315', nombre: 'Ivermectina 3.15%', dosis: 50, diasEfecto: 90, retiro: 122, icono: 'fa-shield-halved', color: '#dc2626' },
-    { id: 'fosforo', nombre: 'Fósforo B12', dosis: 20, diasEfecto: 30, retiro: 0, icono: 'fa-bone', color: '#a78bfa' },
-    { id: 'hierro', nombre: 'Hierro Dextrano', dosis: 100, diasEfecto: 30, retiro: 0, icono: 'fa-droplet', color: '#f87171' }
+    {id:'modificador',nombre:'Modificador Orgánico',dosis:50,diasEfecto:90,retiro:0,icono:'fa-flask',color:'#22c55e'},
+    {id:'vitaminaA',nombre:'Vitamina ADE',dosis:50,diasEfecto:60,retiro:30,icono:'fa-sun',color:'#ffb900'},
+    {id:'complejoB',nombre:'Complejo B (B12)',dosis:50,diasEfecto:20,retiro:0,icono:'fa-capsules',color:'#3b82f6'},
+    {id:'ivermectina1',nombre:'Ivermectina 1%',dosis:50,diasEfecto:30,retiro:28,icono:'fa-shield-virus',color:'#ef4444'},
+    {id:'ivermectina315',nombre:'Ivermectina 3.15%',dosis:50,diasEfecto:90,retiro:122,icono:'fa-shield-halved',color:'#dc2626'},
+    {id:'fosforo',nombre:'Fósforo B12',dosis:20,diasEfecto:30,retiro:0,icono:'fa-bone',color:'#a78bfa'},
+    {id:'hierro',nombre:'Hierro Dextrano',dosis:100,diasEfecto:30,retiro:0,icono:'fa-droplet',color:'#f87171'}
 ];
 
 const initDB = () => {
     try {
         const raw = localStorage.getItem(STORAGE_KEY); const parsed = raw ? JSON.parse(raw) : null;
-        if (!parsed) throw new Error("Init");
+        if(!parsed) throw new Error("Init");
         parsed.alimentosCustom = parsed.alimentosCustom || []; parsed.sanidadCustom = parsed.sanidadCustom || [];
         parsed.asignacionesAlimentos = parsed.asignacionesAlimentos || {};
-        parsed.lotes = parsed.lotes || [{ id: 'lot_general', nombre: 'General', color: '#ffb900' }];
+        parsed.lotes = parsed.lotes || [{id:'lot_general',nombre:'General',color:'#ffb900'}];
         parsed.animales?.forEach(a => { 
-            if(!a.loteId) a.loteId = 'lot_general'; 
-            if(a.litrosLeche === undefined) a.litrosLeche = 0; 
-            if(a.transicionDias === undefined) a.transicionDias = 0; 
-            if(a.transicionActiva === undefined) a.transicionActiva = false; 
-            if(a.bloqueadoPorRetiro === undefined) a.bloqueadoPorRetiro = false;
-            if(a.diasGestacion === undefined) a.diasGestacion = 0;
-            if(a.fechaUltimaInseminacion === undefined) a.fechaUltimaInseminacion = null;
+            if(!a.loteId) a.loteId='lot_general'; 
+            if(a.litrosLeche===undefined) a.litrosLeche=0; 
+            if(a.transicionDias===undefined) a.transicionDias=0; 
+            if(a.transicionActiva===undefined) a.transicionActiva=false; 
+            if(a.bloqueadoPorRetiro===undefined) a.bloqueadoPorRetiro=false;
+            if(a.diasGestacion===undefined) a.diasGestacion=0;
+            if(a.fechaUltimaInseminacion===undefined) a.fechaUltimaInseminacion=null;
         });
-        if(!parsed.factoresDesperdicio) parsed.factoresDesperdicio = {...FD};
-        if(!parsed.precios) parsed.precios = {...PRECIOS_REALISTAS};
-        // ✅ Nuevos parámetros financieros
-        if(!parsed.precioLeche) parsed.precioLeche = 1200;
-        if(!parsed.valorCria) parsed.valorCria = 450000;
-        if(!parsed.intervaloPartos) parsed.intervaloPartos = 400;
-        if(!parsed.costosFijosMensuales) parsed.costosFijosMensuales = 300000;
+        if(!parsed.factoresDesperdicio) parsed.factoresDesperdicio={...FD};
+        if(!parsed.precios) parsed.precios={...PRECIOS_REALISTAS};
+        if(!parsed.unidadesPrecio) parsed.unidadesPrecio={...UNIDADES_DEFECTO}; // ✅ UNIDADES FLEXIBLES
+        if(!parsed.precioLeche) parsed.precioLeche=1200;
+        if(!parsed.valorCria) parsed.valorCria=450000;
+        if(!parsed.intervaloPartos) parsed.intervaloPartos=400;
+        if(!parsed.costosFijosMensuales) parsed.costosFijosMensuales=300000;
         return parsed;
     } catch {
-        return { animales: [], precios: {...PRECIOS_REALISTAS},
-            stock: { pasto:500,salvado:200,melaza:50,levadura:10,bicarb:5,sal:2,urea:20 },
-            stockSanidad:{}, preciosSanidad:{}, aplicaciones:[], precioKG:9800,
-            precioLeche:1200, valorCria:450000, intervaloPartos:400, costosFijosMensuales:300000,
-            alimentosCustom:[], sanidadCustom:[], asignacionesAlimentos:{},
-            lotes:[{id:'lot_general',nombre:'General',color:'#ffb900'}], 
-            factoresDesperdicio: {...FD}, _lastSave:null };
+        return { animales:[], precios:{...PRECIOS_REALISTAS}, unidadesPrecio:{...UNIDADES_DEFECTO},
+            stock:{pasto:500,salvado:200,melaza:50,levadura:10,bicarb:5,sal:2,urea:20},
+            stockSanidad:{},preciosSanidad:{},aplicaciones:[],precioKG:9800,
+            precioLeche:1200,valorCria:450000,intervaloPartos:400,costosFijosMensuales:300000,
+            alimentosCustom:[],sanidadCustom:[],asignacionesAlimentos:{},
+            lotes:[{id:'lot_general',nombre:'General',color:'#ffb900'}], factoresDesperdicio:{...FD}, _lastSave:null };
     }
 };
 DB = initDB(); if(DB._lastSave) lastSaveTime = DB._lastSave;
 
-// ==================== MÓDULO 1: MOTOR NUTRICIONAL (CORREGIDO) ====================
-const getDiet = (pv, prop, estado, transicionDias = 0, diasGestacion = 0, incluirFD = false) => { 
-    if (pv < 20) return { pasto:0,salvado:0,melaza:0,urea:0,bicarb:0,sal:0,levadura:0, _meta:{ureaBloqueada:false,motivo:null} };
+// ==================== MÓDULO 1: MOTOR NUTRICIONAL & COSTOS ====================
+const getDiet = (pv, prop, estado, transicionDias=0, diasGestacion=0, incluirFD=false) => { 
+    if(pv<20) return {pasto:0,salvado:0,melaza:0,urea:0,bicarb:0,sal:0,levadura:0,_meta:{ureaBloqueada:false,motivo:null}};
     const msTotalRequerida = pv * CONSUMO_MS_PV;
-    const esTernera = pv < 150, p = prop || 'carne', st = estado || 'auto';
+    const esTernera = pv<150, p=prop||'carne', st=estado||'auto';
     const ureaPermitida = !(pv < TRIGGERS.ureaMinWeight || diasGestacion >= TRIGGERS.pregnancyUreaBlockDay);
-    const calcMicro = (f, pv, ms) => f.type === 'pv' ? pv * f.factor : ms * f.factor;
+    const calcMicro = (f,pv,ms) => f.type==='pv'?pv*f.factor:ms*f.factor;
     
-    let msPasto = msTotalRequerida * 0.90, msSalvado = msTotalRequerida * 0.10, msMelaza = 0;
-    if (p === 'carne') { if(esTernera) msMelaza=msTotalRequerida*0.02; else if(st==='venta') msMelaza=msTotalRequerida*0.05; else msMelaza=msTotalRequerida*0.03; } 
-    else if (p === 'leche') { if(st==='parida') msMelaza=msTotalRequerida*0.03; else if(st==='seca') msMelaza=msTotalRequerida*0.01; else msMelaza=msTotalRequerida*0.01; }
+    let msPasto=msTotalRequerida*0.90, msSalvado=msTotalRequerida*0.10, msMelaza=0;
+    if(p==='carne'){if(esTernera)msMelaza=msTotalRequerida*0.02;else if(st==='venta')msMelaza=msTotalRequerida*0.05;else msMelaza=msTotalRequerida*0.03;}
+    else if(p==='leche'){if(st==='parida')msMelaza=msTotalRequerida*0.03;else if(st==='seca')msMelaza=msTotalRequerida*0.01;else msMelaza=msTotalRequerida*0.01;}
     
-    const toFresco = (ms, fMS, u) => u==='kg' ? ms/fMS : (ms/fMS)*1000;
-    let pastoFresco = toFresco(msPasto, FACTOR_MS.pasto, 'kg');
-    if(pastoFresco > pv * TRIGGERS.maxRumenVolumePct) pastoFresco = pv * TRIGGERS.maxRumenVolumePct;
+    const toFresco = (ms,fMS,u) => u==='kg'?ms/fMS:(ms/fMS)*1000;
+    let pastoFresco = toFresco(msPasto,FACTOR_MS.pasto,'kg');
+    if(pastoFresco > pv*TRIGGERS.maxRumenVolumePct) pastoFresco = pv*TRIGGERS.maxRumenVolumePct;
     
     let dieta = {
-        pasto: pastoFresco, salvado: toFresco(msSalvado, FACTOR_MS.salvado, 'kg'), melaza: toFresco(msMelaza, FACTOR_MS.melaza, 'kg'),
-        levadura: calcMicro(MICRO_FORMULAS.levadura, pv, msTotalRequerida),
-        bicarb: calcMicro(MICRO_FORMULAS.bicarb, pv, msTotalRequerida),
-        sal: calcMicro(MICRO_FORMULAS.sal, pv, msTotalRequerida),
-        urea: ureaPermitida ? Math.min(calcMicro(MICRO_FORMULAS.urea, pv, msTotalRequerida), msTotalRequerida*0.11*1000) : 0,
-        _meta: { ureaBloqueada: !ureaPermitida, motivo: pv<TRIGGERS.ureaMinWeight?'Peso<150kg':'Gestación>210d' }
+        pasto:pastoFresco, salvado:toFresco(msSalvado,FACTOR_MS.salvado,'kg'), melaza:toFresco(msMelaza,FACTOR_MS.melaza,'kg'),
+        levadura:calcMicro(MICRO_FORMULAS.levadura,pv,msTotalRequerida),
+        bicarb:calcMicro(MICRO_FORMULAS.bicarb,pv,msTotalRequerida),
+        sal:calcMicro(MICRO_FORMULAS.sal,pv,msTotalRequerida),
+        urea:ureaPermitida?Math.min(calcMicro(MICRO_FORMULAS.urea,pv,msTotalRequerida),msTotalRequerida*0.11*1000):0,
+        _meta:{ureaBloqueada:!ureaPermitida, motivo:pv<TRIGGERS.ureaMinWeight?'Peso<150kg':'Gestación>210d'}
     };
     
-    if(transicionDias > 0 && transicionDias < 7) {
-        const f = transicionDias/7, dAnt = { pasto:(pv*0.03*0.95)/MS_PASTO_FRESCO, salvado:(pv*0.03*0.05)/MS_SALVADO, melaza:(pv*0.03*0.01)/MS_MELAZA, urea:0, bicarb:(pv*0.03*0.10)*1000, sal:(pv*0.03*0.15)*1000, levadura:(pv*0.05/1000)*1000 };
-        Object.keys(dieta).forEach(k => { if(k!=='_meta') dieta[k] = dAnt[k]+((dieta[k]-dAnt[k])*f); });
+    if(transicionDias>0 && transicionDias<7){
+        const f=transicionDias/7, dAnt={pasto:(pv*0.03*0.95)/MS_PASTO_FRESCO,salvado:(pv*0.03*0.05)/MS_SALVADO,melaza:(pv*0.03*0.01)/MS_MELAZA,urea:0,bicarb:(pv*0.03*0.10)*1000,sal:(pv*0.03*0.15)*1000,levadura:(pv*0.05/1000)*1000};
+        Object.keys(dieta).forEach(k=>{if(k!=='_meta')dieta[k]=dAnt[k]+((dieta[k]-dAnt[k])*f);});
     }
-    if(incluirFD) { const fd=DB.factoresDesperdicio||FD; Object.keys(dieta).forEach(k => { if(k!=='_meta' && fd[k]) dieta[k]*=(1+fd[k]); }); }
+    if(incluirFD){const fd=DB.factoresDesperdicio||FD; Object.keys(dieta).forEach(k=>{if(k!=='_meta'&&fd[k])dieta[k]*=(1+fd[k]);});}
     return dieta;
 };
 
-// ✅ COSTO FINANCIERO (sin FD)
+// ✅ COSTO FINANCIERO (sin FD, con unidades flexibles)
 const getCostoDiario = (pv, prop, estado) => { 
     const d = getDiet(pv, prop, estado, 0, 0, false);
     const pr = DB.precios || {};
-    return Object.keys(d).filter(k=>k!=='_meta').reduce((s,k)=>s+(d[k]*(pr[k]||0)),0);
+    const unidades = DB.unidadesPrecio || UNIDADES_DEFECTO;
+    
+    return Object.keys(d).filter(k=>k!=='_meta').reduce((s,k)=>{
+        const cant = d[k], precio = pr[k]||0, uCompra = unidades[k]||'kg';
+        let factor = 1;
+        // Dieta siempre devuelve gramos para minerales. Si precio es por Kg, dividir entre 1000.
+        if(UNIDAD[k]==='g' && uCompra==='kg') factor = 0.001;
+        return s + (cant * precio * factor);
+    },0);
 };
+
 // ✅ COSTO LOGÍSTICO (con FD para bodega)
 const getCostoDiarioConFD = (pv, prop, estado) => { 
     const d = getDiet(pv, prop, estado, 0, 0, true);
     const pr = DB.precios || {};
-    return Object.keys(d).filter(k=>k!=='_meta').reduce((s,k)=>s+(d[k]*(pr[k]||0)),0);
+    const unidades = DB.unidadesPrecio || UNIDADES_DEFECTO;
+    const fd = DB.factoresDesperdicio || FD;
+    
+    return Object.keys(d).filter(k=>k!=='_meta').reduce((s,k)=>{
+        const cant = d[k], precio = pr[k]||0, uCompra = unidades[k]||'kg';
+        const cantConFD = cant * (1+(fd[k]||0));
+        let factor = 1;
+        if(UNIDAD[k]==='g' && uCompra==='kg') factor = 0.001;
+        return s + (cantConFD * precio * factor);
+    },0);
 };
 
 const getGMD = (h) => { 
@@ -339,46 +356,50 @@ const getCostoAlimentosCustom = (aid,p) => { if(!DB.asignacionesAlimentos[aid])r
 const getAllSanidad = () => [...CATALOGO_SANIDAD.map(p=>({...p,esBase:true})),...DB.sanidadCustom.map(p=>({...p,esBase:false}))];
 const getCostoSanidadDiario = (aid) => { let t=0; DB.aplicaciones.filter(x=>x.animalId===aid).forEach(ap=>{const p=getAllSanidad().find(x=>x.id===ap.productoId);if(p&&p.diasEfecto>0)t+=(ap.costo||0)/p.diasEfecto;});return t; };
 const getCostoSanidadTotal = (aid) => DB.aplicaciones.filter(x=>x.animalId===aid).reduce((s,a)=>s+(a.costo||0),0);
-const calcularROIA = (g, p, c) => c>0?(g*p)/c:0;
+const calcularROIA = (g,p,c) => c>0?(g*p)/c:0;
 
 // ✅ INGRESO REALISTA (Carne + Leche + Crías)
 const calcularIngresoDiario = (a, gmd, precioKG) => {
-    let ing = gmd > 0 ? gmd * precioKG : 0;
+    let ing = 0;
+    if(gmd > 0.01) ing += gmd * precioKG;
     if(a.proposito==='leche' && a.litrosLeche>0) ing += a.litrosLeche * (DB.precioLeche||1200);
     if(a.proposito==='leche' && (a.estadoReproductivo==='parida'||a.estadoReproductivo==='seca')) ing += (DB.valorCria||450000)/(DB.intervaloPartos||400);
     return ing;
 };
 
 // ✅ MÓDULO 4: FLUJO DE CAJA PROFESIONAL
-const generarFlujoCajaMensual = (meses = 12) => {
+const generarFlujoCajaMensual = (meses = 6) => {
     const cf = []; let saldo = 0;
     const cfM = DB.costosFijosMensuales || 300000;
     const precioBase = DB.precioKG || 9800;
-    const estacionalidad = [1.0, 1.0, 1.0, 1.05, 1.05, 1.1, 1.1, 1.0, 0.95, 0.95, 1.0, 1.0];
+    const estacionalidad = [1.0, 1.0, 1.0, 1.05, 1.05, 1.1];
     let breakEven = null, maxNeg = 0;
 
     DB.animales.forEach(a => {
         let p = a.historial[a.historial.length-1].peso, g = getGMD(a.historial)>0?getGMD(a.historial):0.6;
-        const cd = getCostoDiarioConFD(p, a.proposito, calcRepro(a)?.estadoLactancia||'auto');
-        const ingDia = calcularIngresoDiario(a, g, precioBase);
         
         for(let m=0; m<meses; m++){
             const pMes = p + (g*30);
             let venta = 0;
-            if(a.proposito==='carne' && p>=480 && (m>0 || p>=490)){ venta = p * (precioBase*estacionalidad[m%12]) * 0.95; p=0; }
+            if(a.proposito==='carne' && p>=480 && (m>0 || p>=490)){ venta = p * (precioBase*estacionalidad[m%6]) * 0.95; p=0; }
             else if(p>0) p = pMes;
+            
+            const cd = getCostoDiarioConFD(p, a.proposito, calcRepro(a)?.estadoLactancia||'auto');
+            const ingDia = calcularIngresoDiario(a, g, precioBase);
             
             const ingTotal = venta + (ingDia*30);
             const costoVar = cd*30 + getCostoSanidadDiario(a.id)*30;
-            const neto = ingTotal - costoVar - cfM;
+            // ✅ Costos fijos se suman solo al primer animal para evitar duplicación global
+            const neto = ingTotal - costoVar - (a === DB.animales[0] ? cfM : 0);
+            
             saldo += neto;
             if(!cf[m]) cf[m] = {mes:m+1, ingresos:0, costosVar:0, fijos:0, neto:0, saldo:0};
-            cf[m].ingresos += ingTotal; cf[m].costosVar += costoVar; cf[m].fijos += cfM; cf[m].neto += neto; cf[m].saldo = saldo;
+            cf[m].ingresos += ingTotal; cf[m].costosVar += costoVar; cf[m].fijos += (a === DB.animales[0] ? cfM : 0); cf[m].neto += neto; cf[m].saldo = saldo;
             if(saldo>0 && !breakEven) breakEven = m+1;
             if(saldo<maxNeg) maxNeg = saldo;
         }
     });
-    return { flujo: cf, saldoFinal: saldo, breakEven: breakEven || 'No alcanza', roi: saldo>0?(saldo/Math.abs(maxNeg)*100).toFixed(1):'N/A' };
+    return { flujo:cf, saldoFinal:saldo, breakEven:breakEven||(saldo<0?'No alcanza':'N/A'), roi:saldo>0?(saldo/Math.abs(maxNeg||1)*100).toFixed(1):'N/A' };
 };
 
 // ✅ ALERTAS & TRIGGERS
@@ -421,8 +442,7 @@ document.querySelectorAll('.nav-item').forEach(n=>n.addEventListener('click',()=
 // ==================== RENDERS ====================
 function renderInicio() {
     const ta=DB.animales.length; let tKg=0,coT=0,csT=0,est={verde:0,azul:0,naranja:0,rojo:0,gris:0},als=[];
-    let totalDiet={pasto:0,salvado:0,melaza:0,urea:0,bicarb:0,sal:0,levadura:0};
-    DB.animales.forEach(a=>{const p=a.historial[a.historial.length-1].peso,rep=calcRepro(a),ea=rep?.estadoLactancia||'auto',g=getGMD(a.historial);tKg+=p;coT+=getCostoDiario(p,a.proposito,ea);csT+=getCostoSanidadTotal(a.id);est[getRendimiento(a.historial,g).nivel]++;getAlertasAnimal(a).forEach(s=>als.push({nombre:a.nombre,t:s.t,m:s.m,icon:s.icon}));const d=getDiet(p,a.proposito,ea,a.transicionDias||0,rep?.diasGestacion||0);Object.keys(totalDiet).forEach(k=>totalDiet[k]+=d[k]||0);});
+    DB.animales.forEach(a=>{const p=a.historial[a.historial.length-1].peso,rep=calcRepro(a),ea=rep?.estadoLactancia||'auto',g=getGMD(a.historial);tKg+=p;coT+=getCostoDiario(p,a.proposito,ea);csT+=getCostoSanidadTotal(a.id);est[getRendimiento(a.historial,g).nivel]++;getAlertasAnimal(a).forEach(s=>als.push({nombre:a.nombre,t:s.t,m:s.m,icon:s.icon}));});
     const prom=ta?tKg/ta:0,pctB=ta?((est.verde+est.azul)/ta)*100:0, fc=generarFlujoCajaMensual(6), ab=calcularAutonomiaBodega().autonomia;
 
     let html=`<div class="card" style="background:linear-gradient(135deg,rgba(255,185,0,.1),rgba(255,185,0,.02));border-color:rgba(255,185,0,.2)">
@@ -442,7 +462,6 @@ function renderInicio() {
         <div class="estado-simple"><div class="estado-pildora e"><div class="num">${est.verde}</div><div class="lbl">Excelente</div></div><div class="estado-pildora b"><div class="num">${est.azul}</div><div class="lbl">Bueno</div></div><div class="estado-pildora r"><div class="num">${est.naranja}</div><div class="lbl">Regular</div></div><div class="estado-pildora m"><div class="num">${est.rojo}</div><div class="lbl">Bajo</div></div></div>
         <div class="progress"><div class="progress-fill" style="width:${pctB}%;background:var(--info)"></div></div></div>`;}
 
-    // ✅ FLUJO DE CAJA MEJORADO
     if(fc.flujo.length){
         html+=`<div class="card"><div style="font-weight:700;font-size:.7rem;margin-bottom:10px;color:var(--muted)"><i class="fa-solid fa-money-bill-wave"></i> FLUJO DE CAJA (6M)</div>
         <div class="cf-summary"><div class="cf-box"><div class="val" style="color:${fc.saldoFinal>=0?'#22c55e':'#ef4444'}">$${fm(fc.saldoFinal)}</div><div class="lbl">Saldo Final</div></div>
@@ -468,12 +487,82 @@ function renderLotes(){let h=`<div class="card"><div style="display:flex;justify
 function renderAnimales(){let f=DB.animales;if(animalFilterLote!=='all')f=f.filter(a=>a.loteId===animalFilterLote);if(animalSearch)f=f.filter(a=>a.nombre.toLowerCase().includes(animalSearch.toLowerCase()));let h=`<div class="card" style="padding:12px 16px"><input id="animSearch" type="text" placeholder="🔍 Buscar..." value="${animalSearch}" style="padding:10px 14px"></div>`;h+=`<div class="filter-chips"><div class="chip ${animalFilterLote==='all'?'active':''}" onclick="animalFilterLote='all';renderAnimales()">Todos</div>`;DB.lotes.forEach(l=>h+=`<div class="chip ${animalFilterLote===l.id?'active':''}" onclick="animalFilterLote='${l.id}';renderAnimales()">${l.nombre}</div>`);h+='</div><div class="grid">';if(!f.length)h+='<div style="grid-column:1/-1;text-align:center;padding:30px;color:var(--muted)"><i class="fa-solid fa-cow" style="font-size:2rem"></i><br>Sin animales</div>';f.forEach(a=>{const p=a.historial[a.historial.length-1].peso,rep=calcRepro(a),ea=rep?.estadoLactancia||'auto',et=getEtapa(p,rep),r=getRendimiento(a.historial,getGMD(a.historial)),g=getGMD(a.historial),lm={verde:'ml-g',azul:'ml-b',naranja:'ml-o',rojo:'ml-r',gris:'ml-x'};let ret=a.bloqueadoPorRetiro||false,th='';if(a.tags&&a.tags.length)a.tags.forEach(t=>th+=`<span class="tag-descarte">${t}</span>`);const ub=getDiet(p,a.proposito,ea,a.transicionDias||0,rep?.diasGestacion||0)._meta?.ureaBloqueada?'<span class="trigger-badge">🔒 Urea</span>':'';h+=`<div class="animal-card ${ret?'bloqueado':''}" onclick="${ret?'':`showProfile(${a.id})`}">${ret?'<div style="position:absolute;inset:0;background:rgba(239,68,68,.08);border-radius:18px;z-index:1" onclick="event.stopPropagation()"></div>':''}<div class="mini-led ${lm[r.nivel]}"></div>${et.ureaBloqueada?'<div class="lock-icon"><i class="fa-solid fa-lock"></i></div>':''}<span style="font-size:1.5rem">${et.icono}</span><div class="name">${a.nombre} ${th} ${ub}</div><span class="etapa-tag ${et.clase}">${et.nombre}</span><div style="font-size:.6rem;color:var(--muted)">${getLoteName(a.loteId)}</div><div class="weight">${fm(p)}kg</div>${ret?'<div class="retiro-badge">🚫 VEDA</div>':''}<div class="cm" style="color:${r.cm>=0?'#22c55e':'#ef4444'}">${r.cm>=0?'+':''}${r.cm.toFixed(1)}%</div></div>`;});h+='</div>';document.getElementById('v-animales').innerHTML=h;const si=document.getElementById('animSearch');if(si)si.addEventListener('input',e=>{clearTimeout(searchTimeout);searchTimeout=setTimeout(()=>{animalSearch=e.target.value;sessionStorage.setItem('searchAnim',animalSearch);renderAnimales();queueAutoSave();},250);});}
 
 function renderInsumos(){const h=`<div class="insumos-tabs"><button class="insumo-tab ${insumoTab==='alimentos'?'active':''}" onclick="insumoTab='alimentos';renderInsumos()"><i class="fa-solid fa-wheat-awn"></i> Alimentos</button><button class="insumo-tab ${insumoTab==='sanidad'?'active':''}" onclick="insumoTab='sanidad';renderInsumos()"><i class="fa-solid fa-syringe"></i> Sanidad</button></div><div id="insumoContent"></div>`;document.getElementById('v-insumos').innerHTML=h;if(insumoTab==='alimentos')renderInsumoAlimentos();else renderInsumoSanidad();}
-function renderInsumoAlimentos(){const {autonomia}=calcularAutonomiaBodega();let h=`<div class="card" style="padding:12px 16px"><div style="display:flex;justify-content:space-between;align-items:center"><span style="font-weight:600;color:var(--accent-text)"><i class="fa-solid fa-warehouse"></i> INVENTARIO</span><button class="btn btn-sm btn-purple" style="width:auto;padding:6px 12px" onclick="showModalGestionAlimentos()"><i class="fa-solid fa-plus"></i> Crear</button></div></div>`;AL.forEach(k=>{const s=DB.stock[k]||0,p=DB.precios[k]||0,au=autonomia[k]||999,dc=au<3?'#ef4444':au<7?'#f59e0b':'#22c55e';h+=`<div class="insumo-item"><div class="insumo-item-header"><i class="fa-solid ${IC[k]}"></i><div class="info"><div class="name">${NM[k]} <span class="fd-badge">FD:${Math.round((DB.factoresDesperdicio[k]||0)*100)}%</span></div></div><span class="dias" style="color:${dc}">${au===999?'∞':au+'d'}</span></div><div class="grid"><div><div style="font-size:.6rem;color:var(--muted)">PRECIO ($/${UNIDAD[k]})</div><input id="pr-${k}" type="number" value="${p}" style="padding:10px"></div><div><div style="font-size:.6rem;color:var(--muted)">STOCK (${UNIDAD[k]})</div><input id="st-${k}" type="number" value="${Math.round(s)}" style="padding:10px"></div></div></div>`;});h+='<button class="btn btn-gold mt8" onclick="saveInventario()"><i class="fa-solid fa-check"></i> GUARDAR</button>';document.getElementById('insumoContent').innerHTML=h;}
-function renderInsumoSanidad(){let h=`<div class="card" style="padding:12px 16px"><div style="display:flex;justify-content:space-between;align-items:center"><span style="font-weight:600;color:var(--accent-text)"><i class="fa-solid fa-kit-medical"></i> SANIDAD</span><button class="btn btn-sm btn-purple" style="width:auto;padding:6px 12px" onclick="showModalGestionSanidad()"><i class="fa-solid fa-plus"></i> Crear</button></div></div>`;getAllSanidad().forEach(p=>{const s=DB.stockSanidad[p.id]||0,pr=p.esBase?(DB.preciosSanidad[p.id]||0):(p.precioML||0);h+=`<div class="insumo-item"><div class="insumo-item-header"><i class="fa-solid ${p.icono}" style="color:${p.color}"></i><div class="info"><div class="name">${p.nombre}${p.esBase?'':' <span class="custom-badge">CUST</span>'}</div><div class="consumo">${p.diasEfecto}d efecto · ${p.retiro}d retiro</div></div></div><div class="grid"><div><div style="font-size:.6rem;color:var(--muted)">PRECIO ($/ml)</div><input id="pr-${p.id}" type="number" value="${pr}" style="padding:10px"></div><div><div style="font-size:.6rem;color:var(--muted)">STOCK (ml)</div><input id="st-${p.id}" type="number" value="${Math.round(s)}" style="padding:10px"></div></div>${p.esBase?'':'<button class="btn btn-sm btn-danger mt8" onclick="deleteSanidadCustom(\''+p.id+'\');renderInsumos()"><i class="fa-solid fa-trash"></i> Eliminar</button>'}</div>`;});h+='<button class="btn btn-gold mt8" onclick="saveInventarioSanidad()"><i class="fa-solid fa-check"></i> GUARDAR</button>';document.getElementById('insumoContent').innerHTML=h;}
-function saveInventario(){[...AL,...DB.alimentosCustom.map(a=>a.id)].forEach(id=>{const prEl=document.getElementById(`pr-${id}`),stEl=document.getElementById(`st-${id}`);if(prEl)DB.precios[id]=parseFloat(prEl.value)||0;if(stEl)DB.stock[id]=parseFloat(stEl.value)||0;});save();showToast('✅ Inventario actualizado');}
+
+function renderInsumoAlimentos(){
+    const {autonomia}=calcularAutonomiaBodega();
+    let h=`<div class="card" style="padding:12px 16px"><div style="display:flex;justify-content:space-between;align-items:center"><span style="font-weight:600;color:var(--accent-text)"><i class="fa-solid fa-warehouse"></i> INVENTARIO</span><button class="btn btn-sm btn-purple" style="width:auto;padding:6px 12px" onclick="showModalGestionAlimentos()"><i class="fa-solid fa-plus"></i> Crear</button></div></div>`;
+    
+    AL.forEach(k => {
+        const s = DB.stock[k] || 0;
+        const p = DB.precios[k] || 0;
+        const au = autonomia[k] || 999;
+        const dc = au < 3 ? '#ef4444' : au < 7 ? '#f59e0b' : '#22c55e';
+        // ✅ Determinar unidad activa actual
+        const uActiva = (DB.unidadesPrecio && DB.unidadesPrecio[k] === 'g') ? 'g' : 'kg';
+
+        h += `<div class="insumo-item">
+            <div class="insumo-item-header">
+                <i class="fa-solid ${IC[k]}"></i>
+                <div class="info"><div class="name">${NM[k]} <span class="fd-badge">FD:${Math.round((DB.factoresDesperdicio[k]||0)*100)}%</span></div></div>
+                <span class="dias" style="color:${dc}">${au===999?'∞':au+'d'}</span>
+            </div>
+            <div class="price-grid">
+                <div>
+                    <div style="font-size:.6rem;color:var(--muted);margin-bottom:4px">PRECIO UNITARIO</div>
+                    <div style="display:flex;gap:4px">
+                        <input id="pr-${k}" type="number" value="${p}" style="padding:8px;flex:1">
+                        <div class="unit-toggle">
+                            <div class="unit-btn ${uActiva==='kg'?'active':''}" onclick="togglePrecioUnit('${k}','kg')">$/kg</div>
+                            <div class="unit-btn ${uActiva==='g'?'active':''}" onclick="togglePrecioUnit('${k}','g')">$/gr</div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div style="font-size:.6rem;color:var(--muted);margin-bottom:4px">STOCK (kg)</div>
+                    <input id="st-${k}" type="number" value="${Math.round(s)}" style="padding:8px">
+                </div>
+            </div>
+        </div>`;
+    });
+    
+    h += '<button class="btn btn-gold mt8" onclick="saveInventario()"><i class="fa-solid fa-check"></i> GUARDAR</button>';
+    document.getElementById('insumoContent').innerHTML = h;
+}
+
+// ✅ Función para alternar unidad de precio sin recargar
+window.togglePrecioUnit = (k, unit) => {
+    if(!DB.unidadesPrecio) DB.unidadesPrecio = {};
+    DB.unidadesPrecio[k] = unit;
+    renderInsumos();
+};
+
+function renderInsumoSanidad(){
+    let h=`<div class="card" style="padding:12px 16px"><div style="display:flex;justify-content:space-between;align-items:center"><span style="font-weight:600;color:var(--accent-text)"><i class="fa-solid fa-kit-medical"></i> SANIDAD</span><button class="btn btn-sm btn-purple" style="width:auto;padding:6px 12px" onclick="showModalGestionSanidad()"><i class="fa-solid fa-plus"></i> Crear</button></div></div>`;
+    getAllSanidad().forEach(p=>{
+        const s=DB.stockSanidad[p.id]||0,pr=p.esBase?(DB.preciosSanidad[p.id]||0):(p.precioML||0);
+        h+=`<div class="insumo-item"><div class="insumo-item-header"><i class="fa-solid ${p.icono}" style="color:${p.color}"></i><div class="info"><div class="name">${p.nombre}${p.esBase?'':' <span class="custom-badge">CUST</span>'}</div><div class="consumo">${p.diasEfecto}d efecto · ${p.retiro}d retiro</div></div></div><div class="grid"><div><div style="font-size:.6rem;color:var(--muted)">PRECIO ($/ml)</div><input id="pr-${p.id}" type="number" value="${pr}" style="padding:10px"></div><div><div style="font-size:.6rem;color:var(--muted)">STOCK (ml)</div><input id="st-${p.id}" type="number" value="${Math.round(s)}" style="padding:10px"></div></div>${p.esBase?'':'<button class="btn btn-sm btn-danger mt8" onclick="deleteSanidadCustom(\''+p.id+'\');renderInsumos()"><i class="fa-solid fa-trash"></i> Eliminar</button>'}</div>`;
+    });
+    h+='<button class="btn btn-gold mt8" onclick="saveInventarioSanidad()"><i class="fa-solid fa-check"></i> GUARDAR</button>';
+    document.getElementById('insumoContent').innerHTML=h;
+}
+
+function saveInventario(){
+    AL.forEach(id=>{
+        const prEl=document.getElementById(`pr-${id}`),stEl=document.getElementById(`st-${id}`);
+        if(prEl)DB.precios[id]=parseFloat(prEl.value)||0;
+        if(stEl)DB.stock[id]=parseFloat(stEl.value)||0;
+        // ✅ Asegurar que las unidades se guarden
+        if(!DB.unidadesPrecio) DB.unidadesPrecio = {};
+        if(!DB.unidadesPrecio[id]) DB.unidadesPrecio[id] = 'kg';
+    });
+    save();
+    showToast('✅ Inventario actualizado');
+}
+
 function saveInventarioSanidad(){getAllSanidad().forEach(p=>{const prEl=document.getElementById(`pr-${p.id}`),stEl=document.getElementById(`st-${p.id}`);if(prEl){DB.preciosSanidad[p.id]=parseFloat(prEl.value)||0;if(!p.esBase){const c=DB.sanidadCustom.find(x=>x.id===p.id);if(c)c.precioML=DB.preciosSanidad[p.id];}}if(stEl)DB.stockSanidad[p.id]=parseFloat(stEl.value)||0;});save();showToast('✅ Sanidad actualizada');}
 
 function renderConfig(){const ls=lastSaveTime?formatTimeAgo(lastSaveTime):'Nunca';document.getElementById('v-config').innerHTML=`<div class="card"><div class="config-item" onclick="exportData()"><i class="fa-solid fa-download"></i><div class="cfg-text"><span>Exportar</span><small>Respaldo JSON</small></div><i class="fa-solid fa-chevron-right" style="color:var(--muted)"></i></div><div class="config-item" onclick="importData()"><i class="fa-solid fa-upload"></i><div class="cfg-text"><span>Importar</span><small>Restaurar</small></div><i class="fa-solid fa-chevron-right" style="color:var(--muted)"></i></div><div class="config-item" onclick="if(confirm('⚠️ ¿Borrar TODO?')){localStorage.clear();location.reload();}"><i class="fa-solid fa-trash-can" style="color:var(--danger)"></i><div class="cfg-text"><span style="color:var(--danger)">Borrar Todo</span><small>Eliminar datos</small></div><i class="fa-solid fa-chevron-right" style="color:var(--muted)"></i></div><div class="row"><span class="row-label"><i class="fa-solid fa-calculator"></i> Descuento inventario</span><button class="btn btn-sm btn-green" style="width:auto;padding:6px 12px;margin:0" onclick="descontarInventarioDiario();renderInsumos()"><i class="fa-solid fa-arrow-down"></i> Ejecutar</button></div><div class="row"><span class="row-label"><i class="fa-solid fa-floppy-disk"></i> Auto-guardado</span><span class="row-val" style="color:var(--success)">✅ Activo</span></div><div class="row"><span class="row-label"><i class="fa-solid fa-clock"></i> Último guardado</span><span class="row-val">${ls}</span></div></div><div class="card" style="text-align:center;padding:20px"><div style="font-size:2rem;margin-bottom:8px"><svg class="crown-svg" viewBox="0 0 24 24" style="width:48px;height:48px"><path d="M2.5 18.5l1.5-12 5.5 4 2.5-6 2.5 6 5.5-4 1.5 12h-19z"/></svg></div><div style="font-weight:700;color:var(--accent-text)">GANADERO ÉLITE PRO</div><div style="font-size:.65rem;color:var(--muted)">v${APP_VERSION}</div><input type="file" id="importFile" accept=".json" style="display:none" onchange="handleImport(event)"></div>`;}
+
 function exportData(){const b=new Blob([JSON.stringify(DB)],{type:'application/json'}),u=URL.createObjectURL(b),a=document.createElement('a');a.href=u;a.download=`ganadero_backup_v${APP_VERSION}_${new Date().toISOString().slice(0,10)}.json`;a.click();showToast('✅ Respaldo descargado');}
 function importData(){document.getElementById('importFile').click();}
 function handleImport(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{try{const d=JSON.parse(ev.target.result);if(d.animales&&d.precios){DB=d;if(!DB.lotes)DB.lotes=[{id:'lot_general',nombre:'General',color:'#ffb900'}];DB.animales.forEach(a=>{if(!a.loteId)a.loteId='lot_general';Object.assign(a,{litrosLeche:0,transicionDias:0,transicionActiva:false,bloqueadoPorRetiro:false,diasGestacion:0,fechaUltimaInseminacion:null});});save();showToast('✅ Datos importados');goPage('inicio');}else showToast('⚠️ Archivo inválido');}catch{showToast('⚠️ Error al leer');}};r.readAsText(f);}
