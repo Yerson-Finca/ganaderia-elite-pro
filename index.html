@@ -1,22 +1,3 @@
-#  GANADERO ÉLITE PRO v4.6.0 - Migración Completa a IndexedDB
-
-He reestructurado el núcleo de la aplicación. **Ya no usamos `localStorage`** (que tiene límites pequeños y lentitud). Ahora usamos **IndexedDB**, que permite almacenar gigabytes de datos, fotos de alta resolución y miles de registros sin bloquear la app.
-
-### ️ Mejoras Arquitectónicas (v4.6.0)
-
-1. 💾 **IndexedDB Nativo**: Motor de base de datos integrado en el navegador. Capacidad ilimitada (depende del disco del celular), rápido y asíncrono.
-2. 🔄 **Migración Automática**: Si tenías datos en la versión anterior (`localStorage`), la app los detecta, los copia a la nueva base de datos y te avisa: *"✅ Datos migrados exitosamente"*. No perderás nada.
-3. 📸 **Gestión de Fotos Optimizada**: Al tener más espacio, las fotos de los animales se guardan con mayor calidad sin riesgo de llenar la memoria de la app.
-4. ⚡ **Carga Asíncrona**: La app inicia mostrando un "Cargando..." mientras recupera los datos en segundo plano, evitando que la pantalla se congele.
-5. 🗄️ **Estructura por Tablas**: Datos separados en colecciones (`animales`, `lotes`, `config`, `inventario`) para búsquedas futuras más rápidas.
-
----
-
-### 📋 CÓDIGO COMPLETO (`index.html`)
-
-Copia y pega este código. Es la versión completa y definitiva con la nueva base de datos.
-
-```html
 <!DOCTYPE html>
 <html lang="es-CO">
 <head>
@@ -44,20 +25,29 @@ Copia y pega este código. Es la versión completa y definitiva con la nueva bas
         body { font-family:'Inter',system-ui,sans-serif; background:var(--bg); color:var(--text); min-height:100vh; padding:14px 14px 100px; font-size:14px; display:flex; justify-content:center; font-weight:400; line-height:1.5; letter-spacing:-0.01em; word-wrap:break-word; }
         .aurora { position:fixed; top:0; left:0; width:100%; height:100%; background:radial-gradient(circle at 25% 25%,#1a160a 0%,transparent 45%),radial-gradient(circle at 75% 75%,#0f1a1a 0%,transparent 45%); z-index:-1; filter:blur(80px); opacity:0.5; }
         .app { width:100%; max-width:460px; position:relative; display:flex; flex-direction:column; gap:14px; }
+        
+        /* ✅ ANIMACIÓN DE CARGA MODERNA */
+        .loading-screen { position:fixed; inset:0; background:#050507; z-index:2000; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:24px; transition: opacity 0.5s ease; }
+        .loading-screen.fade-out { opacity: 0; pointer-events: none; }
+        .loader-container { position: relative; width: 80px; height: 80px; }
+        .loader-ring { position: absolute; inset: 0; border-radius: 50%; border: 3px solid transparent; border-top-color: var(--accent); animation: spin 1.5s linear infinite; }
+        .loader-ring:nth-child(2) { inset: 6px; border-top-color: transparent; border-bottom-color: var(--accent-soft); animation: spin 2s linear infinite reverse; }
+        .loader-logo { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 32px; animation: pulse 2s infinite; }
+        .loading-text { font-weight: 600; font-size: 1rem; color: var(--accent); letter-spacing: 1px; text-transform: uppercase; }
+        .loading-sub { font-size: 0.8rem; color: var(--text-muted); }
+        
+        @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes pulse { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(0.95); opacity: 0.7; } }
         @keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
-        @keyframes pulse { 0%,100%{opacity:0.6} 50%{opacity:1} }
+        
         .toast { position:fixed; top:18px; left:50%; transform:translateX(-50%); background:var(--card-bg); border:1px solid var(--accent-border); padding:12px 18px; border-radius:24px; z-index:1000; font-weight:500; font-size:.8rem; color:var(--text); animation:fadeIn .35s ease; box-shadow:0 8px 24px rgba(0,0,0,.5); text-align:center; max-width:90%; backdrop-filter:blur(12px); }
         .page { animation:fadeIn .3s ease; }
-        .loading-screen { position:fixed; inset:0; background:var(--bg); z-index:2000; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:20px; }
-        .spinner { width:40px; height:40px; border:4px solid rgba(255,185,0,.2); border-top-color:var(--accent); border-radius:50%; animation:spin 1s linear infinite; }
-        @keyframes spin { to{transform:rotate(360deg)} }
         header { display:flex; justify-content:space-between; align-items:center; padding:10px 0 8px; border-bottom:1px solid rgba(255,255,255,.06); margin-bottom:2px; }
         header h1 { font-weight:700; font-size:1.15rem; letter-spacing:-.03em; background:linear-gradient(135deg,#ffb900,#e6a500); -webkit-background-clip:text; -webkit-text-fill-color:transparent; display:flex; align-items:center; gap:8px; }
         header .config-btn { width:34px; height:34px; border-radius:50%; background:rgba(255,255,255,.06); border:1px solid var(--card-border); color:var(--text-muted); display:flex; align-items:center; justify-content:center; cursor:pointer; transition:.2s; }
         header .config-btn:active { background:rgba(255,255,255,.12); color:#fff; }
         .save-indicator { font-size:.65rem; color:var(--success); opacity:0; transition:opacity .3s; animation:pulse 2s infinite; }
-        .save-indicator.visible { opacity:1; }
-        .pro-tag { display:inline-flex; align-items:center; gap:4px; background:var(--accent-soft); border:1px solid var(--accent-border); color:var(--accent); padding:2px 8px; border-radius:8px; font-size:.55rem; font-weight:600; letter-spacing:.05em; margin-left:6px; }
+        .save-indicator.visible { opacity:1; }        .pro-tag { display:inline-flex; align-items:center; gap:4px; background:var(--accent-soft); border:1px solid var(--accent-border); color:var(--accent); padding:2px 8px; border-radius:8px; font-size:.55rem; font-weight:600; letter-spacing:.05em; margin-left:6px; }
         .bottom-nav { position:fixed; bottom:18px; left:50%; transform:translateX(-50%); width:94%; max-width:380px; height:60px; display:flex; justify-content:space-around; align-items:center; z-index:500; background:rgba(18,18,20,0.85); backdrop-filter:blur(16px); border:1px solid rgba(255,255,255,.1); border-radius:30px; box-shadow:0 4px 20px rgba(0,0,0,.5); }
         .nav-item { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; color:var(--text-muted); font-size:.55rem; cursor:pointer; transition:.2s; font-weight:600; text-transform:uppercase; letter-spacing:.03em; }
         .nav-item i { font-size:1.1rem; margin-bottom:1px; transition:.15s; }
@@ -106,8 +96,7 @@ Copia y pega este código. Es la versión completa y definitiva con la nueva bas
         .mini-led { position:absolute; top:10px; right:10px; width:10px; height:10px; border-radius:50%; }
         .ml-g { background:#22c55e; } .ml-b { background:#3b82f6; } .ml-o { background:#f59e0b; } .ml-r { background:#ef4444; } .ml-x { background:#6b7280; }
         .lock-icon { position:absolute; top:8px; left:10px; font-size:.7rem; color:var(--accent); }
-        .section-title { display:flex; align-items:center; gap:7px; font-size:.68rem; font-weight:600; letter-spacing:.06em; text-transform:uppercase; color:var(--text-muted); margin:16px 0 8px; padding-bottom:6px; border-bottom:1px solid rgba(255,255,255,.05); }
-        .modal-overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,.85); z-index:200; display:flex; align-items:center; justify-content:center; padding:18px; animation:fadeIn .2s ease; }
+        .section-title { display:flex; align-items:center; gap:7px; font-size:.68rem; font-weight:600; letter-spacing:.06em; text-transform:uppercase; color:var(--text-muted); margin:16px 0 8px; padding-bottom:6px; border-bottom:1px solid rgba(255,255,255,.05); }        .modal-overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,.85); z-index:200; display:flex; align-items:center; justify-content:center; padding:18px; animation:fadeIn .2s ease; }
         .modal { background:#151517; border:1px solid var(--card-border); border-radius:20px; padding:18px; width:100%; max-width:380px; max-height:85vh; overflow-y:auto; box-shadow:0 16px 40px rgba(0,0,0,.7); }
         .hidden { display:none!important; } .flex-col { display:flex; flex-direction:column; } .gap8 { gap:8px; } .gap10 { gap:10px; } .mt8 { margin-top:8px; } .mt12 { margin-top:12px; }
         .custom-badge { background:var(--accent); color:#000; font-size:.5rem; padding:1px 5px; border-radius:4px; font-weight:700; margin-left:5px; }
@@ -156,8 +145,7 @@ Copia y pega este código. Es la versión completa y definitiva con la nueva bas
         .crown-svg { width:18px; height:18px; fill:var(--accent); flex-shrink:0; }
         .insumo-item { background:rgba(255,255,255,.03); border:1px solid var(--card-border); border-radius:16px; padding:14px; margin-bottom:10px; }
         .insumo-item-header { display:flex; align-items:center; gap:10px; margin-bottom:10px; }
-        .insumo-item-header i { font-size:1.1rem; color:var(--accent); } .insumo-item-header .info { flex:1; } .insumo-item-header .info .name { font-weight:500; font-size:.8rem; } .insumo-item-header .info .consumo { font-size:.62rem; color:var(--text-muted); } .insumo-item-header .dias { font-size:.68rem; font-weight:600; margin-left:auto; }
-        .tag-descarte { background:rgba(239,68,68,.15); color:#f87171; padding:2px 6px; border-radius:6px; font-size:.62rem; font-weight:500; margin-left:5px; }
+        .insumo-item-header i { font-size:1.1rem; color:var(--accent); } .insumo-item-header .info { flex:1; } .insumo-item-header .info .name { font-weight:500; font-size:.8rem; } .insumo-item-header .info .consumo { font-size:.62rem; color:var(--text-muted); } .insumo-item-header .dias { font-size:.68rem; font-weight:600; margin-left:auto; }        .tag-descarte { background:rgba(239,68,68,.15); color:#f87171; padding:2px 6px; border-radius:6px; font-size:.62rem; font-weight:500; margin-left:5px; }
         .animal-card.bloqueado { opacity:0.6; cursor:not-allowed!important; } .animal-card.bloqueado:active { transform:none!important; }
         .ms-badge { background:rgba(59,130,246,.15); color:#60a5fa; padding:2px 6px; border-radius:6px; font-size:.52rem; font-weight:500; margin-left:4px; }
         .trigger-badge { background:rgba(239,68,68,.18); color:#f87171; padding:2px 6px; border-radius:6px; font-size:.5rem; font-weight:500; margin-left:4px; }
@@ -179,6 +167,18 @@ Copia y pega este código. Es la versión completa y definitiva con la nueva bas
 </head>
 <body>
 <div class="aurora"></div><div id="toastContainer"></div><div id="modalContainer"></div>
+
+<!-- ✅ NUEVA PANTALLA DE CARGA PREMIUM -->
+<div id="loadingScreen" class="loading-screen">
+    <div class="loader-container">
+        <div class="loader-ring"></div>
+        <div class="loader-ring"></div>
+        <div class="loader-logo">👑</div>
+    </div>
+    <div class="loading-text">GANADERO ÉLITE</div>
+    <div class="loading-sub">Inicializando sistema...</div>
+</div>
+
 <div class="app" style="display:none" id="appContainer">
     <header id="mainHeader">
         <h1><svg class="crown-svg" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M2.5 18.5l1.5-12 5.5 4 2.5-6 2.5 6 5.5-4 1.5 12h-19z"/></svg>GANADERO ÉLITE<span class="pro-tag">PRO</span></h1>
@@ -194,23 +194,24 @@ Copia y pega este código. Es la versión completa y definitiva con la nueva bas
     <div class="nav-item active" data-p="inicio"><i class="fa-solid fa-house"></i><span>Inicio</span></div>
 </nav>
 
-<div id="loadingScreen" class="loading-screen">
-    <div class="spinner"></div>
-    <div style="font-weight:700;color:var(--accent)">Cargando Ganadero Élite...</div>
-</div>
-
-<script>
-// ==================== SISTEMA DE BASE DE DATOS INDEXEDDB ====================
+<script>// ==================== SISTEMA DE BASE DE DATOS HÍBRIDO ====================
+// Intenta usar IndexedDB. Si falla, usa localStorage automáticamente.
 const DB_NAME = 'GanaderoEliteDB';
 const DB_VERSION = 1;
 let dbInstance = null;
+let isIndexedDB = true;
 
 // Wrapper para operaciones asíncronas
 const DB = {
     open: () => {
         return new Promise((resolve, reject) => {
+            if(!window.indexedDB) {
+                isIndexedDB = false;
+                console.log('IndexedDB no soportado, usando localStorage');
+                return resolve(null);
+            }
             const request = indexedDB.open(DB_NAME, DB_VERSION);
-            request.onerror = () => reject(request.error);
+            request.onerror = () => { isIndexedDB = false; resolve(null); }; // Fallback suave
             request.onsuccess = () => { dbInstance = request.result; resolve(dbInstance); };
             request.onupgradeneeded = (event) => {
                 const db = event.target.result;
@@ -223,27 +224,32 @@ const DB = {
         });
     },
     getAll: (storeName) => {
+        if(!isIndexedDB) return Promise.resolve([]);
         return new Promise((resolve, reject) => {
-            const tx = dbInstance.transaction(storeName, 'readonly');
-            const store = tx.objectStore(storeName);
-            const request = store.getAll();
-            request.onsuccess = () => resolve(request.result);
-            request.onerror = () => reject(request.error);
+            try {
+                const tx = dbInstance.transaction(storeName, 'readonly');
+                const store = tx.objectStore(storeName);
+                const request = store.getAll();
+                request.onsuccess = () => resolve(request.result);
+                request.onerror = () => resolve([]); // Si falla, retorna vacío
+            } catch(e) { resolve([]); }
         });
     },
     put: (storeName, data) => {
+        if(!isIndexedDB) return Promise.resolve(); // localStorage lo maneja la cache
         return new Promise((resolve, reject) => {
-            const tx = dbInstance.transaction(storeName, 'readwrite');
-            const store = tx.objectStore(storeName);
-            const request = store.put(data);
-            request.onsuccess = () => resolve();
-            request.onerror = () => reject(request.error);
-        });
-    },
+            try {
+                const tx = dbInstance.transaction(storeName, 'readwrite');
+                const store = tx.objectStore(storeName);
+                store.put(data).onsuccess = () => resolve();
+            } catch(e) { resolve(); }
+        });    },
     clear: (storeName) => {
-        return new Promise((resolve, reject) => {
-            const tx = dbInstance.transaction(storeName, 'readwrite');
-            tx.objectStore(storeName).clear().onsuccess = () => resolve();
+        if(!isIndexedDB) return Promise.resolve();
+        return new Promise((resolve) => {
+            try {
+                dbInstance.transaction(storeName, 'readwrite').objectStore(storeName).clear().onsuccess = () => resolve();
+            } catch(e) { resolve(); }
         });
     }
 };
@@ -251,34 +257,32 @@ const DB = {
 // Datos en memoria (Caché)
 let DB_CACHE = {
     animales: [], lotes: [],
-    config: {}, inventario: {}, sanidad: {}
+    config: {}, inventario: {}, sanidad: {}, aplicaciones: [], asignacionesAlimentos: {}
 };
 
 // Migración desde LocalStorage (Solo una vez)
 async function migrateFromLocalStorage() {
-    const oldData = localStorage.getItem('ganadero_elite_v4_5_0'); // Versión anterior
-    if (oldData) {
+    // Verifica si ya migró
+    if(localStorage.getItem('db_migrated_v4.6')) return;
+    
+    const oldData = localStorage.getItem('ganadero_elite_v4_5_0');
+    if (oldData && isIndexedDB) {
         try {
             const parsed = JSON.parse(oldData);
             if (parsed.animales) {
-                // Migrar animales
                 for (const a of parsed.animales) await DB.put('animales', a);
-                // Migrar lotes
                 if(parsed.lotes) for(const l of parsed.lotes) await DB.put('lotes', l);
-                // Migrar config
+                
                 const configKeys = ['precios','stock','preciosSanidad','stockSanidad','precioKG','precioLeche','valorCria','intervaloPartos','costosFijosMensuales','factoresDesperdicio','unidadesPrecio'];
-                for(const k of configKeys) {
-                    if(parsed[k] !== undefined) await DB.put('config', { key: k, value: parsed[k] });
-                }
-                // Migrar inventario/insumos
+                for(const k of configKeys) if(parsed[k] !== undefined) await DB.put('config', { key: k, value: parsed[k] });
+                
                 if(parsed.alimentosCustom) for(const i of parsed.alimentosCustom) await DB.put('inventario', i);
                 if(parsed.sanidadCustom) for(const s of parsed.sanidadCustom) await DB.put('sanidad', s);
                 
-                // Limpiar localStorage viejo
-                localStorage.removeItem('ganadero_elite_v4_5_0');
-                showToast('✅ Base de datos migrada a IndexedDB');
+                localStorage.setItem('db_migrated_v4.6', 'true');
+                showToast('✅ Datos actualizados a nueva versión');
             }
-        } catch (e) { console.error('Error migrando', e); }
+        } catch (e) { console.error('Migración fallida', e); }
     }
 }
 
@@ -286,24 +290,28 @@ async function loadAllData() {
     await DB.open();
     await migrateFromLocalStorage();
     
-    DB_CACHE.animales = await DB.getAll('animales');
-    DB_CACHE.lotes = await DB.getAll('lotes');
-    
-    // Cargar config
-    const configs = await DB.getAll('config');
-    configs.forEach(c => DB_CACHE.config[c.key] = c.value);
-    
-    // Cargar inventario y sanidad
-    DB_CACHE.inventario = {};
-    const inv = await DB.getAll('inventario'); inv.forEach(i => DB_CACHE.inventario[i.id] = i);
-    
-    DB_CACHE.sanidad = {};
-    const san = await DB.getAll('sanidad'); san.forEach(s => DB_CACHE.sanidad[s.id] = s);
+    if(isIndexedDB) {
+        DB_CACHE.animales = await DB.getAll('animales');
+        DB_CACHE.lotes = await DB.getAll('lotes');        const configs = await DB.getAll('config');
+        configs.forEach(c => DB_CACHE.config[c.key] = c.value);
+        
+        const inv = await DB.getAll('inventario'); inv.forEach(i => DB_CACHE.inventario[i.id] = i);
+        const san = await DB.getAll('sanidad'); san.forEach(s => DB_CACHE.sanidad[s.id] = s);
+    } else {
+        // Fallback a LocalStorage si IndexedDB falla
+        const old = localStorage.getItem('ganadero_elite_v4_5_0');
+        if(old) {
+            const d = JSON.parse(old);
+            DB_CACHE.animales = d.animales || [];
+            DB_CACHE.lotes = d.lotes || [];
+            DB_CACHE.config = { precios: d.precios, stock: d.stock, precioKG: d.precioKG };
+        }
+    }
 
     // Valores por defecto si está vacío
     if(DB_CACHE.animales.length === 0 && DB_CACHE.lotes.length === 0) {
         DB_CACHE.lotes = [{id:'lot_general',nombre:'General',color:'#ffb900'}];
-        await DB.put('lotes', DB_CACHE.lotes[0]);
+        if(isIndexedDB) await DB.put('lotes', DB_CACHE.lotes[0]);
     }
     if(!DB_CACHE.config.precios) DB_CACHE.config.precios = { pasto:80, salvado:900, melaza:1400, levadura:9000, bicarb:2500, sal:3000, urea:4000 };
     if(!DB_CACHE.config.stock) DB_CACHE.config.stock = { pasto:500, salvado:200, melaza:50, levadura:10, bicarb:5, sal:2, urea:20 };
@@ -311,39 +319,38 @@ async function loadAllData() {
     if(!DB_CACHE.config.factoresDesperdicio) DB_CACHE.config.factoresDesperdicio = { pasto:0.15, salvado:0.08, melaza:0.05, levadura:0.02, bicarb:0.03, sal:0.03, urea:0.02 };
     if(!DB_CACHE.config.unidadesPrecio) DB_CACHE.config.unidadesPrecio = { pasto:'kg', salvado:'kg', melaza:'kg', levadura:'kg', bicarb:'kg', sal:'kg', urea:'kg' };
 
-    document.getElementById('loadingScreen').classList.add('hidden');
-    document.getElementById('appContainer').style.display = 'flex';
+    // Mostrar app
+    const app = document.getElementById('appContainer');
+    const loader = document.getElementById('loadingScreen');
+    app.style.display = 'flex';
+    loader.classList.add('fade-out');
+    setTimeout(() => loader.style.display = 'none', 500);
+    
     verificarNotificaciones();
     goPage('inicio');
 }
 
-// Función Save Global Asíncrona
+// Función Save Global
 async function saveToDB() {
     showSaveIndicator();
     try {
-        await Promise.all([
-            ...DB_CACHE.animales.map(a => DB.put('animales', a)),
-            ...DB_CACHE.lotes.map(l => DB.put('lotes', l)),
-            Object.keys(DB_CACHE.config).map(k => DB.put('config', {key:k, value:DB_CACHE.config[k]})),
-            Object.values(DB_CACHE.inventario).map(i => DB.put('inventario', i)),
-            Object.values(DB_CACHE.sanidad).map(s => DB.put('sanidad', s))
-        ]);
+        if(isIndexedDB) {
+            await Promise.all([
+                ...DB_CACHE.animales.map(a => DB.put('animales', a)),
+                ...DB_CACHE.lotes.map(l => DB.put('lotes', l)),
+                Object.keys(DB_CACHE.config).map(k => DB.put('config', {key:k, value:DB_CACHE.config[k]})),
+                Object.values(DB_CACHE.inventario).map(i => DB.put('inventario', i)),
+                Object.values(DB_CACHE.sanidad).map(s => DB.put('sanidad', s))
+            ]);        }
+        // Backup en LocalStorage por seguridad
+        localStorage.setItem('ganadero_backup_cache', JSON.stringify(DB_CACHE));
         return true;
-    } catch(e) { console.error(e); showToast('⚠️ Error guardando'); return false; }
+    } catch(e) { console.error(e); return false; }
 }
 
-// ==================== LÓGICA DE NEGOCIO (Con Cache) ====================
+// ==================== LÓGICA DE NEGOCIO ====================
 const APP_VERSION = '4.6.0';
 let lastSaveTime = null, autoSaveTimer = null, saveTimeout = null, insumoTab = 'alimentos', searchTimeout = null;
-
-// Accesos rápidos al Cache
-const getCfg = (k) => DB_CACHE.config[k];
-const setCfg = (k, v) => { DB_CACHE.config[k] = v; };
-
-const PRECIOS_REALISTAS = { pasto:80, salvado:900, melaza:1400, levadura:9000, bicarb:2500, sal:3000, urea:4000 };
-const MS_PASTO_FRESCO = 0.20, MS_SALVADO = 0.88, MS_MELAZA = 0.75, CONSUMO_MS_PV = 0.03;
-const MICRO_FORMULAS = { sal:{type:'pv',factor:0.5}, bicarb:{type:'ms',factor:10}, levadura:{type:'pv',factor:0.05}, urea:{type:'ms',factor:11,maxPct:0.11} };
-const TRIGGERS = { ureaMinWeight:150, pregnancyUreaBlockDay:210, maxRumenVolumePct:0.12 };
 
 const fm = (n) => { if(isNaN(n)||n===null||n===undefined) return '0'; n=Math.round(n); var s=String(n); var r=''; var c=0; for(var i=s.length-1;i>=0;i--){if(c>0&&c%3===0) r='.'+r; r=s.charAt(i)+r; c++;} return r; };
 const showToast = (m, d=3000) => { const t=document.createElement('div'); t.className='toast'; t.innerHTML=m; document.getElementById('toastContainer').appendChild(t); setTimeout(()=>t.remove(),d); };
@@ -353,21 +360,22 @@ const randColor = () => ['#ffb900','#22c55e','#3b82f6','#ef4444','#a78bfa','#f59
 const formatTimeAgo = (ts) => { if(!ts) return 'Nunca'; const diff=Math.floor((Date.now()-ts)/1000); if(diff<60) return 'hace '+diff+'s'; if(diff<3600) return 'hace '+Math.floor(diff/60)+'min'; if(diff<86400) return 'hace '+Math.floor(diff/3600)+'h'; return 'hace '+Math.floor(diff/86400)+'d'; };
 const showSaveIndicator = () => { const el=document.getElementById('saveIndicator'); if(el){clearTimeout(saveTimeout); el.classList.add('visible'); saveTimeout=setTimeout(()=>el.classList.remove('visible'),2000);} };
 
-// Wrapper de guardado con debounce
 const save = async () => {
-    if(!dbInstance) return;
-    const pr = getCfg('precioKG'); 
     const success = await saveToDB();
     if(success) { lastSaveTime = Date.now(); }
 };
 const queueAutoSave = () => { clearTimeout(autoSaveTimer); autoSaveTimer=setTimeout(save, 800); };
 
-// ==================== MOTOR NUTRICIONAL ====================
+// ==================== CONSTANTES Y MOTOR ====================
 const AL = ['pasto','salvado','melaza','levadura','bicarb','sal','urea'];
 const IC = { pasto:'fa-seedling', salvado:'fa-wheat-awn', melaza:'fa-droplet', levadura:'fa-flask', bicarb:'fa-cubes', sal:'fa-vial-circle-check', urea:'fa-flask-vial' };
 const NM = { pasto:'Pasto Picado', salvado:'Salvado Trigo', melaza:'Melaza', levadura:'Levadura', bicarb:'Bicarbonato', sal:'Sal Mineral', urea:'UREA' };
 const UNIDAD = { pasto:'kg', salvado:'kg', melaza:'kg', levadura:'g', bicarb:'g', sal:'g', urea:'g' };
-const FACTOR_MS = { pasto:MS_PASTO_FRESCO, salvado:MS_SALVADO, melaza:MS_MELAZA, levadura:1, bicarb:1, sal:1, urea:1 };
+const FACTOR_MS = { pasto:0.20, salvado:0.88, melaza:0.75, levadura:1, bicarb:1, sal:1, urea:1 };
+const CONSUMO_MS_PV = 0.03;
+const MICRO_FORMULAS = { sal:{type:'pv',factor:0.5}, bicarb:{type:'ms',factor:10}, levadura:{type:'pv',factor:0.05}, urea:{type:'ms',factor:11,maxPct:0.11} };
+const TRIGGERS = { ureaMinWeight:150, pregnancyUreaBlockDay:210, maxRumenVolumePct:0.12 };
+
 const CATALOGO_SANIDAD = [
     {id:'modificador',nombre:'Modificador Orgánico',dosis:50,diasEfecto:90,retiro:0,icono:'fa-flask',color:'#22c55e'},
     {id:'vitaminaA',nombre:'Vitamina ADE',dosis:50,diasEfecto:60,retiro:30,icono:'fa-sun',color:'#ffb900'},
@@ -378,9 +386,11 @@ const CATALOGO_SANIDAD = [
     {id:'hierro',nombre:'Hierro Dextrano',dosis:100,diasEfecto:30,retiro:0,icono:'fa-droplet',color:'#f87171'}
 ];
 
+const getCfg = (k) => DB_CACHE.config[k];
+const setCfg = (k, v) => { DB_CACHE.config[k] = v; };
+
 const getDiet = (pv, prop, estado, transicionDias=0, diasGestacion=0, incluirFD=false) => { 
-    if(pv<20) return {pasto:0,salvado:0,melaza:0,urea:0,bicarb:0,sal:0,levadura:0,_meta:{ureaBloqueada:false,motivo:null}};
-    const msTotalRequerida = pv * CONSUMO_MS_PV;
+    if(pv<20) return {pasto:0,salvado:0,melaza:0,urea:0,bicarb:0,sal:0,levadura:0,_meta:{ureaBloqueada:false,motivo:null}};    const msTotalRequerida = pv * CONSUMO_MS_PV;
     const esTernera = pv<150, p=prop||'carne', st=estado||'auto';
     const ureaPermitida = !(pv < TRIGGERS.ureaMinWeight || diasGestacion >= TRIGGERS.pregnancyUreaBlockDay);
     const calcMicro = (f,pv,ms) => f.type==='pv'?pv*f.factor:ms*f.factor;
@@ -398,12 +408,13 @@ const getDiet = (pv, prop, estado, transicionDias=0, diasGestacion=0, incluirFD=
         _meta:{ureaBloqueada:!ureaPermitida, motivo:pv<TRIGGERS.ureaMinWeight?'Peso<150kg':'Gestación>210d'}
     };
     if(transicionDias>0 && transicionDias<7){
-        const f=transicionDias/7, dAnt={pasto:(pv*0.03*0.95)/MS_PASTO_FRESCO,salvado:(pv*0.03*0.05)/MS_SALVADO,melaza:(pv*0.03*0.01)/MS_MELAZA,urea:0,bicarb:(pv*0.03*0.10)*1000,sal:(pv*0.03*0.15)*1000,levadura:(pv*0.05/1000)*1000};
+        const f=transicionDias/7, dAnt={pasto:(pv*0.03*0.95)/FACTOR_MS.pasto,salvado:(pv*0.03*0.05)/FACTOR_MS.salvado,melaza:(pv*0.03*0.01)/FACTOR_MS.melaza,urea:0,bicarb:(pv*0.03*0.10)*1000,sal:(pv*0.03*0.15)*1000,levadura:(pv*0.05/1000)*1000};
         Object.keys(dieta).forEach(k=>{if(k!=='_meta')dieta[k]=dAnt[k]+((dieta[k]-dAnt[k])*f);});
     }
     if(incluirFD){const fd=getCfg('factoresDesperdicio')||{}; Object.keys(dieta).forEach(k=>{if(k!=='_meta'&&fd[k])dieta[k]*=(1+fd[k]);});}
     return dieta;
 };
+
 const getCostoDiario = (pv, prop, estado) => { 
     const d = getDiet(pv, prop, estado, 0, 0, false); const pr = getCfg('precios') || {}; const unidades = getCfg('unidadesPrecio') || {};
     return Object.keys(d).filter(k=>k!=='_meta').reduce((s,k)=>{
@@ -428,8 +439,7 @@ const getRendimiento = (h, gmdForzado=null) => {
 };
 const calcRepro = (a) => {
     if(a.proposito!=='leche' && !a.fechaUltimoParto) return null;
-    if(!a.fechaUltimoParto) return {diasPP:0,diasParaParto:999,fechaProxParto:null,semaforo:{color:'#6b7280',txt:'📅 Sin registro',tipo:'gris'},estadoLactancia:'novilla',avisoSecado:false,diasGestacion:a.diasGestacion||0};
-    const hoy=new Date(), parto=new Date(a.fechaUltimoParto.split('/').reverse().join('-')), diasPP=Math.max(0,Math.floor((hoy-parto)/864e5));
+    if(!a.fechaUltimoParto) return {diasPP:0,diasParaParto:999,fechaProxParto:null,semaforo:{color:'#6b7280',txt:'📅 Sin registro',tipo:'gris'},estadoLactancia:'novilla',avisoSecado:false,diasGestacion:a.diasGestacion||0};    const hoy=new Date(), parto=new Date(a.fechaUltimoParto.split('/').reverse().join('-')), diasPP=Math.max(0,Math.floor((hoy-parto)/864e5));
     const fpp=new Date(parto); fpp.setDate(parto.getDate()+285); const dpp=Math.floor((fpp-hoy)/864e5);
     let dg=a.diasGestacion||0; if(a.fechaUltimaInseminacion){const ins=new Date(a.fechaUltimaInseminacion.split('/').reverse().join('-')); dg=Math.max(0,Math.floor((hoy-ins)/864e5));}
     let sem, est=a.estadoReproductivo||'parida';
@@ -478,8 +488,7 @@ const getAlertasAnimal = (a) => {
     if(gmd>0&&gmd<0.4&&!tm)al.push({t:'purple',m:'Aplicar Modificador',icon:'fa-flask'}); if(!tiv)al.push({t:'r',m:'Desparasitación vencida',icon:'fa-shield-virus'}); return al; 
 };
 const getAguaDiaria = (pv, prop, ll=0) => prop==='leche'?pv*0.1+ll*3:pv*0.1;
-const getLoteName = (id) => DB_CACHE.lotes.find(x=>x.id===id)?.nombre||'General';
-const getAnimalesByLote = (lid) => DB_CACHE.animales.filter(a=>a.loteId===lid);
+const getLoteName = (id) => DB_CACHE.lotes.find(x=>x.id===id)?.nombre||'General';const getAnimalesByLote = (lid) => DB_CACHE.animales.filter(a=>a.loteId===lid);
 const actualizarTransiciones = () => { let c=false; DB_CACHE.animales.forEach(a=>{if(a.transicionActiva&&a.transicionDias<7){a.transicionDias++;c=true;if(a.transicionDias>=7){a.transicionActiva=false;showToast(`✅ ${a.nombre}: Transición ok`);}}});if(c)save(); };
 const calcularAutonomiaBodega = () => { const ct={pasto:0,salvado:0,melaza:0,levadura:0,bicarb:0,sal:0,urea:0}, fd=getCfg('factoresDesperdicio')||{}; DB_CACHE.animales.forEach(a=>{const p=a.historial[a.historial.length-1].peso, d=getDiet(p,a.proposito,calcRepro(a)?.estadoLactancia||'auto',a.transicionDias||0,0,true); Object.keys(ct).forEach(k=>ct[k]+=(d[k]||0)*(1+(fd[k]||0))); }); const au={}; const st=getCfg('stock')||{}; Object.keys(ct).forEach(k=>{const s=st[k]||0, c=ct[k]||0.001; au[k]=c>0?Math.floor(s/c):999;}); return {consumo:ct, autonomia:au}; };
 const descontarInventarioDiario = () => { const {consumo}=calcularAutonomiaBodega(); const st=getCfg('stock')||{}; Object.keys(consumo).forEach(k=>{if(st[k]!==undefined){st[k]=Math.max(0,st[k]-consumo[k]);if(st[k]<consumo[k]*3)showToast(`⚠️ Stock bajo: ${NM[k]}`,5000);}}); setCfg('stock', st); save(); };
@@ -498,8 +507,6 @@ const verificarNotificaciones = () => {
     const st=getCfg('stock')||{};
     Object.keys(st).forEach(k=>{if(st[k]<10) alertas.push({msg:`📦 Stock bajo: ${NM[k]}`, tipo:'danger'});});
     alertas.forEach(a=>showToast(a.msg, 6000));
-    if(alertas.length>0 && Notification.permission==='default') Notification.requestPermission();
-    if(Notification.permission==='granted'&&alertas.length>0) new Notification('GANADERO ÉLITE PRO', {body:`${alertas.length} alertas`, icon:'./assets/icons/icon-192x192.png'});
 };
 
 // ✅ GRÁFICO SVG
@@ -530,8 +537,7 @@ async function handlePhotoUpload(file, animalId) {
         if(w>h){if(w>MAX){h*=MAX/w;w=MAX;}}else{if(h>MAX){w*=MAX/h;h=MAX;}}
         canvas.width=w; canvas.height=h;
         canvas.getContext('2d').drawImage(img,0,0,w,h);
-        const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
-        const a = DB_CACHE.animales.find(x=>x.id===animalId);
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.7);        const a = DB_CACHE.animales.find(x=>x.id===animalId);
         if(a) { a.foto = dataUrl; save(); showProfile(animalId); showToast('✅ Foto guardada'); }
     };
     img.src = URL.createObjectURL(file);
@@ -580,8 +586,7 @@ function renderInicio() {
     <div class="card"><div class="row-label mb6" style="font-weight:600"><i class="fa-solid fa-chart-pie"></i> RESUMEN</div><div class="stats-grid">
         <div class="stat-item"><div class="row-label"><i class="fa-solid fa-users"></i> Cabezas</div><div class="row-val">${ta}</div></div>
         <div class="stat-item"><div class="row-label"><i class="fa-solid fa-weight-scale"></i> Peso Total</div><div class="row-val">${fm(tKg)} kg</div></div>
-        <div class="stat-item"><div class="row-label"><i class="fa-solid fa-calculator"></i> Promedio</div><div class="row-val">${fm(prom)} kg</div></div>
-        <div class="stat-item"><div class="row-label"><i class="fa-solid fa-sack-dollar"></i> Valor Hato</div><div class="row-val" style="color:var(--accent)">$${fm(tKg*(getCfg('precioKG')||9800))}</div></div></div></div>`;
+        <div class="stat-item"><div class="row-label"><i class="fa-solid fa-calculator"></i> Promedio</div><div class="row-val">${fm(prom)} kg</div></div>        <div class="stat-item"><div class="row-label"><i class="fa-solid fa-sack-dollar"></i> Valor Hato</div><div class="row-val" style="color:var(--accent)">$${fm(tKg*(getCfg('precioKG')||9800))}</div></div></div></div>`;
 
     if(ta > 0) {
         html += `<div class="card"><div style="font-weight:600;font-size:.7rem;margin-bottom:10px;color:var(--text-muted)"><i class="fa-solid fa-wheat-awn"></i> DIETA DIARIA TOTAL (HATO) <span class="ms-badge">MS+FD</span></div>`;
@@ -630,8 +635,7 @@ function saveInventario(){
     AL.forEach(id=>{
         const prEl=document.getElementById(`pr-${id}`),stEl=document.getElementById(`st-${id}`);
         if(prEl) pr[id]=parseFloat(prEl.value)||0;
-        if(stEl) st[id]=parseFloat(stEl.value)||0;
-        if(!u[id]) u[id]='kg';
+        if(stEl) st[id]=parseFloat(stEl.value)||0;        if(!u[id]) u[id]='kg';
     });
     setCfg('stock', st); setCfg('precios', pr); setCfg('unidadesPrecio', u);
     save(); showToast('✅ Inventario actualizado');
@@ -654,10 +658,11 @@ function exportData(){const b=new Blob([JSON.stringify(DB_CACHE)],{type:'applica
 function importData(){document.getElementById('importFile').click();}
 function handleImport(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=async ev=>{try{const d=JSON.parse(ev.target.result);if(d.animales&&d.lotes){await clearAllData(); await initCacheFromJSON(d); showToast('✅ Datos importados'); renderInicio(); }else showToast('⚠️ Archivo inválido');}catch{showToast('⚠️ Error al leer');}};r.readAsText(f);}
 
-// Función auxiliar para limpiar DB
 async function clearAllData() {
-    if(!dbInstance) return;
-    await DB.clear('animales'); await DB.clear('lotes'); await DB.clear('config'); await DB.clear('inventario'); await DB.clear('sanidad');
+    if(isIndexedDB) {
+        await DB.clear('animales'); await DB.clear('lotes'); await DB.clear('config'); await DB.clear('inventario'); await DB.clear('sanidad');
+    }
+    localStorage.clear();
     location.reload();
 }
 async function initCacheFromJSON(d) {
@@ -673,13 +678,14 @@ async function initCacheFromJSON(d) {
     DB_CACHE.aplicaciones = d.aplicaciones || [];
     DB_CACHE.asignacionesAlimentos = d.asignacionesAlimentos || {};
     
-    await Promise.all([
-        ...DB_CACHE.animales.map(a => DB.put('animales', a)),
-        ...DB_CACHE.lotes.map(l => DB.put('lotes', l)),
-        Object.keys(DB_CACHE.config).map(k => DB.put('config', {key:k, value:DB_CACHE.config[k]})),
-        Object.values(DB_CACHE.inventario).map(i => DB.put('inventario', i)),
-        Object.values(DB_CACHE.sanidad).map(s => DB.put('sanidad', s))
-    ]);
+    if(isIndexedDB) {
+        await Promise.all([
+            ...DB_CACHE.animales.map(a => DB.put('animales', a)),
+            ...DB_CACHE.lotes.map(l => DB.put('lotes', l)),
+            Object.keys(DB_CACHE.config).map(k => DB.put('config', {key:k, value:DB_CACHE.config[k]})),
+            Object.values(DB_CACHE.inventario).map(i => DB.put('inventario', i)),
+            Object.values(DB_CACHE.sanidad).map(s => DB.put('sanidad', s))        ]);
+    }
 }
 
 // ==================== PERFIL SIMPLIFICADO + NUEVAS FUNCIONES ====================
@@ -700,7 +706,7 @@ function showProfile(id){
             <div class="sp-badges-inline">
                 <span class="sp-badge-inline" style="background:${et.color}25;color:${et.color};border:1px solid ${et.color}40">${et.nombre}</span>
                 <span class="sp-badge-inline">${getLoteName(a.loteId)}</span>
-                <span class="sp-badge-inline">${a.proposito==='carne'?'🥩':'🥛'}</span>
+                <span class="sp-badge-inline">${a.proposito==='carne'?'🥩':''}</span>
             </div>
             <div style="display:flex;gap:8px;align-items:center;">
                 <button class="btn btn-sm btn-gray" onclick="shareAnimal(${id})" style="width:36px;padding:0;height:36px;flex:0"><i class="fa-solid fa-share-nodes"></i></button>
@@ -727,8 +733,7 @@ function showProfile(id){
     a.historial.slice().reverse().slice(0,4).forEach((h,i)=>{const pr=a.historial[a.historial.length-2-i];const dl=pr?`+${(((h.peso-pr.peso)/pr.peso)*100).toFixed(1)}%`:'Inicio';const cl=pr?(h.peso>=pr.peso?'#22c55e':'#ef4444'):'var(--accent)';html+=`<div class="row"><span class="row-label"><i class="fa-solid fa-weight-scale"></i> ${fm(h.peso)}kg</span><span class="row-val"><span style="color:${cl}">${dl}</span> <span style="color:var(--text-muted)">${h.fecha}</span></span></div>`;});
     html+='</div>';
     
-    const d=getDiet(p,a.proposito,rep?.estadoLactancia||'auto',a.transicionDias||0,rep?.diasGestacion||0);
-    html+=`<div class="sp-card"><div class="sp-card-title"><i class="fa-solid fa-mortar-pestle"></i> DIETA <span class="ms-badge">MS+FD</span>${d._meta?.ureaBloqueada?' <span class="trigger-badge">🔒</span>':''}</div>`;
+    const d=getDiet(p,a.proposito,rep?.estadoLactancia||'auto',a.transicionDias||0,rep?.diasGestacion||0);    html+=`<div class="sp-card"><div class="sp-card-title"><i class="fa-solid fa-mortar-pestle"></i> DIETA <span class="ms-badge">MS+FD</span>${d._meta?.ureaBloqueada?' <span class="trigger-badge">🔒</span>':''}</div>`;
     const ub=d.urea===0&&a.proposito!=='leche';if(ub)html+=`<div style="background:rgba(239,68,68,.1);color:#f87171;padding:8px;border-radius:10px;font-size:.7rem;margin-bottom:10px">Urea bloqueada</div>`;
     AL.forEach(k=>{const v=d[k],u=UNIDAD[k],dp=u==='kg'?v.toFixed(1):Math.round(v);const ms=(k==='pasto'||k==='salvado'||k==='melaza')?`<span style="font-size:.6rem;color:var(--text-muted)">(${(v*FACTOR_MS[k]).toFixed(1)}kg MS)</span>`:'';const fd=`<span class="fd-badge">+${Math.round((getCfg('factoresDesperdicio')[k]||0)*100)}%</span>`;const s=(k==='urea'&&ub)?'opacity:0.5;text-decoration:line-through':'';html+=`<div class="row" style="${s}"><span class="row-label"><i class="fa-solid ${IC[k]}"></i> ${NM[k]} ${fd}</span><span class="row-val" style="font-size:.8rem">${k==='urea'&&ub?'0':dp+u}${ms}</span></div>`;});
     html+='</div>';
@@ -773,45 +778,58 @@ function toggleOrigenFields(){const o=document.getElementById('addOrig')?.value,
 function showAddAnimalModal(){let opts=DB_CACHE.lotes.map(l=>`<option value="${l.id}">${l.nombre}</option>`).join(''),moms='<option value="">-- Sin Madre --</option>';DB_CACHE.animales.forEach(a=>{if(a.proposito==='leche')moms+=`<option value="${a.id}">${a.nombre}</option>`;});showModal(`<div style="font-weight:700;margin-bottom:14px;color:var(--accent);font-size:1rem"><i class="fa-solid fa-cow"></i> NUEVO ANIMAL</div><div class="flex-col gap10"><input id="addN" type="text" placeholder="Nombre"><input id="addW" type="number" placeholder="Peso (kg)" min="20" max="2000"><select id="addLote">${opts}</select><div class="grid"><select id="addProp"><option value="carne">🥩 CARNE</option><option value="leche">🥛 LECHE</option></select><select id="addOrig" onchange="toggleOrigenFields()"><option value="nacimiento">🐄 Nacimiento</option><option value="comprado">💰 Comprado</option></select></div><div id="nacimientoFields" class="flex-col gap8"><div class="row-label">Fecha Nacimiento</div><input id="addFechaNac" type="date"><div class="row-label">Madre</div><select id="addMama">${moms}</select></div><div id="compradoFields" class="hidden"><input id="addPrice" type="number" placeholder="Valor compra ($)"></div><button class="btn btn-gold mt12" onclick="guardarNuevoAnimal()"><i class="fa-solid fa-check"></i> REGISTRAR</button><button class="btn btn-gray" onclick="document.querySelector('.modal-overlay').remove()">CANCELAR</button></div>`);}
 async function guardarNuevoAnimal(){const n=document.getElementById('addN').value.trim(),w=parseFloat(document.getElementById('addW').value),lote=document.getElementById('addLote').value,p=document.getElementById('addProp').value,orig=document.getElementById('addOrig').value,fn=document.getElementById('addFechaNac')?.value,mi=document.getElementById('addMama')?.value,pr=parseFloat(document.getElementById('addPrice')?.value)||0;if(!n||isNaN(w)||w<20||w>2000)return showToast('⚠️ Verifica datos');const fh=new Date().toLocaleDateString(),fr=(orig==='nacimiento'&&fn)?fn.split('-').reverse().join('/'):fh;const newAnimal={id:Date.now(),nombre:n,historial:[{fecha:fr,peso:w}],proposito:p,origen:orig,valorCompra:pr,fechaUltimoParto:null,estadoReproductivo:'novilla',loteId:lote,fechaNacimiento:fn||null,madreId:mi||null,tags:[],litrosLeche:0,transicionDias:0,transicionActiva:false,bloqueadoPorRetiro:false,diasGestacion:0,fechaUltimaInseminacion:null};
 DB_CACHE.animales.push(newAnimal);
-await DB.put('animales', newAnimal);
+if(isIndexedDB) await DB.put('animales', newAnimal);
 document.querySelector('.modal-overlay').remove();showToast(`✅ ${n} registrado`);goPage('animales');}
 function showAddLoteModal(){showModal(`<div style="font-weight:700;margin-bottom:12px;color:var(--accent)"><i class="fa-solid fa-plus"></i> NUEVO LOTE</div><div class="flex-col gap10"><input id="nlNombre" type="text" placeholder="Nombre"><input id="nlColor" type="color" value="${randColor()}" style="width:100%;height:38px"><button class="btn btn-gold mt8" onclick="guardarLote()"><i class="fa-solid fa-check"></i> CREAR</button><button class="btn btn-gray" onclick="document.querySelector('.modal-overlay').remove()">CANCELAR</button></div>`);}
-async function guardarLote(){const n=document.getElementById('nlNombre').value.trim(),c=document.getElementById('nlColor').value;if(!n)return showToast('⚠️ Ingresa nombre');const l={id:'lot_'+Date.now(),nombre:n,color:c};DB_CACHE.lotes.push(l);await DB.put('lotes', l);document.querySelector('.modal-overlay').remove();showToast(`✅ Lote "${n}" creado`);renderLotes();}
-function showEditLoteColor(lid){const l=DB_CACHE.lotes.find(x=>x.id===lid);if(!l)return;showModal(`<div style="font-weight:700;margin-bottom:12px;color:var(--accent)"><i class="fa-solid fa-palette"></i> COLOR</div><div class="flex-col gap10"><input id="elColor" type="color" value="${l.color}" style="width:100%;height:44px"><button class="btn btn-green mt8" onclick="guardarColorLote('${lid}')"><i class="fa-solid fa-check"></i> GUARDAR</button><button class="btn btn-gray" onclick="document.querySelector('.modal-overlay').remove()">CANCELAR</button></div>`);}
-async function guardarColorLote(lid){const l=DB_CACHE.lotes.find(x=>x.id===lid);if(l){l.color=document.getElementById('elColor').value;await DB.put('lotes', l);}document.querySelector('.modal-overlay').remove();renderLotes();showToast('✅ Color actualizado');}
-async function deleteLote(lid){if(lid==='lot_general')return showToast('⚠️ No eliminar General');if(!confirm('¿Eliminar? Animales a General'))return;DB_CACHE.animales.forEach(a=>{if(a.loteId===lid)a.loteId='lot_general';});DB_CACHE.lotes=DB_CACHE.lotes.filter(l=>l.id!==lid);await DB.put('lotes', DB_CACHE.lotes); // Sync lotes renderLotes();showToast('✅ Lote eliminado');}
-async function updateWeight(id){const a=DB_CACHE.animales.find(x=>x.id===id);if(!a)return;const ow=a.historial[a.historial.length-1].peso;const p=prompt(`⚖️ Nuevo peso (kg):\nActual: ${ow}kg`,'');if(!p)return;const peso=parseFloat(p);if(isNaN(peso)||peso<20||peso>2000)return showToast('⚠️ Peso inválido');if(peso<ow&&!confirm('⚠️ Peso menor. ¿Continuar?'))return;const fechaInput=prompt(`📅 Fecha:\nFormato: DD/MM/AAAA`,new Date().toLocaleDateString());const fechaFinal=fechaInput?fechaInput:new Date().toLocaleDateString();const partes=fechaFinal.split('/');if(partes.length!==3){showToast('⚠️ Formato inválido. DD/MM/AAAA');return;}a.historial.push({fecha:fechaFinal,peso:peso});await DB.put('animales', a); recalcularTodo(id);}
+async function guardarLote(){const n=document.getElementById('nlNombre').value.trim(),c=document.getElementById('nlColor').value;if(!n)return showToast('⚠️ Ingresa nombre');const l={id:'lot_'+Date.now(),nombre:n,color:c};DB_CACHE.lotes.push(l);if(isIndexedDB) await DB.put('lotes', l);document.querySelector('.modal-overlay').remove();showToast(`✅ Lote "${n}" creado`);renderLotes();}
+function showEditLoteColor(lid){const l=DB_CACHE.lotes.find(x=>x.id===lid);if(!l)return;showModal(`<div style="font-weight:700;margin-bottom:12px;color:var(--accent)"><i class="fa-solid fa-palette"></i> COLOR</div><div class="flex-col gap10"><input id="elColor" type="color" value="${l.color}" style="width:100%;height:44px"><button class="btn btn-green mt8" onclick="guardarColorLote('${lid}')"><i class="fa-solid fa-check"></i> GUARDAR</button><button class="btn btn-gray" onclick="document.querySelector('.modal-overlay').remove()">CANCELAR</button></div>`);}async function guardarColorLote(lid){const l=DB_CACHE.lotes.find(x=>x.id===lid);if(l){l.color=document.getElementById('elColor').value;if(isIndexedDB) await DB.put('lotes', l);}document.querySelector('.modal-overlay').remove();renderLotes();showToast('✅ Color actualizado');}
+async function deleteLote(lid){if(lid==='lot_general')return showToast('⚠️ No eliminar General');if(!confirm('¿Eliminar? Animales a General'))return;DB_CACHE.animales.forEach(a=>{if(a.loteId===lid)a.loteId='lot_general';});DB_CACHE.lotes=DB_CACHE.lotes.filter(l=>l.id!==lid);if(isIndexedDB) await DB.put('lotes', DB_CACHE.lotes); renderLotes();showToast('✅ Lote eliminado');}
+async function updateWeight(id){const a=DB_CACHE.animales.find(x=>x.id===id);if(!a)return;const ow=a.historial[a.historial.length-1].peso;const p=prompt(`⚖️ Nuevo peso (kg):\nActual: ${ow}kg`,'');if(!p)return;const peso=parseFloat(p);if(isNaN(peso)||peso<20||peso>2000)return showToast('⚠️ Peso inválido');if(peso<ow&&!confirm('⚠️ Peso menor. ¿Continuar?'))return;const fechaInput=prompt(`📅 Fecha:\nFormato: DD/MM/AAAA`,new Date().toLocaleDateString());const fechaFinal=fechaInput?fechaInput:new Date().toLocaleDateString();const partes=fechaFinal.split('/');if(partes.length!==3){showToast('⚠️ Formato inválido. DD/MM/AAAA');return;}a.historial.push({fecha:fechaFinal,peso:peso});if(isIndexedDB) await DB.put('animales', a); recalcularTodo(id);}
 function recalcularTodo(id){const a=DB_CACHE.animales.find(x=>x.id===id);if(!a)return;const p=a.historial[a.historial.length-1].peso,et=getEtapa(p,calcRepro(a));if(a.fechaNacimiento&&p<=150){const ed=Math.floor((new Date()-new Date(a.fechaNacimiento))/864e5);if(ed>=210&&et.nombre==='Cría'){a.estadoReproductivo='destetado';a.transicionActiva=true;a.transicionDias=1;showToast('🍼 Destete auto: Levante');}}save();showProfile(id);}
-async function deleteAnimal(id){DB_CACHE.animales=DB_CACHE.animales.filter(x=>x.id!==id);delete DB_CACHE.asignacionesAlimentos[id];await DB.put('animales', DB_CACHE.animales); document.querySelector('.modal-overlay').remove();closeProfile();showToast('✅ Eliminado');}
+async function deleteAnimal(id){DB_CACHE.animales=DB_CACHE.animales.filter(x=>x.id!==id);delete DB_CACHE.asignacionesAlimentos[id];if(isIndexedDB) await DB.put('animales', DB_CACHE.animales); document.querySelector('.modal-overlay').remove();closeProfile();showToast('✅ Eliminado');}
 function openAplicarProducto(id){const a=DB_CACHE.animales.find(x=>x.id===id);if(!a)return;const p=a.historial[a.historial.length-1].peso;let opts=getAllSanidad().map(pr=>`<option value="${pr.id}">${pr.nombre} (${pr.diasEfecto}d)</option>`).join('');showModal(`<div style="font-weight:700;margin-bottom:12px;color:var(--accent)">💉 APLICAR</div><div class="flex-col gap10"><select id="aplProducto" onchange="calcDosisModal(${p})">${opts}</select><div id="dosisInfo" style="font-size:.7rem;color:var(--text-muted);background:rgba(255,255,255,.05);padding:8px">📋 Selecciona</div><input id="aplML" type="number" placeholder="ml" step=".1"><button class="btn btn-green mt8" onclick="aplicarProducto(${id})"><i class="fa-solid fa-check"></i> CONFIRMAR</button><button class="btn btn-gray" onclick="document.querySelector('.modal-overlay').remove()">CANCELAR</button></div>`);setTimeout(()=>calcDosisModal(p),100);}
 function calcDosisModal(p){const s=document.getElementById('aplProducto'),i=document.getElementById('dosisInfo');if(!s||!i)return;const pr=getAllSanidad().find(x=>x.id===s.value);if(pr)i.innerHTML=`📋 Dosis: <b>${(p/pr.dosis).toFixed(1)} ml</b>`;}
 function aplicarProducto(id){const pid=document.getElementById('aplProducto').value,ml=parseFloat(document.getElementById('aplML').value);if(isNaN(ml)||ml<=0)return showToast('⚠️ ml inválidos');const pr=getAllSanidad().find(x=>x.id===pid);if(!pr)return;const stS=getCfg('stockSanidad')||{}; if(ml>(stS[pid]||0))return showToast('⚠️ Stock insuficiente');const cu=pr.precioML||((getCfg('preciosSanidad')||{})[pid]||0),ct=ml*cu; if(!DB_CACHE.aplicaciones) DB_CACHE.aplicaciones=[]; DB_CACHE.aplicaciones.push({animalId:id,productoId:pid,producto:pr.nombre,ml,costo:ct,fecha:new Date().toLocaleDateString()}); stS[pid]=Math.max(0,(stS[pid]||0)-ml); setCfg('stockSanidad', stS); save(); document.querySelector('.modal-overlay').remove(); verificarRetiro(id); showToast('✅ Aplicado'); showProfile(id); }
 function verificarRetiro(id){const a=DB_CACHE.animales.find(x=>x.id===id);if(!a)return;let mx=0;const apps=DB_CACHE.aplicaciones?DB_CACHE.aplicaciones.filter(x=>x.animalId===id):[];apps.forEach(ap=>{const pr=getAllSanidad().find(x=>x.id===ap.productoId);if(pr&&pr.retiro>0){const d=getDiasDesde(ap.fecha),r=pr.retiro-d;if(r>mx)mx=r;}});if(mx>0){a.bloqueadoPorRetiro=true;save();showToast(`⚠️ Retiro: ${mx}d`);}else a.bloqueadoPorRetiro=false;}
 function showModalAsignarAlimento(id){const d=Object.values(DB_CACHE.inventario);if(!d.length)return showToast('⚠️ Crea alimentos primero');const as=DB_CACHE.asignacionesAlimentos?DB_CACHE.asignacionesAlimentos[id]:[],ids=as?as.map(a=>a.alimentoId):[];let opts='';d.forEach(i=>{if(ids.indexOf(i.id)===-1)opts+=`<option value="${i.id}">${i.nombre}</option>`;});if(!opts)return showToast('✅ Todos asignados');showModal(`<div style="font-weight:700;margin-bottom:12px;color:var(--accent)"><i class="fa-solid fa-wheat-awn"></i> ASIGNAR</div><div class="flex-col gap10"><select id="selAlimentoCustom">${opts}</select><input id="cantidadDiaria" type="number" step="any" placeholder="Cantidad"><button class="btn btn-green mt8" onclick="asignarAlimentoConStock(${id})"><i class="fa-solid fa-check"></i> ASIGNAR</button><button class="btn btn-gray" onclick="document.querySelector('.modal-overlay').remove()">CANCELAR</button></div>`);}
-async function asignarAlimentoConStock(id){const s=document.getElementById('selAlimentoCustom'),c=parseFloat(document.getElementById('cantidadDiaria').value);if(!s||isNaN(c)||c<=0)return showToast('⚠️ Inválido');const aid=s.value,al=DB_CACHE.inventario[aid];if(!al)return;if(c>al.stock)return showToast('⚠️ Stock bajo');al.stock-=c;await DB.put('inventario', al); if(!DB_CACHE.asignacionesAlimentos) DB_CACHE.asignacionesAlimentos={}; if(!DB_CACHE.asignacionesAlimentos[id]) DB_CACHE.asignacionesAlimentos[id]=[]; DB_CACHE.asignacionesAlimentos[id].push({alimentoId:aid,cantidadDiaria:c,activo:true}); save(); document.querySelector('.modal-overlay').remove(); showToast('✅ Asignado'); showProfile(id); }
+async function asignarAlimentoConStock(id){const s=document.getElementById('selAlimentoCustom'),c=parseFloat(document.getElementById('cantidadDiaria').value);if(!s||isNaN(c)||c<=0)return showToast('⚠️ Inválido');const aid=s.value,al=DB_CACHE.inventario[aid];if(!al)return;if(c>al.stock)return showToast('⚠️ Stock bajo');al.stock-=c;if(isIndexedDB) await DB.put('inventario', al); if(!DB_CACHE.asignacionesAlimentos) DB_CACHE.asignacionesAlimentos={}; if(!DB_CACHE.asignacionesAlimentos[id]) DB_CACHE.asignacionesAlimentos[id]=[]; DB_CACHE.asignacionesAlimentos[id].push({alimentoId:aid,cantidadDiaria:c,activo:true}); save(); document.querySelector('.modal-overlay').remove(); showToast('✅ Asignado'); showProfile(id); }
 function toggleAlimentoCustom(id,aid){if(!DB_CACHE.asignacionesAlimentos||!DB_CACHE.asignacionesAlimentos[id])return;const i=DB_CACHE.asignacionesAlimentos[id].findIndex(a=>a.alimentoId===aid);if(i>-1){if(DB_CACHE.asignacionesAlimentos[id][i].activo){if(confirm('¿Quitar?')){DB_CACHE.asignacionesAlimentos[id].splice(i,1);save();showProfile(id);}}else{DB_CACHE.asignacionesAlimentos[id][i].activo=true;save();showProfile(id);}}}
 function showReproModal(id){showModal(`<div style="font-weight:700;margin-bottom:12px;color:var(--accent)"><i class="fa-solid fa-calendar-check"></i> REGISTRO</div><div class="flex-col gap10"><select id="reTipo"><option value="parto">🐣 Parto</option><option value="insem">🐄 Inseminación</option><option value="secado">🛑 Secado</option></select><input id="reFecha" type="date"><button class="btn btn-green" onclick="guardarRepro(${id})"><i class="fa-solid fa-check"></i> GUARDAR</button><button class="btn btn-gray" onclick="document.querySelector('.modal-overlay').remove()">CANCELAR</button></div>`);}
-async function guardarRepro(id){const t=document.getElementById('reTipo').value,f=document.getElementById('reFecha').value;if(!f)return showToast('⚠️ Selecciona fecha');const fd=f.split('-').reverse().join('/'),a=DB_CACHE.animales.find(x=>x.id===id);if(t==='parto'){a.fechaUltimoParto=fd;a.estadoReproductivo='parida';a.diasGestacion=0;}if(t==='insem'){a.fechaUltimaInseminacion=fd;a.estadoReproductivo='gestando';}if(t==='secado'){a.estadoReproductivo='seca';}await DB.put('animales', a); save(); document.querySelector('.modal-overlay').remove(); recalcularTodo(id); showToast('✅ Registrado'); }
+async function guardarRepro(id){const t=document.getElementById('reTipo').value,f=document.getElementById('reFecha').value;if(!f)return showToast('⚠️ Selecciona fecha');const fd=f.split('-').reverse().join('/'),a=DB_CACHE.animales.find(x=>x.id===id);if(t==='parto'){a.fechaUltimoParto=fd;a.estadoReproductivo='parida';a.diasGestacion=0;}if(t==='insem'){a.fechaUltimaInseminacion=fd;a.estadoReproductivo='gestando';}if(t==='secado'){a.estadoReproductivo='seca';}if(isIndexedDB) await DB.put('animales', a); save(); document.querySelector('.modal-overlay').remove(); recalcularTodo(id); showToast('✅ Registrado'); }
 function showModalGestionAlimentos(){showModal(`<div style="font-weight:700;margin-bottom:12px;color:var(--accent)"><i class="fa-solid fa-plus"></i> NUEVO ALIMENTO</div><div class="flex-col gap8"><input id="acNombre" type="text" placeholder="Nombre"><div class="grid"><select id="acIcono"><option value="fa-wheat-awn">🌾 Grano</option><option value="fa-seedling">🌱 Forraje</option></select><select id="acUnidad"><option value="kg">Kilogramos</option><option value="g">Gramos</option></select></div><div class="grid"><input id="acDosis" type="number" step="0.001" placeholder="Dosis/kg"><input id="acPrecioTotal" type="number" placeholder="Precio $"></div><div class="grid"><input id="acCantidadTotal" type="number" step="0.1" placeholder="Cantidad"><input id="acPrecioUnitario" type="text" readonly placeholder="Auto..."></div><button class="btn btn-green" onclick="guardarAlimentoCustom()"><i class="fa-solid fa-check"></i> GUARDAR</button></div>`);}
-async function guardarAlimentoCustom(){const n=document.getElementById('acNombre').value.trim(),d=parseFloat(document.getElementById('acDosis').value),pt=parseFloat(document.getElementById('acPrecioTotal').value),ct=parseFloat(document.getElementById('acCantidadTotal').value);if(!n||isNaN(d)||isNaN(pt)||isNaN(ct))return showToast('⚠️ Completa');const id='ac_'+Date.now();const item={id,nombre:n,icono:document.getElementById('acIcono').value,unidad:document.getElementById('acUnidad').value,dosisPorKg:d,precioUnitario:pt/ct,stock:ct};DB_CACHE.inventario[id]=item;await DB.put('inventario', item); document.querySelector('.modal-overlay').remove(); showToast('✅ Agregado'); renderInsumos(); }
-async function deleteAlimentoCustom(id){if(!confirm('¿Eliminar?'))return;delete DB_CACHE.inventario[id];await DB.clear('inventario'); Object.values(DB_CACHE.inventario).forEach(i => DB.put('inventario', i)); renderInsumos();}
+async function guardarAlimentoCustom(){const n=document.getElementById('acNombre').value.trim(),d=parseFloat(document.getElementById('acDosis').value),pt=parseFloat(document.getElementById('acPrecioTotal').value),ct=parseFloat(document.getElementById('acCantidadTotal').value);if(!n||isNaN(d)||isNaN(pt)||isNaN(ct))return showToast('⚠️ Completa');const id='ac_'+Date.now();const item={id,nombre:n,icono:document.getElementById('acIcono').value,unidad:document.getElementById('acUnidad').value,dosisPorKg:d,precioUnitario:pt/ct,stock:ct};DB_CACHE.inventario[id]=item;if(isIndexedDB) await DB.put('inventario', item); document.querySelector('.modal-overlay').remove(); showToast('✅ Agregado'); renderInsumos(); }
+async function deleteAlimentoCustom(id){if(!confirm('¿Eliminar?'))return;delete DB_CACHE.inventario[id];if(isIndexedDB) await DB.clear('inventario'); Object.values(DB_CACHE.inventario).forEach(i => DB.put('inventario', i)); renderInsumos();}
 function showModalGestionSanidad(){showModal(`<div style="font-weight:700;margin-bottom:12px;color:var(--accent)"><i class="fa-solid fa-plus"></i> NUEVO</div><div class="flex-col gap8"><input id="scNombre" type="text" placeholder="Nombre"><div class="grid"><select id="scIcono"><option value="fa-syringe">💉</option><option value="fa-pills">💊</option></select><input id="scColor" type="color" value="#a78bfa" style="width:100%;height:38px"></div><input id="scDosis" type="number" step="0.01" placeholder="ml/kg"><div class="grid"><input id="scEfecto" type="number" placeholder="Días efecto"><input id="scRetiro" type="number" placeholder="Días retiro"></div><div class="grid"><input id="scPrecioTotal" type="number" placeholder="Precio $"><input id="scMlTotal" type="number" placeholder="Mililitros"></div><button class="btn btn-green" onclick="guardarSanidadCustom()"><i class="fa-solid fa-check"></i> GUARDAR</button></div>`);}
-async function guardarSanidadCustom(){const n=document.getElementById('scNombre').value.trim(),d=parseFloat(document.getElementById('scDosis').value),ef=parseInt(document.getElementById('scEfecto').value)||0,ret=parseInt(document.getElementById('scRetiro').value)||0,pt=parseFloat(document.getElementById('scPrecioTotal').value),ml=parseFloat(document.getElementById('scMlTotal').value);if(!n||isNaN(d)||isNaN(pt)||isNaN(ml))return showToast('⚠️ Completa');const id='sc_'+Date.now();const item={id,nombre:n,icono:document.getElementById('scIcono').value,color:document.getElementById('scColor').value,dosisPorKg:d,diasEfecto:ef,retiro:ret,precioML:pt/ml,stockML:ml};DB_CACHE.sanidad[id]=item;await DB.put('sanidad', item); document.querySelector('.modal-overlay').remove(); showToast('✅ Agregado'); renderInsumos(); }
-async function deleteSanidadCustom(id){if(!confirm('¿Eliminar?'))return;delete DB_CACHE.sanidad[id];await DB.clear('sanidad'); Object.values(DB_CACHE.sanidad).forEach(s => DB.put('sanidad', s)); renderInsumos();}
+async function guardarSanidadCustom(){const n=document.getElementById('scNombre').value.trim(),d=parseFloat(document.getElementById('scDosis').value),ef=parseInt(document.getElementById('scEfecto').value)||0,ret=parseInt(document.getElementById('scRetiro').value)||0,pt=parseFloat(document.getElementById('scPrecioTotal').value),ml=parseFloat(document.getElementById('scMlTotal').value);if(!n||isNaN(d)||isNaN(pt)||isNaN(ml))return showToast('⚠️ Completa');const id='sc_'+Date.now();const item={id,nombre:n,icono:document.getElementById('scIcono').value,color:document.getElementById('scColor').value,dosisPorKg:d,diasEfecto:ef,retiro:ret,precioML:pt/ml,stockML:ml};DB_CACHE.sanidad[id]=item;if(isIndexedDB) await DB.put('sanidad', item); document.querySelector('.modal-overlay').remove(); showToast('✅ Agregado'); renderInsumos(); }
+async function deleteSanidadCustom(id){if(!confirm('¿Eliminar?'))return;delete DB_CACHE.sanidad[id];if(isIndexedDB) await DB.clear('sanidad'); Object.values(DB_CACHE.sanidad).forEach(s => DB.put('sanidad', s)); renderInsumos();}
 
-// ==================== PWA & INIT ====================
-if('serviceWorker' in navigator){window.addEventListener('load',()=>{navigator.serviceWorker.register('./sw.js',{scope:'./'}).then(r=>console.log('✅ SW:',r.scope)).catch(e=>console.error('❌ SW:',e));});}
+// ==================== INICIO DE APP ====================
+// Timeout de seguridad: Si tarda más de 5 segundos, entra igual.
+setTimeout(() => {
+    const loader = document.getElementById('loadingScreen');
+    if(loader && loader.style.display !== 'none') {
+        const app = document.getElementById('appContainer');
+        app.style.display = 'flex';
+        loader.classList.add('fade-out');
+        setTimeout(() => loader.style.display = 'none', 500);
+        goPage('inicio');
+    }
+}, 5000);
 
-// Iniciar App
+// Iniciar carga real
 (async () => {
     try {
         await loadAllData();
     } catch(e) {
-        console.error(e);
-        document.getElementById('loadingScreen').innerHTML = '<div style="color:var(--danger);text-align:center">Error al cargar base de datos.<br>Reinicie la aplicación.</div>';
+        console.error('Error crítico:', e);
+        // Fallback extremo
+        const loader = document.getElementById('loadingScreen');
+        if(loader) {
+            loader.innerHTML = '<div style="color:var(--danger);text-align:center">Error cargando. Intentando modo seguro...</div>';
+            document.getElementById('appContainer').style.display = 'flex';
+            setTimeout(() => { loader.style.display='none'; goPage('inicio'); }, 1500);
+        }
     }
 })();
-</script>
-</body>
+</script></body>
 </html>
-```
