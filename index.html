@@ -14,8 +14,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --bg: #0a0a0c; --card-bg: rgba(22, 22, 24, 0.95); --card-border: rgba(255, 255, 255, 0.1);
-            --accent: #ffb900; --accent-soft: rgba(255, 185, 0, 0.15); --accent-border: rgba(255, 185, 0, 0.3);
+            --bg: #0a0a0c; --card-bg: rgba(22, 22, 24, 0.95); --card-border: rgba(255, 255, 255, 0.08);
+            --accent: #ffb900; --accent-soft: rgba(255, 185, 0, 0.12); --accent-border: rgba(255, 185, 0, 0.3);
             --text: #ffffff; --text-muted: #a1a1aa; --success: #22c55e; --danger: #ef4444;
             --info: #3b82f6; --warning: #f59e0b; --purple: #a78bfa; --radius: 20px; --radius-sm: 14px;
             --shadow-card: 0 4px 20px rgba(0,0,0,0.4);
@@ -24,7 +24,7 @@
         html, body { overflow-x:hidden; max-width:100vw; }
         body { font-family:'Inter',system-ui,sans-serif; background:var(--bg); color:var(--text); min-height:100vh; padding:14px 14px 100px; font-size:14px; display:flex; justify-content:center; font-weight:400; line-height:1.5; letter-spacing:-0.01em; word-wrap:break-word; }
         .aurora { position:fixed; top:0; left:0; width:100%; height:100%; background:radial-gradient(circle at 25% 25%,#1a160a 0%,transparent 45%),radial-gradient(circle at 75% 75%,#0f1a1a 0%,transparent 45%); z-index:-1; filter:blur(80px); opacity:0.5; }
-        .app { width:100%; max-width:460px; position:relative; display:flex; flex-direction:column; gap:14px; }
+        .app { width:100%; max-width:480px; position:relative; display:flex; flex-direction:column; gap:14px; }
         
         /* ✅ ANIMACIÓN DE CARGA MODERNA */
         .loading-screen { position:fixed; inset:0; background:#050507; z-index:2000; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:24px; transition: opacity 0.5s ease; }
@@ -35,7 +35,6 @@
         .loader-logo { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 32px; animation: pulse 2s infinite; }
         .loading-text { font-weight: 600; font-size: 1rem; color: var(--accent); letter-spacing: 1px; text-transform: uppercase; }
         .loading-sub { font-size: 0.8rem; color: var(--text-muted); }
-        
         @keyframes spin { to { transform: rotate(360deg); } }
         @keyframes pulse { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(0.95); opacity: 0.7; } }
         @keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
@@ -47,8 +46,8 @@
         header .config-btn { width:34px; height:34px; border-radius:50%; background:rgba(255,255,255,.06); border:1px solid var(--card-border); color:var(--text-muted); display:flex; align-items:center; justify-content:center; cursor:pointer; transition:.2s; }
         header .config-btn:active { background:rgba(255,255,255,.12); color:#fff; }
         .save-indicator { font-size:.65rem; color:var(--success); opacity:0; transition:opacity .3s; animation:pulse 2s infinite; }
-        .save-indicator.visible { opacity:1; }        .pro-tag { display:inline-flex; align-items:center; gap:4px; background:var(--accent-soft); border:1px solid var(--accent-border); color:var(--accent); padding:2px 8px; border-radius:8px; font-size:.55rem; font-weight:600; letter-spacing:.05em; margin-left:6px; }
-        .bottom-nav { position:fixed; bottom:18px; left:50%; transform:translateX(-50%); width:94%; max-width:380px; height:60px; display:flex; justify-content:space-around; align-items:center; z-index:500; background:rgba(18,18,20,0.85); backdrop-filter:blur(16px); border:1px solid rgba(255,255,255,.1); border-radius:30px; box-shadow:0 4px 20px rgba(0,0,0,.5); }
+        .save-indicator.visible { opacity:1; }
+        .pro-tag { display:inline-flex; align-items:center; gap:4px; background:var(--accent-soft); border:1px solid var(--accent-border); color:var(--accent); padding:2px 8px; border-radius:8px; font-size:.55rem; font-weight:600; letter-spacing:.05em; margin-left:6px; }        .bottom-nav { position:fixed; bottom:18px; left:50%; transform:translateX(-50%); width:94%; max-width:400px; height:60px; display:flex; justify-content:space-around; align-items:center; z-index:500; background:rgba(18,18,20,0.85); backdrop-filter:blur(16px); border:1px solid rgba(255,255,255,.1); border-radius:30px; box-shadow:0 4px 20px rgba(0,0,0,.5); }
         .nav-item { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; color:var(--text-muted); font-size:.55rem; cursor:pointer; transition:.2s; font-weight:600; text-transform:uppercase; letter-spacing:.03em; }
         .nav-item i { font-size:1.1rem; margin-bottom:1px; transition:.15s; }
         .nav-item.active { color:var(--accent); }
@@ -96,37 +95,44 @@
         .mini-led { position:absolute; top:10px; right:10px; width:10px; height:10px; border-radius:50%; }
         .ml-g { background:#22c55e; } .ml-b { background:#3b82f6; } .ml-o { background:#f59e0b; } .ml-r { background:#ef4444; } .ml-x { background:#6b7280; }
         .lock-icon { position:absolute; top:8px; left:10px; font-size:.7rem; color:var(--accent); }
-        .section-title { display:flex; align-items:center; gap:7px; font-size:.68rem; font-weight:600; letter-spacing:.06em; text-transform:uppercase; color:var(--text-muted); margin:16px 0 8px; padding-bottom:6px; border-bottom:1px solid rgba(255,255,255,.05); }        .modal-overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,.85); z-index:200; display:flex; align-items:center; justify-content:center; padding:18px; animation:fadeIn .2s ease; }
-        .modal { background:#151517; border:1px solid var(--card-border); border-radius:20px; padding:18px; width:100%; max-width:380px; max-height:85vh; overflow-y:auto; box-shadow:0 16px 40px rgba(0,0,0,.7); }
+        .section-title { display:flex; align-items:center; gap:7px; font-size:.68rem; font-weight:600; letter-spacing:.06em; text-transform:uppercase; color:var(--text-muted); margin:16px 0 8px; padding-bottom:6px; border-bottom:1px solid rgba(255,255,255,.05); }
+        .modal-overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,.85); z-index:200; display:flex; align-items:center; justify-content:center; padding:18px; animation:fadeIn .2s ease; }        .modal { background:#151517; border:1px solid var(--card-border); border-radius:20px; padding:18px; width:100%; max-width:380px; max-height:85vh; overflow-y:auto; box-shadow:0 16px 40px rgba(0,0,0,.7); }
         .hidden { display:none!important; } .flex-col { display:flex; flex-direction:column; } .gap8 { gap:8px; } .gap10 { gap:10px; } .mt8 { margin-top:8px; } .mt12 { margin-top:12px; }
         .custom-badge { background:var(--accent); color:#000; font-size:.5rem; padding:1px 5px; border-radius:4px; font-weight:700; margin-left:5px; }
         .toggle-btn { width:28px; height:28px; border-radius:8px; border:none; background:rgba(255,255,255,.1); color:var(--text-muted); cursor:pointer; }
         .toggle-btn.active { background:var(--success); color:#fff; }
         .custom-item-row { display:flex; align-items:center; justify-content:space-between; padding:8px 0; border-bottom:1px solid rgba(255,255,255,.04); }
-        .sp-wrapper { background:var(--card-bg); border-radius:var(--radius); border:1px solid var(--card-border); overflow:hidden; }
-        .sp-header-inline { padding:14px 16px; border-bottom:1px solid var(--card-border); display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
-        .sp-avatar-sm { width:48px; height:48px; border-radius:50%; background:rgba(255,255,255,.08); display:flex; align-items:center; justify-content:center; font-size:1.5rem; flex-shrink:0; cursor:pointer; background-size:cover; background-position:center; position:relative; overflow:hidden; }
-        .sp-avatar-sm::after { content:'📷'; position:absolute; bottom:2px; right:2px; background:var(--accent); border-radius:50%; width:18px; height:18px; display:flex; align-items:center; justify-content:center; font-size:10px; color:#000; border:2px solid #0a0a0c; }
-        .sp-name-inline { font-weight:700; font-size:1rem; color:var(--text); flex:1; min-width:120px; }
-        .sp-badges-inline { display:flex; gap:5px; flex-wrap:wrap; }
-        .sp-badge-inline { font-size:.55rem; padding:3px 8px; border-radius:8px; font-weight:500; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.06); }
-        .sp-meta-inline { font-size:.65rem; color:var(--text-muted); width:100%; margin-top:6px; padding-top:8px; border-top:1px solid rgba(255,255,255,.05); }
-        .sp-stats-inline { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; padding:12px 16px; border-bottom:1px solid var(--card-border); }
-        .sp-stat-inline { text-align:center; } .sp-stat-inline .val { font-weight:700; font-size:.9rem; } .sp-stat-inline .lbl { font-size:.5rem; color:var(--text-muted); margin-top:2px; text-transform:uppercase; font-weight:500; }
-        .stage-progress-container { padding:12px 16px; border-bottom:1px solid var(--card-border); }
-        .stage-progress-labels { display:flex; justify-content:space-between; font-size:.6rem; color:var(--text-muted); margin-bottom:4px; }
-        .stage-progress-bar { width:100%; height:5px; background:rgba(255,255,255,.08); border-radius:3px; overflow:hidden; position:relative; }
-        .stage-progress-fill { height:100%; border-radius:3px; transition:width .6s ease; }
-        .sp-scroll { max-height:60vh; overflow-y:auto; padding:14px 16px 20px; }
-        .sp-scroll::-webkit-scrollbar { width:3px; } .sp-scroll::-webkit-scrollbar-thumb { background:rgba(255,255,255,.15); border-radius:3px; }
-        .sp-card { background:rgba(255,255,255,.03); border:1px solid var(--card-border); border-radius:16px; padding:14px; margin-bottom:10px; }
-        .sp-card-title { font-size:.7rem; font-weight:600; color:var(--accent); margin-bottom:10px; display:flex; align-items:center; gap:6px; }
-        .sp-projection { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; }
-        .sp-proj-box { background:rgba(255,255,255,.04); border-radius:12px; padding:8px; text-align:center; }
-        .sp-proj-d { font-size:.5rem; color:var(--text-muted); font-weight:500; text-transform:uppercase; }
-        .sp-proj-w { font-weight:700; font-size:.8rem; margin:3px 0; } .sp-proj-g { font-size:.58rem; font-weight:500; }
-        .sp-actions-bar { display:flex; gap:8px; padding:12px 16px; border-top:1px solid var(--card-border); background:rgba(0,0,0,.15); }
-        .sp-actions-bar .btn { flex:1; margin-bottom:0; font-size:.7rem; padding:11px 8px; }
+        
+        /* ✅ NUEVO DISEÑO DE PERFIL */
+        .sp-container { background: var(--card-bg); border-radius: var(--radius); overflow: hidden; border: 1px solid var(--card-border); box-shadow: var(--shadow-card); }
+        .sp-header { padding: 14px 16px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--card-border); background: rgba(255,255,255,0.02); }
+        .sp-back { width: 34px; height: 34px; border-radius: 50%; background: rgba(255,255,255,0.08); border: none; color: var(--text); display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1rem; }
+        .sp-header-title { font-weight: 700; font-size: 1.1rem; color: var(--text); flex: 1; text-align: center; margin: 0 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .sp-header-actions { display: flex; gap: 8px; }
+        .sp-hero { padding: 20px 16px; text-align: center; border-bottom: 1px solid var(--card-border); }
+        .sp-avatar-large { width: 80px; height: 80px; border-radius: 50%; background: rgba(255,255,255,0.05); margin: 0 auto 12px; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; position: relative; overflow: hidden; border: 3px solid var(--accent-border); background-size: cover; background-position: center; cursor: pointer; }
+        .sp-avatar-large::after { content: '📷'; position: absolute; bottom: 0; right: 0; background: var(--accent); width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; border: 2px solid var(--bg); }
+        .sp-hero-name { font-size: 1.4rem; font-weight: 800; color: var(--text); margin-bottom: 4px; }
+        .sp-hero-badges { display: flex; justify-content: center; gap: 6px; flex-wrap: wrap; margin-bottom: 16px; }
+        .sp-badge { font-size: 0.65rem; padding: 4px 10px; border-radius: 20px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1); font-weight: 500; }
+        .sp-metrics { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-top: 12px; }
+        .sp-metric { background: rgba(0,0,0,0.3); padding: 10px 8px; border-radius: 12px; text-align: center; }
+        .sp-metric .val { font-size: 1.1rem; font-weight: 700; color: var(--accent); display: block; margin-bottom: 2px; }
+        .sp-metric .lbl { font-size: 0.6rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600; }
+        
+        .sp-content { max-height: 60vh; overflow-y: auto; padding: 16px; }
+        .sp-content::-webkit-scrollbar { width: 4px; } .sp-content::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 4px; }
+        
+        .sp-card { background: rgba(255,255,255,0.02); border: 1px solid var(--card-border); border-radius: 16px; padding: 14px; margin-bottom: 12px; }
+        .sp-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 8px; }
+        .sp-card-title { font-size: 0.75rem; font-weight: 700; color: var(--text); text-transform: uppercase; letter-spacing: 0.05em; display: flex; align-items: center; gap: 6px; }
+        
+        .sp-actions-bar { position: sticky; bottom: 0; background: rgba(10,10,12,0.95); backdrop-filter: blur(10px); padding: 12px 16px; border-top: 1px solid var(--card-border); display: flex; gap: 10px; z-index: 10; }
+        .sp-actions-bar .btn { flex: 1; margin-bottom: 0; padding: 12px; font-size: 0.8rem; border-radius: 12px; }
+        
+        .chart-box { background: rgba(0,0,0,0.3); border-radius: 12px; padding: 8px; margin-top: 8px; }
+        .chart-box svg { width: 100%; height: auto; display: block; }
+        
         .lote-card { background:rgba(255,255,255,.03); border:1px solid var(--card-border); border-radius:16px; padding:14px; margin-bottom:10px; position:relative; overflow:hidden; cursor:pointer; transition:.2s; }
         .lote-card:active { background:rgba(255,255,255,.06); transform:translateY(-2px); }
         .lote-card .lote-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px; }
@@ -139,13 +145,13 @@
         .config-item { display:flex; align-items:center; justify-content:space-between; padding:12px 0; border-bottom:1px solid rgba(255,255,255,.05); cursor:pointer; }
         .config-item:last-child { border-bottom:none; } .config-item i { font-size:1rem; width:26px; text-align:center; color:var(--accent); }
         .config-item .cfg-text { flex:1; margin-left:10px; } .config-item .cfg-text span { display:block; font-size:.8rem; font-weight:500; } .config-item .cfg-text small { font-size:.62rem; color:var(--text-muted); }
-        .filter-chips { display:flex; gap:6px; overflow-x:auto; padding:4px 0 8px; -webkit-overflow-scrolling:touch; } .filter-chips::-webkit-scrollbar { display:none; }
-        .chip { padding:6px 12px; border-radius:18px; border:1px solid var(--card-border); background:rgba(255,255,255,.05); font-size:.68rem; font-weight:500; color:var(--text-muted); cursor:pointer; white-space:nowrap; transition:.2s; }
+        .filter-chips { display:flex; gap:6px; overflow-x:auto; padding:4px 0 8px; -webkit-overflow-scrolling:touch; } .filter-chips::-webkit-scrollbar { display:none; }        .chip { padding:6px 12px; border-radius:18px; border:1px solid var(--card-border); background:rgba(255,255,255,.05); font-size:.68rem; font-weight:500; color:var(--text-muted); cursor:pointer; white-space:nowrap; transition:.2s; }
         .chip.active { background:var(--accent); color:#000; border-color:var(--accent-border); }
         .crown-svg { width:18px; height:18px; fill:var(--accent); flex-shrink:0; }
         .insumo-item { background:rgba(255,255,255,.03); border:1px solid var(--card-border); border-radius:16px; padding:14px; margin-bottom:10px; }
         .insumo-item-header { display:flex; align-items:center; gap:10px; margin-bottom:10px; }
-        .insumo-item-header i { font-size:1.1rem; color:var(--accent); } .insumo-item-header .info { flex:1; } .insumo-item-header .info .name { font-weight:500; font-size:.8rem; } .insumo-item-header .info .consumo { font-size:.62rem; color:var(--text-muted); } .insumo-item-header .dias { font-size:.68rem; font-weight:600; margin-left:auto; }        .tag-descarte { background:rgba(239,68,68,.15); color:#f87171; padding:2px 6px; border-radius:6px; font-size:.62rem; font-weight:500; margin-left:5px; }
+        .insumo-item-header i { font-size:1.1rem; color:var(--accent); } .insumo-item-header .info { flex:1; } .insumo-item-header .info .name { font-weight:500; font-size:.8rem; } .insumo-item-header .info .consumo { font-size:.62rem; color:var(--text-muted); } .insumo-item-header .dias { font-size:.68rem; font-weight:600; margin-left:auto; }
+        .tag-descarte { background:rgba(239,68,68,.15); color:#f87171; padding:2px 6px; border-radius:6px; font-size:.62rem; font-weight:500; margin-left:5px; }
         .animal-card.bloqueado { opacity:0.6; cursor:not-allowed!important; } .animal-card.bloqueado:active { transform:none!important; }
         .ms-badge { background:rgba(59,130,246,.15); color:#60a5fa; padding:2px 6px; border-radius:6px; font-size:.52rem; font-weight:500; margin-left:4px; }
         .trigger-badge { background:rgba(239,68,68,.18); color:#f87171; padding:2px 6px; border-radius:6px; font-size:.5rem; font-weight:500; margin-left:4px; }
@@ -161,8 +167,6 @@
         .unit-btn.active { background:var(--accent); color:#000; }
         .price-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:8px; }
         .mb6 { margin-bottom:6px; }
-        .chart-box { background:rgba(0,0,0,.2); border-radius:12px; padding:8px; margin-top:8px; overflow:hidden; }
-        .chart-box svg { width:100%; height:auto; display:block; }
     </style>
 </head>
 <body>
@@ -190,18 +194,16 @@
     <div class="nav-item" data-p="insumos"><i class="fa-solid fa-boxes-stacked"></i><span>Insumos</span></div>
     <div class="nav-item" data-p="lotes"><i class="fa-solid fa-layer-group"></i><span>Lotes</span></div>
     <button class="nav-center" onclick="showAddAnimalModal()"><i class="fa-solid fa-plus"></i></button>
-    <div class="nav-item" data-p="animales"><i class="fa-solid fa-cow"></i><span>Animales</span></div>
-    <div class="nav-item active" data-p="inicio"><i class="fa-solid fa-house"></i><span>Inicio</span></div>
+    <div class="nav-item" data-p="animales"><i class="fa-solid fa-cow"></i><span>Animales</span></div>    <div class="nav-item active" data-p="inicio"><i class="fa-solid fa-house"></i><span>Inicio</span></div>
 </nav>
 
-<script>// ==================== SISTEMA DE BASE DE DATOS HÍBRIDO ====================
-// Intenta usar IndexedDB. Si falla, usa localStorage automáticamente.
+<script>
+// ==================== SISTEMA DE BASE DE DATOS HÍBRIDO ====================
 const DB_NAME = 'GanaderoEliteDB';
 const DB_VERSION = 1;
 let dbInstance = null;
 let isIndexedDB = true;
 
-// Wrapper para operaciones asíncronas
 const DB = {
     open: () => {
         return new Promise((resolve, reject) => {
@@ -211,7 +213,7 @@ const DB = {
                 return resolve(null);
             }
             const request = indexedDB.open(DB_NAME, DB_VERSION);
-            request.onerror = () => { isIndexedDB = false; resolve(null); }; // Fallback suave
+            request.onerror = () => { isIndexedDB = false; resolve(null); };
             request.onsuccess = () => { dbInstance = request.result; resolve(dbInstance); };
             request.onupgradeneeded = (event) => {
                 const db = event.target.result;
@@ -231,19 +233,19 @@ const DB = {
                 const store = tx.objectStore(storeName);
                 const request = store.getAll();
                 request.onsuccess = () => resolve(request.result);
-                request.onerror = () => resolve([]); // Si falla, retorna vacío
+                request.onerror = () => resolve([]);
             } catch(e) { resolve([]); }
         });
     },
     put: (storeName, data) => {
-        if(!isIndexedDB) return Promise.resolve(); // localStorage lo maneja la cache
+        if(!isIndexedDB) return Promise.resolve();
         return new Promise((resolve, reject) => {
             try {
                 const tx = dbInstance.transaction(storeName, 'readwrite');
                 const store = tx.objectStore(storeName);
-                store.put(data).onsuccess = () => resolve();
-            } catch(e) { resolve(); }
-        });    },
+                store.put(data).onsuccess = () => resolve();            } catch(e) { resolve(); }
+        });
+    },
     clear: (storeName) => {
         if(!isIndexedDB) return Promise.resolve();
         return new Promise((resolve) => {
@@ -254,17 +256,13 @@ const DB = {
     }
 };
 
-// Datos en memoria (Caché)
 let DB_CACHE = {
     animales: [], lotes: [],
     config: {}, inventario: {}, sanidad: {}, aplicaciones: [], asignacionesAlimentos: {}
 };
 
-// Migración desde LocalStorage (Solo una vez)
 async function migrateFromLocalStorage() {
-    // Verifica si ya migró
     if(localStorage.getItem('db_migrated_v4.6')) return;
-    
     const oldData = localStorage.getItem('ganadero_elite_v4_5_0');
     if (oldData && isIndexedDB) {
         try {
@@ -272,13 +270,10 @@ async function migrateFromLocalStorage() {
             if (parsed.animales) {
                 for (const a of parsed.animales) await DB.put('animales', a);
                 if(parsed.lotes) for(const l of parsed.lotes) await DB.put('lotes', l);
-                
                 const configKeys = ['precios','stock','preciosSanidad','stockSanidad','precioKG','precioLeche','valorCria','intervaloPartos','costosFijosMensuales','factoresDesperdicio','unidadesPrecio'];
                 for(const k of configKeys) if(parsed[k] !== undefined) await DB.put('config', { key: k, value: parsed[k] });
-                
                 if(parsed.alimentosCustom) for(const i of parsed.alimentosCustom) await DB.put('inventario', i);
                 if(parsed.sanidadCustom) for(const s of parsed.sanidadCustom) await DB.put('sanidad', s);
-                
                 localStorage.setItem('db_migrated_v4.6', 'true');
                 showToast('✅ Datos actualizados a nueva versión');
             }
@@ -292,14 +287,12 @@ async function loadAllData() {
     
     if(isIndexedDB) {
         DB_CACHE.animales = await DB.getAll('animales');
-        DB_CACHE.lotes = await DB.getAll('lotes');        const configs = await DB.getAll('config');
+        DB_CACHE.lotes = await DB.getAll('lotes');
+        const configs = await DB.getAll('config');
         configs.forEach(c => DB_CACHE.config[c.key] = c.value);
-        
         const inv = await DB.getAll('inventario'); inv.forEach(i => DB_CACHE.inventario[i.id] = i);
         const san = await DB.getAll('sanidad'); san.forEach(s => DB_CACHE.sanidad[s.id] = s);
-    } else {
-        // Fallback a LocalStorage si IndexedDB falla
-        const old = localStorage.getItem('ganadero_elite_v4_5_0');
+    } else {        const old = localStorage.getItem('ganadero_elite_v4_5_0');
         if(old) {
             const d = JSON.parse(old);
             DB_CACHE.animales = d.animales || [];
@@ -308,7 +301,6 @@ async function loadAllData() {
         }
     }
 
-    // Valores por defecto si está vacío
     if(DB_CACHE.animales.length === 0 && DB_CACHE.lotes.length === 0) {
         DB_CACHE.lotes = [{id:'lot_general',nombre:'General',color:'#ffb900'}];
         if(isIndexedDB) await DB.put('lotes', DB_CACHE.lotes[0]);
@@ -319,7 +311,6 @@ async function loadAllData() {
     if(!DB_CACHE.config.factoresDesperdicio) DB_CACHE.config.factoresDesperdicio = { pasto:0.15, salvado:0.08, melaza:0.05, levadura:0.02, bicarb:0.03, sal:0.03, urea:0.02 };
     if(!DB_CACHE.config.unidadesPrecio) DB_CACHE.config.unidadesPrecio = { pasto:'kg', salvado:'kg', melaza:'kg', levadura:'kg', bicarb:'kg', sal:'kg', urea:'kg' };
 
-    // Mostrar app
     const app = document.getElementById('appContainer');
     const loader = document.getElementById('loadingScreen');
     app.style.display = 'flex';
@@ -330,7 +321,6 @@ async function loadAllData() {
     goPage('inicio');
 }
 
-// Función Save Global
 async function saveToDB() {
     showSaveIndicator();
     try {
@@ -341,8 +331,8 @@ async function saveToDB() {
                 Object.keys(DB_CACHE.config).map(k => DB.put('config', {key:k, value:DB_CACHE.config[k]})),
                 Object.values(DB_CACHE.inventario).map(i => DB.put('inventario', i)),
                 Object.values(DB_CACHE.sanidad).map(s => DB.put('sanidad', s))
-            ]);        }
-        // Backup en LocalStorage por seguridad
+            ]);
+        }
         localStorage.setItem('ganadero_backup_cache', JSON.stringify(DB_CACHE));
         return true;
     } catch(e) { console.error(e); return false; }
@@ -351,7 +341,6 @@ async function saveToDB() {
 // ==================== LÓGICA DE NEGOCIO ====================
 const APP_VERSION = '4.6.0';
 let lastSaveTime = null, autoSaveTimer = null, saveTimeout = null, insumoTab = 'alimentos', searchTimeout = null;
-
 const fm = (n) => { if(isNaN(n)||n===null||n===undefined) return '0'; n=Math.round(n); var s=String(n); var r=''; var c=0; for(var i=s.length-1;i>=0;i--){if(c>0&&c%3===0) r='.'+r; r=s.charAt(i)+r; c++;} return r; };
 const showToast = (m, d=3000) => { const t=document.createElement('div'); t.className='toast'; t.innerHTML=m; document.getElementById('toastContainer').appendChild(t); setTimeout(()=>t.remove(),d); };
 const showModal = (h) => { const o=document.createElement('div'); o.className='modal-overlay'; o.innerHTML='<div class="modal">'+h+'</div>'; o.onclick=(e)=>{if(e.target===o)o.remove();}; document.getElementById('modalContainer').appendChild(o); };
@@ -366,7 +355,6 @@ const save = async () => {
 };
 const queueAutoSave = () => { clearTimeout(autoSaveTimer); autoSaveTimer=setTimeout(save, 800); };
 
-// ==================== CONSTANTES Y MOTOR ====================
 const AL = ['pasto','salvado','melaza','levadura','bicarb','sal','urea'];
 const IC = { pasto:'fa-seedling', salvado:'fa-wheat-awn', melaza:'fa-droplet', levadura:'fa-flask', bicarb:'fa-cubes', sal:'fa-vial-circle-check', urea:'fa-flask-vial' };
 const NM = { pasto:'Pasto Picado', salvado:'Salvado Trigo', melaza:'Melaza', levadura:'Levadura', bicarb:'Bicarbonato', sal:'Sal Mineral', urea:'UREA' };
@@ -390,7 +378,8 @@ const getCfg = (k) => DB_CACHE.config[k];
 const setCfg = (k, v) => { DB_CACHE.config[k] = v; };
 
 const getDiet = (pv, prop, estado, transicionDias=0, diasGestacion=0, incluirFD=false) => { 
-    if(pv<20) return {pasto:0,salvado:0,melaza:0,urea:0,bicarb:0,sal:0,levadura:0,_meta:{ureaBloqueada:false,motivo:null}};    const msTotalRequerida = pv * CONSUMO_MS_PV;
+    if(pv<20) return {pasto:0,salvado:0,melaza:0,urea:0,bicarb:0,sal:0,levadura:0,_meta:{ureaBloqueada:false,motivo:null}};
+    const msTotalRequerida = pv * CONSUMO_MS_PV;
     const esTernera = pv<150, p=prop||'carne', st=estado||'auto';
     const ureaPermitida = !(pv < TRIGGERS.ureaMinWeight || diasGestacion >= TRIGGERS.pregnancyUreaBlockDay);
     const calcMicro = (f,pv,ms) => f.type==='pv'?pv*f.factor:ms*f.factor;
@@ -401,8 +390,7 @@ const getDiet = (pv, prop, estado, transicionDias=0, diasGestacion=0, incluirFD=
     let pastoFresco = toFresco(msPasto,FACTOR_MS.pasto,'kg');
     if(pastoFresco > pv*TRIGGERS.maxRumenVolumePct) pastoFresco = pv*TRIGGERS.maxRumenVolumePct;
     let dieta = {
-        pasto:pastoFresco, salvado:toFresco(msSalvado,FACTOR_MS.salvado,'kg'), melaza:toFresco(msMelaza,FACTOR_MS.melaza,'kg'),
-        levadura:calcMicro(MICRO_FORMULAS.levadura,pv,msTotalRequerida), bicarb:calcMicro(MICRO_FORMULAS.bicarb,pv,msTotalRequerida),
+        pasto:pastoFresco, salvado:toFresco(msSalvado,FACTOR_MS.salvado,'kg'), melaza:toFresco(msMelaza,FACTOR_MS.melaza,'kg'),        levadura:calcMicro(MICRO_FORMULAS.levadura,pv,msTotalRequerida), bicarb:calcMicro(MICRO_FORMULAS.bicarb,pv,msTotalRequerida),
         sal:calcMicro(MICRO_FORMULAS.sal,pv,msTotalRequerida),
         urea:ureaPermitida?Math.min(calcMicro(MICRO_FORMULAS.urea,pv,msTotalRequerida),msTotalRequerida*0.11*1000):0,
         _meta:{ureaBloqueada:!ureaPermitida, motivo:pv<TRIGGERS.ureaMinWeight?'Peso<150kg':'Gestación>210d'}
@@ -439,7 +427,8 @@ const getRendimiento = (h, gmdForzado=null) => {
 };
 const calcRepro = (a) => {
     if(a.proposito!=='leche' && !a.fechaUltimoParto) return null;
-    if(!a.fechaUltimoParto) return {diasPP:0,diasParaParto:999,fechaProxParto:null,semaforo:{color:'#6b7280',txt:'📅 Sin registro',tipo:'gris'},estadoLactancia:'novilla',avisoSecado:false,diasGestacion:a.diasGestacion||0};    const hoy=new Date(), parto=new Date(a.fechaUltimoParto.split('/').reverse().join('-')), diasPP=Math.max(0,Math.floor((hoy-parto)/864e5));
+    if(!a.fechaUltimoParto) return {diasPP:0,diasParaParto:999,fechaProxParto:null,semaforo:{color:'#6b7280',txt:'📅 Sin registro',tipo:'gris'},estadoLactancia:'novilla',avisoSecado:false,diasGestacion:a.diasGestacion||0};
+    const hoy=new Date(), parto=new Date(a.fechaUltimoParto.split('/').reverse().join('-')), diasPP=Math.max(0,Math.floor((hoy-parto)/864e5));
     const fpp=new Date(parto); fpp.setDate(parto.getDate()+285); const dpp=Math.floor((fpp-hoy)/864e5);
     let dg=a.diasGestacion||0; if(a.fechaUltimaInseminacion){const ins=new Date(a.fechaUltimaInseminacion.split('/').reverse().join('-')); dg=Math.max(0,Math.floor((hoy-ins)/864e5));}
     let sem, est=a.estadoReproductivo||'parida';
@@ -450,8 +439,7 @@ const getEtapa = (pv,rep) => { var e=rep?rep.estadoLactancia:'auto'; if(e==='sec
 const getProgresoEtapa = (pv,e) => Math.min(100,Math.max(0,((pv-e.min)/(e.max-e.min))*100));
 const getCostoAlimentosCustom = (aid,p) => { if(!DB_CACHE.asignacionesAlimentos||!DB_CACHE.asignacionesAlimentos[aid])return 0; return DB_CACHE.asignacionesAlimentos[aid].reduce((s,a)=>{if(!a.activo)return s;const i=DB_CACHE.inventario[a.alimentoId]; return i?s+(p*(i.unidad==='g'?i.dosisPorKg*0.001:i.dosisPorKg)*i.precioUnitario):s;},0); };
 const getAllSanidad = () => [...CATALOGO_SANIDAD.map(p=>({...p,esBase:true})),...Object.values(DB_CACHE.sanidad).map(p=>({...p,esBase:false}))];
-const getCostoSanidadDiario = (aid) => { let t=0; const apps = DB_CACHE.aplicaciones ? DB_CACHE.aplicaciones.filter(x=>x.animalId===aid) : []; apps.forEach(ap=>{const p=getAllSanidad().find(x=>x.id===ap.productoId);if(p&&p.diasEfecto>0)t+=(ap.costo||0)/p.diasEfecto;});return t; };
-const getCostoSanidadTotal = (aid) => { const apps = DB_CACHE.aplicaciones ? DB_CACHE.aplicaciones.filter(x=>x.animalId===aid) : []; return apps.reduce((s,a)=>s+(a.costo||0),0); };
+const getCostoSanidadDiario = (aid) => { let t=0; const apps = DB_CACHE.aplicaciones ? DB_CACHE.aplicaciones.filter(x=>x.animalId===aid) : []; apps.forEach(ap=>{const p=getAllSanidad().find(x=>x.id===ap.productoId);if(p&&p.diasEfecto>0)t+=(ap.costo||0)/p.diasEfecto;});return t; };const getCostoSanidadTotal = (aid) => { const apps = DB_CACHE.aplicaciones ? DB_CACHE.aplicaciones.filter(x=>x.animalId===aid) : []; return apps.reduce((s,a)=>s+(a.costo||0),0); };
 const calcularROIA = (g,p,c) => c>0?(g*p)/c:0;
 const calcularIngresoDiario = (a, gmd, precioKG) => {
     let ing=0; if(gmd>0) ing+=gmd*precioKG;
@@ -488,7 +476,8 @@ const getAlertasAnimal = (a) => {
     if(gmd>0&&gmd<0.4&&!tm)al.push({t:'purple',m:'Aplicar Modificador',icon:'fa-flask'}); if(!tiv)al.push({t:'r',m:'Desparasitación vencida',icon:'fa-shield-virus'}); return al; 
 };
 const getAguaDiaria = (pv, prop, ll=0) => prop==='leche'?pv*0.1+ll*3:pv*0.1;
-const getLoteName = (id) => DB_CACHE.lotes.find(x=>x.id===id)?.nombre||'General';const getAnimalesByLote = (lid) => DB_CACHE.animales.filter(a=>a.loteId===lid);
+const getLoteName = (id) => DB_CACHE.lotes.find(x=>x.id===id)?.nombre||'General';
+const getAnimalesByLote = (lid) => DB_CACHE.animales.filter(a=>a.loteId===lid);
 const actualizarTransiciones = () => { let c=false; DB_CACHE.animales.forEach(a=>{if(a.transicionActiva&&a.transicionDias<7){a.transicionDias++;c=true;if(a.transicionDias>=7){a.transicionActiva=false;showToast(`✅ ${a.nombre}: Transición ok`);}}});if(c)save(); };
 const calcularAutonomiaBodega = () => { const ct={pasto:0,salvado:0,melaza:0,levadura:0,bicarb:0,sal:0,urea:0}, fd=getCfg('factoresDesperdicio')||{}; DB_CACHE.animales.forEach(a=>{const p=a.historial[a.historial.length-1].peso, d=getDiet(p,a.proposito,calcRepro(a)?.estadoLactancia||'auto',a.transicionDias||0,0,true); Object.keys(ct).forEach(k=>ct[k]+=(d[k]||0)*(1+(fd[k]||0))); }); const au={}; const st=getCfg('stock')||{}; Object.keys(ct).forEach(k=>{const s=st[k]||0, c=ct[k]||0.001; au[k]=c>0?Math.floor(s/c):999;}); return {consumo:ct, autonomia:au}; };
 const descontarInventarioDiario = () => { const {consumo}=calcularAutonomiaBodega(); const st=getCfg('stock')||{}; Object.keys(consumo).forEach(k=>{if(st[k]!==undefined){st[k]=Math.max(0,st[k]-consumo[k]);if(st[k]<consumo[k]*3)showToast(`⚠️ Stock bajo: ${NM[k]}`,5000);}}); setCfg('stock', st); save(); };
@@ -499,8 +488,7 @@ const verificarNotificaciones = () => {
     DB_CACHE.animales.forEach(a => {
         const apps = DB_CACHE.aplicaciones ? DB_CACHE.aplicaciones.filter(ap=>ap.animalId===a.id) : [];
         apps.forEach(ap=>{
-            const prod=getAllSanidad().find(p=>p.id===ap.productoId);
-            if(prod&&prod.diasEfecto){const fa=new Date(ap.fecha.split('/').reverse().join('-')), fv=new Date(fa); fv.setDate(fa.getDate()+prod.diasEfecto-3); if(fv<=hoy&&(hoy-fv)<864e5*3) alertas.push({msg:`🔄 Reforzar ${prod.nombre} para ${a.nombre}`, tipo:'warning'});}
+            const prod=getAllSanidad().find(p=>p.id===ap.productoId);            if(prod&&prod.diasEfecto){const fa=new Date(ap.fecha.split('/').reverse().join('-')), fv=new Date(fa); fv.setDate(fa.getDate()+prod.diasEfecto-3); if(fv<=hoy&&(hoy-fv)<864e5*3) alertas.push({msg:`🔄 Reforzar ${prod.nombre} para ${a.nombre}`, tipo:'warning'});}
         });
         if(a.proposito==='leche'&&a.fechaUltimoParto){const pa=new Date(a.fechaUltimoParto.split('/').reverse().join('-')), pp=new Date(pa); pp.setDate(pa.getDate()+285); if(Math.floor((pp-hoy)/864e5)===60) alertas.push({msg:`🥛 Secar vaca ${a.nombre} en 60 días`, tipo:'info'});}
     });
@@ -537,7 +525,8 @@ async function handlePhotoUpload(file, animalId) {
         if(w>h){if(w>MAX){h*=MAX/w;w=MAX;}}else{if(h>MAX){w*=MAX/h;h=MAX;}}
         canvas.width=w; canvas.height=h;
         canvas.getContext('2d').drawImage(img,0,0,w,h);
-        const dataUrl = canvas.toDataURL('image/jpeg', 0.7);        const a = DB_CACHE.animales.find(x=>x.id===animalId);
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
+        const a = DB_CACHE.animales.find(x=>x.id===animalId);
         if(a) { a.foto = dataUrl; save(); showProfile(animalId); showToast('✅ Foto guardada'); }
     };
     img.src = URL.createObjectURL(file);
@@ -549,7 +538,6 @@ function shareAnimal(id) {
     if(navigator.share) { navigator.share({title:`Ficha ${a.nombre}`, text:txt}).catch(()=>{}); }
     else { navigator.clipboard.writeText(txt).then(()=>showToast('✅ Copiado al portapapeles')); }
 }
-
 // ==================== NAVEGACIÓN ====================
 let animalFilterLote = sessionStorage.getItem('filterLote') || 'all';
 let animalSearch = sessionStorage.getItem('searchAnim') || '';
@@ -586,7 +574,8 @@ function renderInicio() {
     <div class="card"><div class="row-label mb6" style="font-weight:600"><i class="fa-solid fa-chart-pie"></i> RESUMEN</div><div class="stats-grid">
         <div class="stat-item"><div class="row-label"><i class="fa-solid fa-users"></i> Cabezas</div><div class="row-val">${ta}</div></div>
         <div class="stat-item"><div class="row-label"><i class="fa-solid fa-weight-scale"></i> Peso Total</div><div class="row-val">${fm(tKg)} kg</div></div>
-        <div class="stat-item"><div class="row-label"><i class="fa-solid fa-calculator"></i> Promedio</div><div class="row-val">${fm(prom)} kg</div></div>        <div class="stat-item"><div class="row-label"><i class="fa-solid fa-sack-dollar"></i> Valor Hato</div><div class="row-val" style="color:var(--accent)">$${fm(tKg*(getCfg('precioKG')||9800))}</div></div></div></div>`;
+        <div class="stat-item"><div class="row-label"><i class="fa-solid fa-calculator"></i> Promedio</div><div class="row-val">${fm(prom)} kg</div></div>
+        <div class="stat-item"><div class="row-label"><i class="fa-solid fa-sack-dollar"></i> Valor Hato</div><div class="row-val" style="color:var(--accent)">$${fm(tKg*(getCfg('precioKG')||9800))}</div></div></div></div>`;
 
     if(ta > 0) {
         html += `<div class="card"><div style="font-weight:600;font-size:.7rem;margin-bottom:10px;color:var(--text-muted)"><i class="fa-solid fa-wheat-awn"></i> DIETA DIARIA TOTAL (HATO) <span class="ms-badge">MS+FD</span></div>`;
@@ -598,7 +587,6 @@ function renderInicio() {
         });
         html += '</div>';
     }
-
     html+=`<div class="card"><div style="font-weight:600;font-size:.7rem;margin-bottom:10px;color:var(--text-muted)"><i class="fa-solid fa-warehouse"></i> AUTONOMÍA BODEGA <span class="fd-badge">Con FD</span></div>
         <div class="grid">${['pasto','salvado','melaza'].map(k=>`<div class="stat-item"><div class="row-label">${NM[k]}</div><div class="row-val" style="color:${ab[k]<7?'#ef4444':ab[k]<14?'#f59e0b':'#22c55e'}">${ab[k]===999?'∞':ab[k]}d</div></div>`).join('')}</div></div>`;
 
@@ -635,7 +623,8 @@ function saveInventario(){
     AL.forEach(id=>{
         const prEl=document.getElementById(`pr-${id}`),stEl=document.getElementById(`st-${id}`);
         if(prEl) pr[id]=parseFloat(prEl.value)||0;
-        if(stEl) st[id]=parseFloat(stEl.value)||0;        if(!u[id]) u[id]='kg';
+        if(stEl) st[id]=parseFloat(stEl.value)||0;
+        if(!u[id]) u[id]='kg';
     });
     setCfg('stock', st); setCfg('precios', pr); setCfg('unidadesPrecio', u);
     save(); showToast('✅ Inventario actualizado');
@@ -646,8 +635,7 @@ function saveInventarioSanidad(){
         const prEl=document.getElementById(`pr-${p.id}`),stEl=document.getElementById(`st-${p.id}`);
         if(prEl) {
             prS[p.id]=parseFloat(prEl.value)||0; 
-            if(!p.esBase){const c=DB_CACHE.sanidad[p.id]; if(c) c.precioML=prS[p.id];}
-        }
+            if(!p.esBase){const c=DB_CACHE.sanidad[p.id]; if(c) c.precioML=prS[p.id];}        }
         if(stEl) stS[p.id]=parseFloat(stEl.value)||0;
     });
     setCfg('stockSanidad', stS); setCfg('preciosSanidad', prS);
@@ -684,91 +672,150 @@ async function initCacheFromJSON(d) {
             ...DB_CACHE.lotes.map(l => DB.put('lotes', l)),
             Object.keys(DB_CACHE.config).map(k => DB.put('config', {key:k, value:DB_CACHE.config[k]})),
             Object.values(DB_CACHE.inventario).map(i => DB.put('inventario', i)),
-            Object.values(DB_CACHE.sanidad).map(s => DB.put('sanidad', s))        ]);
+            Object.values(DB_CACHE.sanidad).map(s => DB.put('sanidad', s))
+        ]);
     }
 }
 
-// ==================== PERFIL SIMPLIFICADO + NUEVAS FUNCIONES ====================
+// ==================== PERFIL REESTRUCTURADO UI/UX ====================
 function showProfile(id){
     const a=DB_CACHE.animales.find(x=>x.id===id);if(!a)return;
     const p=a.historial[a.historial.length-1].peso,rep=calcRepro(a),et=getEtapa(p,rep);
     const r=getRendimiento(a.historial,getGMD(a.historial)),gmd=getGMD(a.historial);
-    const valA=p*(getCfg('precioKG')||9800),proy30=p+(gmd*30),faltaKg=et.max-p,progPct=getProgresoEtapa(p,et);
+    const valA=p*(getCfg('precioKG')||9800),faltaKg=et.max-p,progPct=getProgresoEtapa(p,et);
     let etxt='--';if(a.fechaNacimiento){const n=new Date(a.fechaNacimiento),h=new Date(),d=Math.ceil(Math.abs(h-n)/864e5);etxt=d>60?`${Math.floor(d/30)}m`:`${d}d`;}
-    const mama=a.madreId?(DB_CACHE.animales.find(x=>x.id==a.madreId)?.nombre||'--'):'--';
-    const fotoStyle = a.foto ? `background-image:url('${a.foto}')` : '';
+    const mama=a.madreId?(DB_CACHE.animales.find(x=>x.id==a.madreId)?.nombre||'--'):'--';    const fotoStyle = a.foto ? `background-image:url('${a.foto}')` : '';
     
-    let html=`<div class="sp-wrapper">
-        <div class="sp-header-inline">
-            <div class="sp-avatar-sm" id="sp-avatar" style="${fotoStyle}" onclick="document.getElementById('photoInput').click()">${!a.foto?'🐄':''}</div>
-            <input type="file" id="photoInput" accept="image/*" capture="environment" style="display:none" onchange="handlePhotoUpload(this.files[0], ${id})">
-            <div class="sp-name-inline">${a.nombre}</div>
-            <div class="sp-badges-inline">
-                <span class="sp-badge-inline" style="background:${et.color}25;color:${et.color};border:1px solid ${et.color}40">${et.nombre}</span>
-                <span class="sp-badge-inline">${getLoteName(a.loteId)}</span>
-                <span class="sp-badge-inline">${a.proposito==='carne'?'🥩':''}</span>
+    // HTML Estructurado y Limpio
+    let html=`<div class="sp-container">
+        <!-- Header Minimalista -->
+        <div class="sp-header">
+            <button class="sp-back" onclick="closeProfile()"><i class="fa-solid fa-arrow-left"></i></button>
+            <div class="sp-header-title">${a.nombre}</div>
+            <div class="sp-header-actions">
+                <button class="sp-back" onclick="shareAnimal(${id})" style="font-size:0.9rem;width:30px;height:30px"><i class="fa-solid fa-share-nodes"></i></button>
+                <button class="sp-back" onclick="confirmDeleteAnimal(${id})" style="font-size:0.9rem;width:30px;height:30px;color:var(--danger)"><i class="fa-solid fa-trash-can"></i></button>
             </div>
-            <div style="display:flex;gap:8px;align-items:center;">
-                <button class="btn btn-sm btn-gray" onclick="shareAnimal(${id})" style="width:36px;padding:0;height:36px;flex:0"><i class="fa-solid fa-share-nodes"></i></button>
-                <button class="btn btn-sm btn-danger" onclick="confirmDeleteAnimal(${id})" style="width:36px;padding:0;height:36px;flex:0"><i class="fa-solid fa-trash-can"></i></button>
-            </div>
-            <div class="sp-meta-inline">${fm(p)}kg · ${r.texto} · Edad: <b>${etxt}</b> · Mama: <b>${mama}</b></div>
         </div>
-        <div class="sp-stats-inline">
-            <div class="sp-stat-inline"><div class="val">${fm(p)}</div><div class="lbl">Peso</div></div>
-            <div class="sp-stat-inline"><div class="val">$${fm(valA)}</div><div class="lbl">Valor</div></div>
-            <div class="sp-stat-inline"><div class="val">${gmd>0?gmd.toFixed(2):'--'}</div><div class="lbl">GMD</div></div>
-            <div class="sp-stat-inline"><div class="val">${gmd>0?'$'+fm((p*(getCfg('precioKG')||9800))/gmd):'--'}</div><div class="lbl">Costo/kg</div></div>
-        </div>`;
-    
-    html+=`<div class="stage-progress-container"><div class="stage-progress-labels"><span>Etapa</span><span>Meta: ${et.siguiente}</span></div><div class="stage-progress-bar"><div class="stage-progress-fill" style="width:${progPct}%;background:${et.color}"></div></div><div style="font-size:.55rem;text-align:center;color:var(--text-muted);margin-top:4px">${faltaKg<=0?'✅ VENDIBLE':fm(faltaKg)+'kg faltan'}</div></div>`;
-    
-    html+=`<div class="sp-scroll">`;
-    html+=`<div class="sp-card"><div class="sp-card-title"><i class="fa-solid fa-chart-line"></i> EVOLUCIÓN DE PESO</div>${renderGraficoEvolucion(a.historial)}</div>`;
-    let alH=getAlertasAnimal(a).map(s=>`<div class="alert-item alert-${s.t==='r'?'danger':s.t==='purple'?'purple':'warning'}"><i class="fa-solid ${s.icon}"></i> ${s.m}</div>`).join('');
-    if(!alH)alH='<div style="text-align:center;padding:12px;color:var(--success);background:rgba(34,197,94,.08);border-radius:12px;font-size:.75rem">✅ Todo en orden</div>';
-    html+=alH;
-    
-    html+='<div class="sp-card"><div class="sp-card-title"><i class="fa-solid fa-clock-rotate-left"></i> HISTORIAL</div>';
-    a.historial.slice().reverse().slice(0,4).forEach((h,i)=>{const pr=a.historial[a.historial.length-2-i];const dl=pr?`+${(((h.peso-pr.peso)/pr.peso)*100).toFixed(1)}%`:'Inicio';const cl=pr?(h.peso>=pr.peso?'#22c55e':'#ef4444'):'var(--accent)';html+=`<div class="row"><span class="row-label"><i class="fa-solid fa-weight-scale"></i> ${fm(h.peso)}kg</span><span class="row-val"><span style="color:${cl}">${dl}</span> <span style="color:var(--text-muted)">${h.fecha}</span></span></div>`;});
-    html+='</div>';
-    
-    const d=getDiet(p,a.proposito,rep?.estadoLactancia||'auto',a.transicionDias||0,rep?.diasGestacion||0);    html+=`<div class="sp-card"><div class="sp-card-title"><i class="fa-solid fa-mortar-pestle"></i> DIETA <span class="ms-badge">MS+FD</span>${d._meta?.ureaBloqueada?' <span class="trigger-badge">🔒</span>':''}</div>`;
-    const ub=d.urea===0&&a.proposito!=='leche';if(ub)html+=`<div style="background:rgba(239,68,68,.1);color:#f87171;padding:8px;border-radius:10px;font-size:.7rem;margin-bottom:10px">Urea bloqueada</div>`;
-    AL.forEach(k=>{const v=d[k],u=UNIDAD[k],dp=u==='kg'?v.toFixed(1):Math.round(v);const ms=(k==='pasto'||k==='salvado'||k==='melaza')?`<span style="font-size:.6rem;color:var(--text-muted)">(${(v*FACTOR_MS[k]).toFixed(1)}kg MS)</span>`:'';const fd=`<span class="fd-badge">+${Math.round((getCfg('factoresDesperdicio')[k]||0)*100)}%</span>`;const s=(k==='urea'&&ub)?'opacity:0.5;text-decoration:line-through':'';html+=`<div class="row" style="${s}"><span class="row-label"><i class="fa-solid ${IC[k]}"></i> ${NM[k]} ${fd}</span><span class="row-val" style="font-size:.8rem">${k==='urea'&&ub?'0':dp+u}${ms}</span></div>`;});
-    html+='</div>';
-    
-    if(a.proposito==='leche'&&rep){const sem=rep.semaforo;html+=`<div class="sp-card" style="border-left:3px solid ${sem.color}"><div class="sp-card-title"><i class="fa-solid fa-calendar-days"></i> REPRODUCTIVO</div><div style="text-align:center;padding:10px;background:${sem.color}15;border-radius:12px;margin-bottom:12px"><div style="font-size:1.2rem;font-weight:700;color:${sem.color}">${sem.txt}</div><div style="font-size:.65rem;color:var(--text-muted);margin-top:3px">PP: ${rep.diasPP}${rep.diasGestacion>0?` · Gest: ${rep.diasGestacion}d`:''}</div></div><button class="btn btn-sm btn-purple" onclick="showReproModal(${id})"><i class="fa-solid fa-pen"></i> Registrar</button></div>`;}
-    
-    const gv=a.historial.length>=2&&gmd>0.01?gmd:0,cd=getCostoDiario(p,a.proposito,rep?.estadoLactancia||'auto'),csd=getCostoSanidadDiario(id),cdC=getCostoAlimentosCustom(id,p),ct=cd+cdC+csd;
-    const ckp=gv>0?ct/gv:null;const ingDiario=calcularIngresoDiario(a,gv,getCfg('precioKG')),mgDiario=ingDiario-ct,clMg=mgDiario>=0?'#22c55e':'#ef4444';
-    const roia=calcularROIA(gv,getCfg('precioKG'),ct),agua=getAguaDiaria(p,a.proposito,a.litrosLeche||0);
-    const proy30d=p+(gv*30), proy60d=p+(gv*60), proy120d=p+(gv*120), proyMeta=500;
-    
-    html+=`<div class="sp-card" style="border:1px solid var(--card-border);background:var(--card-bg)">
-    <div class="sp-card-title" style="color:var(--text)"><i class="fa-solid fa-chart-line"></i> RENTABILIDAD</div>
-    <div class="sp-projection">
-        <div class="sp-proj-box"><div class="sp-proj-d">30 DÍAS</div><div class="sp-proj-w">${fm(proy30d)}kg</div><div class="sp-proj-g" style="color:#22c55e">${gv>0?'+$'+fm((proy30d-p)*(getCfg('precioKG'))):'--'}</div></div>
-        <div class="sp-proj-box"><div class="sp-proj-d">60 DÍAS</div><div class="sp-proj-w">${fm(proy60d)}kg</div><div class="sp-proj-g" style="color:#22c55e">${gv>0?'+$'+fm((proy60d-p)*(getCfg('precioKG'))):'--'}</div></div>
-        <div class="sp-proj-box"><div class="sp-proj-d">120 DÍAS</div><div class="sp-proj-w">${fm(proy120d)}kg</div><div class="sp-proj-g" style="color:#22c55e">${gv>0?'+$'+fm((proy120d-p)*(getCfg('precioKG'))):'--'}</div></div>
-        <div class="sp-proj-box"><div class="sp-proj-d">META FINAL</div><div class="sp-proj-w">${proyMeta}kg</div><div class="sp-proj-g" style="color:var(--accent)">${gv>0?Math.ceil((proyMeta-p)/gv)+'d':'--'}</div></div>
-    </div>
-    <div style="margin-top:12px;padding:10px;background:rgba(0,0,0,.2);border-radius:12px;text-align:center;border:1px solid ${mgDiario>=0?'rgba(34,197,94,.2)':'rgba(239,68,68,.2)'}">
-        <div style="font-size:.65rem;color:var(--text-muted);margin-bottom:4px">MARGEN DIARIO NETO</div>
-        <div style="font-size:1.2rem;font-weight:700;color:${clMg}">$ ${fm(mgDiario)}</div>
-        <div style="font-size:.6rem;color:var(--text-muted);margin-top:3px">Ingreso: $${fm(ingDiario)} · Costo: $${fm(ct)} · ROIA: ${gv>0?roia.toFixed(2)+'x':'--'}</div>
-    </div></div>`;
-    
-    html+=`</div><div class="sp-actions-bar">
-        <button class="btn btn-gold" onclick="updateWeight(${id})"><i class="fa-solid fa-gauge-high"></i> PESAJE</button>
-        <button class="btn btn-purple" onclick="openAplicarProducto(${id})"><i class="fa-solid fa-syringe"></i> SANIDAD</button>
-        <button class="btn btn-green" onclick="showModalAsignarAlimento(${id})"><i class="fa-solid fa-plus"></i> ALIMENTO</button>
-    </div></div>`;
+
+        <!-- Hero Info -->
+        <div class="sp-hero">
+            <div class="sp-avatar-large" style="${fotoStyle}" onclick="document.getElementById('photoInput').click()">${!a.foto?'🐄':''}</div>
+            <input type="file" id="photoInput" accept="image/*" capture="environment" style="display:none" onchange="handlePhotoUpload(this.files[0], ${id})">
+            <div class="sp-hero-name">${a.nombre}</div>
+            <div class="sp-hero-badges">
+                <span class="sp-badge" style="border-color:${et.color};color:${et.color}">${et.nombre}</span>
+                <span class="sp-badge">${getLoteName(a.loteId)}</span>
+                <span class="sp-badge">${a.proposito==='carne'?'🥩 Carne':'🥛 Leche'}</span>
+            </div>
+            
+            <!-- Métricas Principales -->
+            <div class="sp-metrics">
+                <div class="sp-metric">
+                    <span class="val">${fm(p)} kg</span>
+                    <span class="lbl">Peso Actual</span>
+                </div>
+                <div class="sp-metric">
+                    <span class="val" style="color:${gmd>0?'#22c55e':'var(--text-muted)'}">${gmd>0?gmd.toFixed(2):'--'}</span>
+                    <span class="lbl">GMD (kg/d)</span>
+                </div>
+                <div class="sp-metric">
+                    <span class="val" style="color:var(--accent)">$${fm(valA)}</span>
+                    <span class="lbl">Valor</span>
+                </div>
+            </div>
+            <div style="font-size:0.7rem;color:var(--text-muted);margin-top:12px;">
+                Edad: <b>${etxt}</b> · Mama: <b>${mama}</b> · Retiro: <b>${a.bloqueadoPorRetiro?'⚠️ Sí':'✅ No'}</b>
+            </div>
+        </div>
+
+        <!-- Contenido Scrollable -->
+        <div class="sp-content">
+            
+            <!-- Alertas -->
+            ${getAlertasAnimal(a).map(s => `                <div class="alert-item alert-${s.t==='r'?'danger':s.t==='purple'?'purple':'warning'}" style="margin-bottom:12px">
+                    <i class="fa-solid ${s.icon}"></i> ${s.m}
+                </div>
+            `).join('')}
+
+            <!-- Evolución Gráfica -->
+            <div class="sp-card">
+                <div class="sp-card-header">
+                    <div class="sp-card-title"><i class="fa-solid fa-chart-line"></i> Evolución de Peso</div>
+                </div>
+                ${renderGraficoEvolucion(a.historial)}
+            </div>
+
+            <!-- Dieta Dinámica -->
+            <div class="sp-card">
+                <div class="sp-card-header">
+                    <div class="sp-card-title"><i class="fa-solid fa-wheat-awn"></i> Dieta & Costos</div>
+                    <button class="btn btn-sm btn-purple" style="width:auto;padding:4px 8px;margin:0;font-size:0.6rem" onclick="showModalAsignarAlimento(${id})">+ Alimento</button>
+                </div>
+                <div class="row">
+                    <span class="row-label"><i class="fa-solid fa-receipt"></i> Costo Diario Total</span>
+                    <span class="row-val" style="color:var(--warning)">$ ${fm(getCostoDiario(p,a.proposito,rep?.estadoLactancia||'auto') + getCostoAlimentosCustom(a.id,p))}</span>
+                </div>
+                ${AL.map(k => {
+                    const d = getDiet(p, a.proposito, rep?.estadoLactancia || 'auto', a.transicionDias || 0, rep?.diasGestacion || 0);
+                    const v = d[k], u = UNIDAD[k];
+                    const dp = u === 'kg' ? v.toFixed(1) : Math.round(v);
+                    const msNote = (k === 'pasto' || k === 'salvado' || k === 'melaza') ? ` <span style="font-size:.6rem;color:var(--text-muted)">(${(v*FACTOR_MS[k]).toFixed(1)}kg MS)</span>` : '';
+                    const ub = d.urea === 0 && a.proposito !== 'leche';
+                    if (k === 'urea' && ub) return `<div class="row" style="opacity:0.5;text-decoration:line-through"><span class="row-label"><i class="fa-solid ${IC[k]}"></i> ${NM[k]}</span><span class="row-val">0 (Bloqueado)</span></div>`;
+                    return `<div class="row"><span class="row-label"><i class="fa-solid ${IC[k]}"></i> ${NM[k]}</span><span class="row-val">${dp}${u} ${msNote}</span></div>`;
+                }).join('')}
+            </div>
+
+            <!-- Proyecciones -->
+            <div class="sp-card">
+                <div class="sp-card-header">
+                    <div class="sp-card-title"><i class="fa-solid fa-bullseye"></i> Proyecciones</div>
+                </div>
+                <div class="sp-metrics" style="grid-template-columns:1fr 1fr;">
+                    <div class="sp-metric">
+                        <span class="val">${fm(p + (gmd>0?gmd*30:0))} kg</span>
+                        <span class="lbl">En 30 Días</span>
+                    </div>
+                    <div class="sp-metric">
+                        <span class="val">${fm(p + (gmd>0?gmd*60:0))} kg</span>
+                        <span class="lbl">En 60 Días</span>
+                    </div>
+                </div>
+                <div style="margin-top:12px;text-align:center;background:rgba(255,255,255,.03);padding:10px;border-radius:12px">                    <div style="font-size:0.7rem;color:var(--text-muted)">Meta de Venta (${et.siguiente})</div>
+                    <div style="font-size:1.2rem;font-weight:700;color:var(--success)">${gmd>0?Math.ceil((et.max-p)/gmd)+' días':'--'}</div>
+                    <div style="font-size:0.65rem;color:var(--text-muted);margin-top:4px">Faltan ${faltaKg>0?fm(faltaKg):0} kg</div>
+                </div>
+            </div>
+
+            <!-- Reproductivo (Solo Leche) -->
+            ${a.proposito === 'leche' && rep ? `
+            <div class="sp-card" style="border-left:4px solid ${rep.semaforo.color}">
+                <div class="sp-card-header">
+                    <div class="sp-card-title" style="color:${rep.semaforo.color}"><i class="fa-solid fa-heart"></i> Reproductivo</div>
+                </div>
+                <div style="text-align:center;padding:8px;background:${rep.semaforo.color}15;border-radius:12px;margin-bottom:10px">
+                    <div style="font-size:1.1rem;font-weight:700;color:${rep.semaforo.color}">${rep.semaforo.txt}</div>
+                </div>
+                <div class="row"><span class="row-label"><i class="fa-solid fa-clock"></i> Días Post-Parto</span><span class="row-val">${rep.diasPP}d</span></div>
+                ${rep.avisoSecado ? '<div style="margin-top:8px;background:rgba(59,130,246,.1);color:#60a5fa;padding:8px;border-radius:8px;font-size:.75rem;text-align:center">💧 <b>Dieta Seca:</b> Iniciar en 60 días</div>' : ''}
+                <button class="btn btn-sm btn-purple mt8" onclick="showReproModal(${id})"><i class="fa-solid fa-pen"></i> Registrar Evento</button>
+            </div>` : ''}
+
+        </div>
+
+        <!-- Barra de Acciones Fija -->
+        <div class="sp-actions-bar">
+            <button class="btn btn-gold" onclick="updateWeight(${id})"><i class="fa-solid fa-scale-balanced"></i> Pesaje</button>
+            <button class="btn btn-purple" onclick="openAplicarProducto(${id})"><i class="fa-solid fa-syringe"></i> Sanidad</button>
+            <button class="btn btn-green" onclick="showModalAsignarAlimento(${id})"><i class="fa-solid fa-plus"></i> Alimento</button>
+        </div>
+    </div>`;
     
     document.querySelectorAll('.page').forEach(el=>el.classList.add('hidden'));
     document.getElementById('v-perfil').classList.remove('hidden');
     document.getElementById('v-perfil').innerHTML=html;
-    document.querySelector('header').classList.remove('hidden');
+    document.querySelector('header').classList.add('hidden'); // Ocultar header global en perfil
     requestWakeLock();
 }
 
@@ -782,9 +829,9 @@ if(isIndexedDB) await DB.put('animales', newAnimal);
 document.querySelector('.modal-overlay').remove();showToast(`✅ ${n} registrado`);goPage('animales');}
 function showAddLoteModal(){showModal(`<div style="font-weight:700;margin-bottom:12px;color:var(--accent)"><i class="fa-solid fa-plus"></i> NUEVO LOTE</div><div class="flex-col gap10"><input id="nlNombre" type="text" placeholder="Nombre"><input id="nlColor" type="color" value="${randColor()}" style="width:100%;height:38px"><button class="btn btn-gold mt8" onclick="guardarLote()"><i class="fa-solid fa-check"></i> CREAR</button><button class="btn btn-gray" onclick="document.querySelector('.modal-overlay').remove()">CANCELAR</button></div>`);}
 async function guardarLote(){const n=document.getElementById('nlNombre').value.trim(),c=document.getElementById('nlColor').value;if(!n)return showToast('⚠️ Ingresa nombre');const l={id:'lot_'+Date.now(),nombre:n,color:c};DB_CACHE.lotes.push(l);if(isIndexedDB) await DB.put('lotes', l);document.querySelector('.modal-overlay').remove();showToast(`✅ Lote "${n}" creado`);renderLotes();}
-function showEditLoteColor(lid){const l=DB_CACHE.lotes.find(x=>x.id===lid);if(!l)return;showModal(`<div style="font-weight:700;margin-bottom:12px;color:var(--accent)"><i class="fa-solid fa-palette"></i> COLOR</div><div class="flex-col gap10"><input id="elColor" type="color" value="${l.color}" style="width:100%;height:44px"><button class="btn btn-green mt8" onclick="guardarColorLote('${lid}')"><i class="fa-solid fa-check"></i> GUARDAR</button><button class="btn btn-gray" onclick="document.querySelector('.modal-overlay').remove()">CANCELAR</button></div>`);}async function guardarColorLote(lid){const l=DB_CACHE.lotes.find(x=>x.id===lid);if(l){l.color=document.getElementById('elColor').value;if(isIndexedDB) await DB.put('lotes', l);}document.querySelector('.modal-overlay').remove();renderLotes();showToast('✅ Color actualizado');}
-async function deleteLote(lid){if(lid==='lot_general')return showToast('⚠️ No eliminar General');if(!confirm('¿Eliminar? Animales a General'))return;DB_CACHE.animales.forEach(a=>{if(a.loteId===lid)a.loteId='lot_general';});DB_CACHE.lotes=DB_CACHE.lotes.filter(l=>l.id!==lid);if(isIndexedDB) await DB.put('lotes', DB_CACHE.lotes); renderLotes();showToast('✅ Lote eliminado');}
-async function updateWeight(id){const a=DB_CACHE.animales.find(x=>x.id===id);if(!a)return;const ow=a.historial[a.historial.length-1].peso;const p=prompt(`⚖️ Nuevo peso (kg):\nActual: ${ow}kg`,'');if(!p)return;const peso=parseFloat(p);if(isNaN(peso)||peso<20||peso>2000)return showToast('⚠️ Peso inválido');if(peso<ow&&!confirm('⚠️ Peso menor. ¿Continuar?'))return;const fechaInput=prompt(`📅 Fecha:\nFormato: DD/MM/AAAA`,new Date().toLocaleDateString());const fechaFinal=fechaInput?fechaInput:new Date().toLocaleDateString();const partes=fechaFinal.split('/');if(partes.length!==3){showToast('⚠️ Formato inválido. DD/MM/AAAA');return;}a.historial.push({fecha:fechaFinal,peso:peso});if(isIndexedDB) await DB.put('animales', a); recalcularTodo(id);}
+function showEditLoteColor(lid){const l=DB_CACHE.lotes.find(x=>x.id===lid);if(!l)return;showModal(`<div style="font-weight:700;margin-bottom:12px;color:var(--accent)"><i class="fa-solid fa-palette"></i> COLOR</div><div class="flex-col gap10"><input id="elColor" type="color" value="${l.color}" style="width:100%;height:44px"><button class="btn btn-green mt8" onclick="guardarColorLote('${lid}')"><i class="fa-solid fa-check"></i> GUARDAR</button><button class="btn btn-gray" onclick="document.querySelector('.modal-overlay').remove()">CANCELAR</button></div>`);}
+async function guardarColorLote(lid){const l=DB_CACHE.lotes.find(x=>x.id===lid);if(l){l.color=document.getElementById('elColor').value;if(isIndexedDB) await DB.put('lotes', l);}document.querySelector('.modal-overlay').remove();renderLotes();showToast('✅ Color actualizado');}
+async function deleteLote(lid){if(lid==='lot_general')return showToast('⚠️ No eliminar General');if(!confirm('¿Eliminar? Animales a General'))return;DB_CACHE.animales.forEach(a=>{if(a.loteId===lid)a.loteId='lot_general';});DB_CACHE.lotes=DB_CACHE.lotes.filter(l=>l.id!==lid);if(isIndexedDB) await DB.put('lotes', DB_CACHE.lotes); renderLotes();showToast('✅ Lote eliminado');}async function updateWeight(id){const a=DB_CACHE.animales.find(x=>x.id===id);if(!a)return;const ow=a.historial[a.historial.length-1].peso;const p=prompt(`⚖️ Nuevo peso (kg):\nActual: ${ow}kg`,'');if(!p)return;const peso=parseFloat(p);if(isNaN(peso)||peso<20||peso>2000)return showToast('⚠️ Peso inválido');if(peso<ow&&!confirm('⚠️ Peso menor. ¿Continuar?'))return;const fechaInput=prompt(`📅 Fecha:\nFormato: DD/MM/AAAA`,new Date().toLocaleDateString());const fechaFinal=fechaInput?fechaInput:new Date().toLocaleDateString();const partes=fechaFinal.split('/');if(partes.length!==3){showToast('⚠️ Formato inválido. DD/MM/AAAA');return;}a.historial.push({fecha:fechaFinal,peso:peso});if(isIndexedDB) await DB.put('animales', a); recalcularTodo(id);}
 function recalcularTodo(id){const a=DB_CACHE.animales.find(x=>x.id===id);if(!a)return;const p=a.historial[a.historial.length-1].peso,et=getEtapa(p,calcRepro(a));if(a.fechaNacimiento&&p<=150){const ed=Math.floor((new Date()-new Date(a.fechaNacimiento))/864e5);if(ed>=210&&et.nombre==='Cría'){a.estadoReproductivo='destetado';a.transicionActiva=true;a.transicionDias=1;showToast('🍼 Destete auto: Levante');}}save();showProfile(id);}
 async function deleteAnimal(id){DB_CACHE.animales=DB_CACHE.animales.filter(x=>x.id!==id);delete DB_CACHE.asignacionesAlimentos[id];if(isIndexedDB) await DB.put('animales', DB_CACHE.animales); document.querySelector('.modal-overlay').remove();closeProfile();showToast('✅ Eliminado');}
 function openAplicarProducto(id){const a=DB_CACHE.animales.find(x=>x.id===id);if(!a)return;const p=a.historial[a.historial.length-1].peso;let opts=getAllSanidad().map(pr=>`<option value="${pr.id}">${pr.nombre} (${pr.diasEfecto}d)</option>`).join('');showModal(`<div style="font-weight:700;margin-bottom:12px;color:var(--accent)">💉 APLICAR</div><div class="flex-col gap10"><select id="aplProducto" onchange="calcDosisModal(${p})">${opts}</select><div id="dosisInfo" style="font-size:.7rem;color:var(--text-muted);background:rgba(255,255,255,.05);padding:8px">📋 Selecciona</div><input id="aplML" type="number" placeholder="ml" step=".1"><button class="btn btn-green mt8" onclick="aplicarProducto(${id})"><i class="fa-solid fa-check"></i> CONFIRMAR</button><button class="btn btn-gray" onclick="document.querySelector('.modal-overlay').remove()">CANCELAR</button></div>`);setTimeout(()=>calcDosisModal(p),100);}
@@ -804,7 +851,6 @@ async function guardarSanidadCustom(){const n=document.getElementById('scNombre'
 async function deleteSanidadCustom(id){if(!confirm('¿Eliminar?'))return;delete DB_CACHE.sanidad[id];if(isIndexedDB) await DB.clear('sanidad'); Object.values(DB_CACHE.sanidad).forEach(s => DB.put('sanidad', s)); renderInsumos();}
 
 // ==================== INICIO DE APP ====================
-// Timeout de seguridad: Si tarda más de 5 segundos, entra igual.
 setTimeout(() => {
     const loader = document.getElementById('loadingScreen');
     if(loader && loader.style.display !== 'none') {
@@ -816,13 +862,11 @@ setTimeout(() => {
     }
 }, 5000);
 
-// Iniciar carga real
 (async () => {
     try {
         await loadAllData();
     } catch(e) {
         console.error('Error crítico:', e);
-        // Fallback extremo
         const loader = document.getElementById('loadingScreen');
         if(loader) {
             loader.innerHTML = '<div style="color:var(--danger);text-align:center">Error cargando. Intentando modo seguro...</div>';
@@ -831,5 +875,6 @@ setTimeout(() => {
         }
     }
 })();
-</script></body>
+</script>
+</body>
 </html>
