@@ -6,10 +6,9 @@
     <meta name="theme-color" content="#ffb900">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="description" content="Gestión ganadera profesional automática">
+    <meta name="description" content="Gestión ganadera profesional 100% offline">
     <title>GANADERO ÉLITE PRO</title>
     <link rel="manifest" href="./manifest.json">
-    <link rel="apple-touch-icon" href="./assets/icons/icon-192x192.png">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -25,16 +24,19 @@
         body { font-family:'Inter',system-ui,sans-serif; background:var(--bg); color:var(--text); min-height:100vh; padding:14px 14px 100px; font-size:14px; display:flex; justify-content:center; font-weight:400; line-height:1.5; letter-spacing:-0.01em; word-wrap:break-word; }
         .aurora { position:fixed; top:0; left:0; width:100%; height:100%; background:radial-gradient(circle at 25% 25%,#1a160a 0%,transparent 45%),radial-gradient(circle at 75% 75%,#0f1a1a 0%,transparent 45%); z-index:-1; filter:blur(80px); opacity:0.5; }
         .app { width:100%; max-width:480px; position:relative; display:flex; flex-direction:column; gap:14px; }
-        .loading-screen { position:fixed; inset:0; background:#050507; z-index:2000; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:24px; transition: opacity 0.5s ease; }
-        .loading-screen.fade-out { opacity: 0; pointer-events: none; }
-        .loader-container { position: relative; width: 80px; height: 80px; }
-        .loader-ring { position: absolute; inset: 0; border-radius: 50%; border: 3px solid transparent; border-top-color: var(--accent); animation: spin 1.5s linear infinite; }
-        .loader-ring:nth-child(2) { inset: 6px; border-top-color: transparent; border-bottom-color: var(--accent-soft); animation: spin 2s linear infinite reverse; }
-        .loader-logo { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 32px; animation: pulse 2s infinite; }
-        .loading-text { font-weight: 600; font-size: 1rem; color: var(--accent); letter-spacing: 1px; text-transform: uppercase; }
-        .loading-sub { font-size: 0.8rem; color: var(--text-muted); }
+        
+        /* ✅ LOADER PREMIUM REDISEÑADO */
+        .loading-screen { position:fixed; inset:0; background:#050507; z-index:9999; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:22px; transition: opacity 0.5s ease, visibility 0.5s ease; }
+        .loading-screen.hidden { opacity:0; visibility:hidden; pointer-events:none; }
+        .loader-core { position:relative; width:76px; height:76px; display:flex; align-items:center; justify-content:center; }
+        .loader-ring { position:absolute; inset:0; border:3px solid transparent; border-top:3px solid var(--accent); border-radius:50%; animation:spin 1.1s linear infinite; }
+        .loader-ring::after { content:''; position:absolute; inset:7px; border:3px solid transparent; border-bottom:3px solid rgba(255,185,0,0.35); border-radius:50%; animation:spin 1.8s linear infinite reverse; }
+        .loader-icon { font-size:28px; animation:pulse 2s infinite; z-index:2; }
+        .loader-text { font-weight:700; font-size:1.05rem; color:var(--accent); letter-spacing:1.5px; }
+        .loader-status { font-size:0.78rem; color:var(--text-muted); animation:fadeText 2s infinite alternate; }
         @keyframes spin { to { transform: rotate(360deg); } }
-        @keyframes pulse { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(0.95); opacity: 0.7; } }
+        @keyframes pulse { 0%,100% { transform:scale(1); } 50% { transform:scale(0.92); } }
+        @keyframes fadeText { 0% { opacity:0.4; } 100% { opacity:1; } }
         @keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
         
         .toast { position:fixed; top:18px; left:50%; transform:translateX(-50%); background:var(--card-bg); border:1px solid var(--accent-border); padding:12px 18px; border-radius:24px; z-index:1000; font-weight:500; font-size:.8rem; color:var(--text); animation:fadeIn .35s ease; box-shadow:0 8px 24px rgba(0,0,0,.5); text-align:center; max-width:90%; backdrop-filter:blur(12px); }
@@ -45,9 +47,9 @@
         header .config-btn:active { background:rgba(255,255,255,.12); color:#fff; }
         .save-indicator { font-size:.65rem; color:var(--success); opacity:0; transition:opacity .3s; animation:pulse 2s infinite; }
         .save-indicator.visible { opacity:1; }
-        .pro-tag { display:inline-flex; align-items:center; gap:4px; background:var(--accent-soft); border:1px solid var(--accent-border); color:var(--accent); padding:2px 8px; border-radius:8px; font-size:.55rem; font-weight:600; letter-spacing:.05em; margin-left:6px; }
-        .bottom-nav { position:fixed; bottom:18px; left:50%; transform:translateX(-50%); width:94%; max-width:400px; height:60px; display:flex; justify-content:space-around; align-items:center; z-index:500; background:rgba(18,18,20,0.85); backdrop-filter:blur(16px); border:1px solid rgba(255,255,255,.1); border-radius:30px; box-shadow:0 4px 20px rgba(0,0,0,.5); }
-        .nav-item { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; color:var(--text-muted); font-size:.55rem; cursor:pointer; transition:.2s; font-weight:600; text-transform:uppercase; letter-spacing:.03em; }        .nav-item i { font-size:1.1rem; margin-bottom:1px; transition:.15s; }
+        .pro-tag { display:inline-flex; align-items:center; gap:4px; background:var(--accent-soft); border:1px solid var(--accent-border); color:var(--accent); padding:2px 8px; border-radius:8px; font-size:.55rem; font-weight:600; letter-spacing:.05em; margin-left:6px; }        .bottom-nav { position:fixed; bottom:18px; left:50%; transform:translateX(-50%); width:94%; max-width:400px; height:60px; display:flex; justify-content:space-around; align-items:center; z-index:500; background:rgba(18,18,20,0.85); backdrop-filter:blur(16px); border:1px solid rgba(255,255,255,.1); border-radius:30px; box-shadow:0 4px 20px rgba(0,0,0,.5); }
+        .nav-item { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; color:var(--text-muted); font-size:.55rem; cursor:pointer; transition:.2s; font-weight:600; text-transform:uppercase; letter-spacing:.03em; }
+        .nav-item i { font-size:1.1rem; margin-bottom:1px; transition:.15s; }
         .nav-item.active { color:var(--accent); }
         .nav-item.active i { transform:translateY(-1px); }
         .nav-center { width:48px; height:48px; border-radius:50%; background:linear-gradient(135deg,#ffb900,#e6a500); color:#000; font-size:1.3rem; display:flex; align-items:center; justify-content:center; border:2px solid rgba(255,255,255,.2); box-shadow:0 4px 16px rgba(255,185,0,.25); cursor:pointer; border:none; transition:transform .15s; margin-top:-24px; }
@@ -94,9 +96,9 @@
         .ml-g { background:#22c55e; } .ml-b { background:#3b82f6; } .ml-o { background:#f59e0b; } .ml-r { background:#ef4444; } .ml-x { background:#6b7280; }
         .lock-icon { position:absolute; top:8px; left:10px; font-size:.7rem; color:var(--accent); }
         .section-title { display:flex; align-items:center; gap:7px; font-size:.68rem; font-weight:600; letter-spacing:.06em; text-transform:uppercase; color:var(--text-muted); margin:16px 0 8px; padding-bottom:6px; border-bottom:1px solid rgba(255,255,255,.05); }
-        .modal-overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,.85); z-index:200; display:flex; align-items:center; justify-content:center; padding:18px; animation:fadeIn .2s ease; }
-        .modal { background:#151517; border:1px solid var(--card-border); border-radius:20px; padding:18px; width:100%; max-width:380px; max-height:85vh; overflow-y:auto; box-shadow:0 16px 40px rgba(0,0,0,.7); }
-        .hidden { display:none!important; } .flex-col { display:flex; flex-direction:column; } .gap8 { gap:8px; } .gap10 { gap:10px; } .mt8 { margin-top:8px; } .mt12 { margin-top:12px; }        .custom-badge { background:var(--accent); color:#000; font-size:.5rem; padding:1px 5px; border-radius:4px; font-weight:700; margin-left:5px; }
+        .modal-overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,.85); z-index:200; display:flex; align-items:center; justify-content:center; padding:18px; animation:fadeIn .2s ease; }        .modal { background:#151517; border:1px solid var(--card-border); border-radius:20px; padding:18px; width:100%; max-width:380px; max-height:85vh; overflow-y:auto; box-shadow:0 16px 40px rgba(0,0,0,.7); }
+        .hidden { display:none!important; } .flex-col { display:flex; flex-direction:column; } .gap8 { gap:8px; } .gap10 { gap:10px; } .mt8 { margin-top:8px; } .mt12 { margin-top:12px; }
+        .custom-badge { background:var(--accent); color:#000; font-size:.5rem; padding:1px 5px; border-radius:4px; font-weight:700; margin-left:5px; }
         .toggle-btn { width:28px; height:28px; border-radius:8px; border:none; background:rgba(255,255,255,.1); color:var(--text-muted); cursor:pointer; }
         .toggle-btn.active { background:var(--success); color:#fff; }
         .custom-item-row { display:flex; align-items:center; justify-content:space-between; padding:8px 0; border-bottom:1px solid rgba(255,255,255,.04); }
@@ -143,9 +145,9 @@
         .config-item .cfg-text { flex:1; margin-left:10px; } .config-item .cfg-text span { display:block; font-size:.8rem; font-weight:500; } .config-item .cfg-text small { font-size:.62rem; color:var(--text-muted); }
         .filter-chips { display:flex; gap:6px; overflow-x:auto; padding:4px 0 8px; -webkit-overflow-scrolling:touch; } .filter-chips::-webkit-scrollbar { display:none; }
         .chip { padding:6px 12px; border-radius:18px; border:1px solid var(--card-border); background:rgba(255,255,255,.05); font-size:.68rem; font-weight:500; color:var(--text-muted); cursor:pointer; white-space:nowrap; transition:.2s; }
-        .chip.active { background:var(--accent); color:#000; border-color:var(--accent-border); }
-        .crown-svg { width:18px; height:18px; fill:var(--accent); flex-shrink:0; }
-        .insumo-item { background:rgba(255,255,255,.03); border:1px solid var(--card-border); border-radius:16px; padding:14px; margin-bottom:10px; }        .insumo-item-header { display:flex; align-items:center; gap:10px; margin-bottom:10px; }
+        .chip.active { background:var(--accent); color:#000; border-color:var(--accent-border); }        .crown-svg { width:18px; height:18px; fill:var(--accent); flex-shrink:0; }
+        .insumo-item { background:rgba(255,255,255,.03); border:1px solid var(--card-border); border-radius:16px; padding:14px; margin-bottom:10px; }
+        .insumo-item-header { display:flex; align-items:center; gap:10px; margin-bottom:10px; }
         .insumo-item-header i { font-size:1.1rem; color:var(--accent); } .insumo-item-header .info { flex:1; } .insumo-item-header .info .name { font-weight:500; font-size:.8rem; } .insumo-item-header .info .consumo { font-size:.62rem; color:var(--text-muted); } .insumo-item-header .dias { font-size:.68rem; font-weight:600; margin-left:auto; }
         .tag-descarte { background:rgba(239,68,68,.15); color:#f87171; padding:2px 6px; border-radius:6px; font-size:.62rem; font-weight:500; margin-left:5px; }
         .animal-card.bloqueado { opacity:0.6; cursor:not-allowed!important; } .animal-card.bloqueado:active { transform:none!important; }
@@ -192,14 +194,14 @@
     </header>
     <div id="v-inicio" class="page"></div><div id="v-lotes" class="hidden page"></div><div id="v-animales" class="hidden page"></div><div id="v-insumos" class="hidden page"></div><div id="v-config" class="hidden page"></div><div id="v-perfil" class="hidden page"></div>
 </div>
-
+<!-- ✅ LOADER PREMIUM -->
 <div id="loadingScreen" class="loading-screen">
-    <div class="loader-container">        <div class="loader-ring"></div>
+    <div class="loader-core">
         <div class="loader-ring"></div>
-        <div class="loader-logo">👑</div>
+        <div class="loader-icon">👑</div>
     </div>
-    <div class="loading-text">GANADERO ÉLITE</div>
-    <div class="loading-sub">Inicializando sistema...</div>
+    <div class="loader-text">GANADERO ÉLITE</div>
+    <div class="loader-status" id="loaderStatus">Inicializando...</div>
 </div>
 
 <nav class="bottom-nav">
@@ -218,120 +220,63 @@ let dbInstance = null;
 let isIndexedDB = true;
 
 const DB = {
-    open: () => {
-        return new Promise((resolve, reject) => {
-            if(!window.indexedDB) {
-                isIndexedDB = false;
-                console.log('IndexedDB no soportado, usando localStorage');
-                return resolve(null);
-            }
-            const request = indexedDB.open(DB_NAME, DB_VERSION);
-            request.onerror = () => { isIndexedDB = false; resolve(null); };
-            request.onsuccess = () => { dbInstance = request.result; resolve(dbInstance); };
-            request.onupgradeneeded = (event) => {
-                const db = event.target.result;
-                if (!db.objectStoreNames.contains('animales')) db.createObjectStore('animales', { keyPath: 'id' });
-                if (!db.objectStoreNames.contains('lotes')) db.createObjectStore('lotes', { keyPath: 'id' });
-                if (!db.objectStoreNames.contains('config')) db.createObjectStore('config', { keyPath: 'key' });
-                if (!db.objectStoreNames.contains('inventario')) db.createObjectStore('inventario', { keyPath: 'id' });
-                if (!db.objectStoreNames.contains('sanidad')) db.createObjectStore('sanidad', { keyPath: 'id' });
-            };
-        });
-    },
-    getAll: (storeName) => {
-        if(!isIndexedDB) return Promise.resolve([]);
-        return new Promise((resolve, reject) => {
-            try {
-                const tx = dbInstance.transaction(storeName, 'readonly');
-                const store = tx.objectStore(storeName);                const request = store.getAll();
-                request.onsuccess = () => resolve(request.result);
-                request.onerror = () => resolve([]);
-            } catch(e) { resolve([]); }
-        });
-    },
-    put: (storeName, data) => {
-        if(!isIndexedDB) return Promise.resolve();
-        return new Promise((resolve, reject) => {
-            try {
-                const tx = dbInstance.transaction(storeName, 'readwrite');
-                const store = tx.objectStore(storeName);
-                store.put(data).onsuccess = () => resolve();
-            } catch(e) { resolve(); }
-        });
-    },
-    clear: (storeName) => {
-        if(!isIndexedDB) return Promise.resolve();
-        return new Promise((resolve) => {
-            try {
-                dbInstance.transaction(storeName, 'readwrite').objectStore(storeName).clear().onsuccess = () => resolve();
-            } catch(e) { resolve(); }
-        });
-    }
+    open: () => new Promise((resolve) => {
+        if(!window.indexedDB) { isIndexedDB = false; return resolve(null); }
+        const req = indexedDB.open(DB_NAME, DB_VERSION);
+        req.onerror = () => { isIndexedDB = false; resolve(null); };
+        req.onsuccess = () => { dbInstance = req.result; resolve(dbInstance); };
+        req.onupgradeneeded = (e) => {
+            const db = e.target.result;
+            ['animales','lotes','config','inventario','sanidad'].forEach(s => {
+                if(!db.objectStoreNames.contains(s)) db.createObjectStore(s, {keyPath:'id'});
+            });
+        };
+    }),
+    getAll: (store) => new Promise(resolve => {
+        if(!isIndexedDB) return resolve([]);
+        try {
+            const tx = dbInstance.transaction(store, 'readonly');
+            const req = tx.objectStore(store).getAll();
+            req.onsuccess = () => resolve(req.result);
+            req.onerror = () => resolve([]);
+        } catch { resolve([]); }
+    }),
+    put: (store, data) => new Promise(resolve => {
+        if(!isIndexedDB) return resolve();
+        try {            const tx = dbInstance.transaction(store, 'readwrite');
+            tx.objectStore(store).put(data);
+            tx.oncomplete = () => resolve();
+            tx.onerror = () => resolve();
+        } catch { resolve(); }
+    }),
+    clear: (store) => new Promise(resolve => {
+        if(!isIndexedDB) return resolve();
+        try {
+            dbInstance.transaction(store, 'readwrite').objectStore(store).clear();
+            resolve();
+        } catch { resolve(); }
+    })
 };
 
-let DB_CACHE = {
-    animales: [], lotes: [],
-    config: {}, inventario: {}, sanidad: {}, aplicaciones: [], asignacionesAlimentos: {}
-};
+let DB_CACHE = { animales: [], lotes: [], config: {}, inventario: {}, sanidad: {}, aplicaciones: [], asignacionesAlimentos: {} };
 
 async function migrateFromLocalStorage() {
     if(localStorage.getItem('db_migrated_v4.6')) return;
-    const oldData = localStorage.getItem('ganadero_elite_v4_5_0');
-    if (oldData && isIndexedDB) {
+    const old = localStorage.getItem('ganadero_elite_v4_5_0');
+    if(old && isIndexedDB) {
         try {
-            const parsed = JSON.parse(oldData);
-            if (parsed.animales) {
-                for (const a of parsed.animales) await DB.put('animales', a);
-                if(parsed.lotes) for(const l of parsed.lotes) await DB.put('lotes', l);
-                const configKeys = ['precios','stock','preciosSanidad','stockSanidad','precioKG','precioLeche','valorCria','intervaloPartos','costosFijosMensuales','factoresDesperdicio','unidadesPrecio'];
-                for(const k of configKeys) if(parsed[k] !== undefined) await DB.put('config', { key: k, value: parsed[k] });
-                if(parsed.alimentosCustom) for(const i of parsed.alimentosCustom) await DB.put('inventario', i);
-                if(parsed.sanidadCustom) for(const s of parsed.sanidadCustom) await DB.put('sanidad', s);
-                localStorage.setItem('db_migrated_v4.6', 'true');
-                showToast('✅ Datos actualizados a nueva versión');
-            }
-        } catch (e) { console.error('Migración fallida', e); }
-    }
-}
-async function loadAllData() {
-    await DB.open();
-    await migrateFromLocalStorage();
-    
-    if(isIndexedDB) {
-        DB_CACHE.animales = await DB.getAll('animales');
-        DB_CACHE.lotes = await DB.getAll('lotes');
-        const configs = await DB.getAll('config');
-        configs.forEach(c => DB_CACHE.config[c.key] = c.value);
-        const inv = await DB.getAll('inventario'); inv.forEach(i => DB_CACHE.inventario[i.id] = i);
-        const san = await DB.getAll('sanidad'); san.forEach(s => DB_CACHE.sanidad[s.id] = s);
-    } else {
-        const old = localStorage.getItem('ganadero_elite_v4_5_0');
-        if(old) {
             const d = JSON.parse(old);
-            DB_CACHE.animales = d.animales || [];
-            DB_CACHE.lotes = d.lotes || [];
-            DB_CACHE.config = { precios: d.precios, stock: d.stock, precioKG: d.precioKG };
-        }
+            if(d.animales) {
+                for(const a of d.animales) await DB.put('animales', a);
+                if(d.lotes) for(const l of d.lotes) await DB.put('lotes', l);
+                const keys = ['precios','stock','preciosSanidad','stockSanidad','precioKG','precioLeche','valorCria','intervaloPartos','costosFijosMensuales','factoresDesperdicio','unidadesPrecio'];
+                for(const k of keys) if(d[k] !== undefined) await DB.put('config', {key:k, value:d[k]});
+                if(d.alimentosCustom) for(const i of d.alimentosCustom) await DB.put('inventario', i);
+                if(d.sanidadCustom) for(const s of d.sanidadCustom) await DB.put('sanidad', s);
+                localStorage.setItem('db_migrated_v4.6', 'true');
+            }
+        } catch(e) { console.warn('Migración omitida:', e); }
     }
-
-    if(DB_CACHE.animales.length === 0 && DB_CACHE.lotes.length === 0) {
-        DB_CACHE.lotes = [{id:'lot_general',nombre:'General',color:'#ffb900'}];
-        if(isIndexedDB) await DB.put('lotes', DB_CACHE.lotes[0]);
-    }
-    if(!DB_CACHE.config.precios) DB_CACHE.config.precios = { pasto:80, salvado:900, melaza:1400, levadura:9000, bicarb:2500, sal:3000, urea:4000 };
-    if(!DB_CACHE.config.stock) DB_CACHE.config.stock = { pasto:500, salvado:200, melaza:50, levadura:10, bicarb:5, sal:2, urea:20 };
-    if(!DB_CACHE.config.precioKG) DB_CACHE.config.precioKG = 9800;
-    if(!DB_CACHE.config.factoresDesperdicio) DB_CACHE.config.factoresDesperdicio = { pasto:0.15, salvado:0.08, melaza:0.05, levadura:0.02, bicarb:0.03, sal:0.03, urea:0.02 };
-    if(!DB_CACHE.config.unidadesPrecio) DB_CACHE.config.unidadesPrecio = { pasto:'kg', salvado:'kg', melaza:'kg', levadura:'kg', bicarb:'kg', sal:'kg', urea:'kg' };
-
-    const app = document.getElementById('appContainer');
-    const loader = document.getElementById('loadingScreen');
-    app.style.display = 'flex';
-    loader.classList.add('fade-out');
-    setTimeout(() => loader.style.display = 'none', 500);
-    
-    verificarNotificaciones();
-    goPage('inicio');
 }
 
 async function saveToDB() {
@@ -341,27 +286,26 @@ async function saveToDB() {
             await Promise.all([
                 ...DB_CACHE.animales.map(a => DB.put('animales', a)),
                 ...DB_CACHE.lotes.map(l => DB.put('lotes', l)),
-                Object.keys(DB_CACHE.config).map(k => DB.put('config', {key:k, value:DB_CACHE.config[k]})),                Object.values(DB_CACHE.inventario).map(i => DB.put('inventario', i)),
+                Object.keys(DB_CACHE.config).map(k => DB.put('config', {key:k, value:DB_CACHE.config[k]})),
+                Object.values(DB_CACHE.inventario).map(i => DB.put('inventario', i)),
                 Object.values(DB_CACHE.sanidad).map(s => DB.put('sanidad', s))
             ]);
         }
-        localStorage.setItem('ganadero_backup_cache', JSON.stringify(DB_CACHE));
-        return true;
-    } catch(e) { console.error(e); return false; }
+        localStorage.setItem('ganadero_backup', JSON.stringify(DB_CACHE));
+        return true;    } catch { return false; }
 }
 
 // ==================== LÓGICA DE NEGOCIO ====================
 const APP_VERSION = '4.6.2';
 let lastSaveTime = null, autoSaveTimer = null, saveTimeout = null, insumoTab = 'alimentos', searchTimeout = null;
-const fm = (n) => { if(isNaN(n)||n===null||n===undefined) return '0'; n=Math.round(n); var s=String(n); var r=''; var c=0; for(var i=s.length-1;i>=0;i--){if(c>0&&c%3===0) r='.'+r; r=s.charAt(i)+r; c++;} return r; };
+const fm = (n) => { if(isNaN(n)||n===null||n===undefined) return '0'; n=Math.round(n); var s=String(n), r='', c=0; for(var i=s.length-1;i>=0;i--){if(c>0&&c%3===0) r='.'+r; r=s.charAt(i)+r; c++;} return r; };
 const showToast = (m, d=3000) => { const t=document.createElement('div'); t.className='toast'; t.innerHTML=m; document.getElementById('toastContainer').appendChild(t); setTimeout(()=>t.remove(),d); };
-const showModal = (h) => { const o=document.createElement('div'); o.className='modal-overlay'; o.innerHTML='<div class="modal">'+h+'</div>'; o.onclick=(e)=>{if(e.target===o)o.remove();}; document.getElementById('modalContainer').appendChild(o); };
-const getDiasDesde = (f) => { if(!f) return 999; var p=f.split('/'); if(p.length<3) return 999; return Math.floor((new Date()-new Date(p[2],p[1]-1,p[0]))/864e5); };
+const showModal = (h) => { const o=document.createElement('div'); o.className='modal-overlay'; o.innerHTML=`<div class="modal">${h}</div>`; o.onclick=(e)=>{if(e.target===o)o.remove();}; document.getElementById('modalContainer').appendChild(o); };
+const getDiasDesde = (f) => { if(!f) return 999; const p=f.split('/'); if(p.length<3) return 999; return Math.floor((new Date()-new Date(p[2],p[1]-1,p[0]))/864e5); };
 const randColor = () => ['#ffb900','#22c55e','#3b82f6','#ef4444','#a78bfa','#f59e0b','#ec4899','#14b8a6'][Math.floor(Math.random()*8)];
 const formatTimeAgo = (ts) => { if(!ts) return 'Nunca'; const diff=Math.floor((Date.now()-ts)/1000); if(diff<60) return 'hace '+diff+'s'; if(diff<3600) return 'hace '+Math.floor(diff/60)+'min'; if(diff<86400) return 'hace '+Math.floor(diff/3600)+'h'; return 'hace '+Math.floor(diff/86400)+'d'; };
 const showSaveIndicator = () => { const el=document.getElementById('saveIndicator'); if(el){clearTimeout(saveTimeout); el.classList.add('visible'); saveTimeout=setTimeout(()=>el.classList.remove('visible'),2000);} };
-
-const save = async () => { const success = await saveToDB(); if(success) { lastSaveTime = Date.now(); } };
+const save = async () => { if(await saveToDB()) lastSaveTime = Date.now(); };
 const queueAutoSave = () => { clearTimeout(autoSaveTimer); autoSaveTimer=setTimeout(save, 800); };
 
 const AL = ['pasto','salvado','melaza','levadura','bicarb','sal','urea'];
@@ -386,68 +330,32 @@ const CATALOGO_SANIDAD = [
 const getCfg = (k) => DB_CACHE.config[k];
 const setCfg = (k, v) => { DB_CACHE.config[k] = v; };
 
-const getDiet = (pv, prop, estado, transicionDias=0, diasGestacion=0, incluirFD=false) => { 
+const getDiet = (pv, prop, estado, td=0, dg=0, fd=false) => { 
     if(pv<20) return {pasto:0,salvado:0,melaza:0,urea:0,bicarb:0,sal:0,levadura:0,_meta:{ureaBloqueada:false,motivo:null}};
-    const msTotalRequerida = pv * CONSUMO_MS_PV;
-    const esTernera = pv<150, p=prop||'carne', st=estado||'auto';
-    const ureaPermitida = !(pv < TRIGGERS.ureaMinWeight || diasGestacion >= TRIGGERS.pregnancyUreaBlockDay);    const calcMicro = (f,pv,ms) => f.type==='pv'?pv*f.factor:ms*f.factor;
-    let msPasto=msTotalRequerida*0.90, msSalvado=msTotalRequerida*0.10, msMelaza=0;
-    if(p==='carne'){if(esTernera)msMelaza=msTotalRequerida*0.02;else if(st==='venta')msMelaza=msTotalRequerida*0.05;else msMelaza=msTotalRequerida*0.03;}
-    else if(p==='leche'){if(st==='parida')msMelaza=msTotalRequerida*0.03;else if(st==='seca')msMelaza=msTotalRequerida*0.01;else msMelaza=msTotalRequerida*0.01;}
-    const toFresco = (ms,fMS,u) => u==='kg'?ms/fMS:(ms/fMS)*1000;
-    let pastoFresco = toFresco(msPasto,FACTOR_MS.pasto,'kg');
-    if(pastoFresco > pv*TRIGGERS.maxRumenVolumePct) pastoFresco = pv*TRIGGERS.maxRumenVolumePct;
-    let dieta = {
-        pasto:pastoFresco, salvado:toFresco(msSalvado,FACTOR_MS.salvado,'kg'), melaza:toFresco(msMelaza,FACTOR_MS.melaza,'kg'),
-        levadura:calcMicro(MICRO_FORMULAS.levadura,pv,msTotalRequerida), bicarb:calcMicro(MICRO_FORMULAS.bicarb,pv,msTotalRequerida),
-        sal:calcMicro(MICRO_FORMULAS.sal,pv,msTotalRequerida),
-        urea:ureaPermitida?Math.min(calcMicro(MICRO_FORMULAS.urea,pv,msTotalRequerida),msTotalRequerida*0.11*1000):0,
-        _meta:{ureaBloqueada:!ureaPermitida, motivo:pv<TRIGGERS.ureaMinWeight?'Peso<150kg':'Gestación>210d'}
-    };
-    if(transicionDias>0 && transicionDias<7){
-        const f=transicionDias/7, dAnt={pasto:(pv*0.03*0.95)/FACTOR_MS.pasto,salvado:(pv*0.03*0.05)/FACTOR_MS.salvado,melaza:(pv*0.03*0.01)/FACTOR_MS.melaza,urea:0,bicarb:(pv*0.03*0.10)*1000,sal:(pv*0.03*0.15)*1000,levadura:(pv*0.05/1000)*1000};
-        Object.keys(dieta).forEach(k=>{if(k!=='_meta')dieta[k]=dAnt[k]+((dieta[k]-dAnt[k])*f);});
-    }
-    if(incluirFD){const fd=getCfg('factoresDesperdicio')||{}; Object.keys(dieta).forEach(k=>{if(k!=='_meta'&&fd[k])dieta[k]*=(1+fd[k]);});}
-    return dieta;
+    const msT = pv * CONSUMO_MS_PV, esT = pv<150, p=prop||'carne', st=estado||'auto';
+    const uP = !(pv < TRIGGERS.ureaMinWeight || dg >= TRIGGERS.pregnancyUreaBlockDay);
+    const cM = (f,pv,ms) => f.type==='pv'?pv*f.factor:ms*f.factor;
+    let msP=msT*0.90, msS=msT*0.10, msM=0;
+    if(p==='carne'){if(esT)msM=msT*0.02;else if(st==='venta')msM=msT*0.05;else msM=msT*0.03;}
+    else if(p==='leche'){if(st==='parida')msM=msT*0.03;else if(st==='seca')msM=msT*0.01;else msM=msT*0.01;}
+    const tF = (ms,fMS,u) => u==='kg'?ms/fMS:(ms/fMS)*1000;
+    let pF = tF(msP,FACTOR_MS.pasto,'kg'); if(pF > pv*TRIGGERS.maxRumenVolumePct) pF = pv*TRIGGERS.maxRumenVolumePct;
+    let d = {pasto:pF, salvado:tF(msS,FACTOR_MS.salvado,'kg'), melaza:tF(msM,FACTOR_MS.melaza,'kg'), levadura:cM(MICRO_FORMULAS.levadura,pv,msT), bicarb:cM(MICRO_FORMULAS.bicarb,pv,msT), sal:cM(MICRO_FORMULAS.sal,pv,msT), urea:uP?Math.min(cM(MICRO_FORMULAS.urea,pv,msT),msT*0.11*1000):0, _meta:{ureaBloqueada:!uP, motivo:pv<TRIGGERS.ureaMinWeight?'Peso<150kg':'Gestación>210d'}};
+    if(td>0&&td<7){const f=td/7, a={pasto:(pv*0.03*0.95)/FACTOR_MS.pasto,salvado:(pv*0.03*0.05)/FACTOR_MS.salvado,melaza:(pv*0.03*0.01)/FACTOR_MS.melaza,urea:0,bicarb:(pv*0.03*0.10)*1000,sal:(pv*0.03*0.15)*1000,levadura:(pv*0.05/1000)*1000}; Object.keys(d).forEach(k=>{if(k!=='_meta')d[k]=a[k]+((d[k]-a[k])*f);});}    if(fd){const f=getCfg('factoresDesperdicio')||{}; Object.keys(d).forEach(k=>{if(k!=='_meta'&&f[k])d[k]*=(1+f[k]);});}
+    return d;
 };
 
 const getCostoDiario = (pv, prop, estado) => { 
-    const d = getDiet(pv, prop, estado, 0, 0, false); const pr = getCfg('precios') || {}; const unidades = getCfg('unidadesPrecio') || {};
-    return Object.keys(d).filter(k=>k!=='_meta').reduce((s,k)=>{
-        const cant=d[k], precio=pr[k]||0, uCompra=unidades[k]||'kg'; let factor=1; if(UNIDAD[k]==='g'&&uCompra==='kg') factor=0.001; return s+(cant*precio*factor);
-    },0);
+    const d = getDiet(pv, prop, estado, 0, 0, false), pr = getCfg('precios') || {}, u = getCfg('unidadesPrecio') || {};
+    return Object.keys(d).filter(k=>k!=='_meta').reduce((s,k)=>{const c=d[k], p=pr[k]||0, uc=u[k]||'kg'; let f=1; if(UNIDAD[k]==='g'&&uc==='kg') f=0.001; return s+(c*p*f);},0);
 };
-
 const getCostoDiarioConFD = (pv, prop, estado) => { 
-    const d = getDiet(pv, prop, estado, 0, 0, true); const pr = getCfg('precios') || {}; const unidades = getCfg('unidadesPrecio') || {}; const fd = getCfg('factoresDesperdicio') || {};
-    return Object.keys(d).filter(k=>k!=='_meta').reduce((s,k)=>{
-        const cant=d[k], precio=pr[k]||0, uCompra=unidades[k]||'kg'; const cantConFD=cant*(1+(fd[k]||0)); let factor=1; if(UNIDAD[k]==='g'&&uCompra==='kg') factor=0.001; return s+(cantConFD*precio*factor);
-    },0);
+    const d = getDiet(pv, prop, estado, 0, 0, true), pr = getCfg('precios') || {}, u = getCfg('unidadesPrecio') || {}, fd = getCfg('factoresDesperdicio') || {};
+    return Object.keys(d).filter(k=>k!=='_meta').reduce((s,k)=>{const c=d[k], p=pr[k]||0, uc=u[k]||'kg'; const cF=c*(1+(fd[k]||0)); let f=1; if(UNIDAD[k]==='g'&&uc==='kg') f=0.001; return s+(cF*p*f);},0);
 };
-
-const getGMD = (h) => { 
-    if(h.length<2) return 0; const f=h[0], l=h[h.length-1]; const pF=f.fecha.split('/'), pL=l.fecha.split('/');
-    const fecha1=new Date(parseInt(pF[2]),parseInt(pF[1])-1,parseInt(pF[0])), fecha2=new Date(parseInt(pL[2]),parseInt(pL[1])-1,parseInt(pL[0]));
-    const diffDias=(fecha2-fecha1)/864e5; if(diffDias<1) return 0; const gmd=(l.peso-f.peso)/diffDias; return Math.max(0,Math.min(gmd,2.5));
-};
-
-const getRendimiento = (h, gmdForzado=null) => { 
-    if(h.length<2) return {nivel:'azul',texto:'Registre más',cm:0,color:'azul'}; 
-    const g=gmdForzado||getGMD(h), r=g>0?g/0.8:0, c=((g-0.8)/0.8)*100;
-    return r>=1.2?{nivel:'verde',texto:'Excelente',cm:c,color:'#22c55e'}:r>=0.9?{nivel:'azul',texto:'Bueno',cm:c,color:'#3b82f6'}:r>=0.7?{nivel:'naranja',texto:'Regular',cm:c,color:'#f59e0b'}:{nivel:'rojo',texto:'Bajo',cm:c,color:'#ef4444'};
-};
-
-const calcRepro = (a) => {
-    if(a.proposito!=='leche' && !a.fechaUltimoParto) return null;    if(!a.fechaUltimoParto) return {diasPP:0,diasParaParto:999,fechaProxParto:null,semaforo:{color:'#6b7280',txt:'📅 Sin registro',tipo:'gris'},estadoLactancia:'novilla',avisoSecado:false,diasGestacion:a.diasGestacion||0};
-    const hoy=new Date(), parto=new Date(a.fechaUltimoParto.split('/').reverse().join('-')), diasPP=Math.max(0,Math.floor((hoy-parto)/864e5));
-    const fpp=new Date(parto); fpp.setDate(parto.getDate()+285); const dpp=Math.floor((fpp-hoy)/864e5);
-    let dg=a.diasGestacion||0; if(a.fechaUltimaInseminacion){const ins=new Date(a.fechaUltimaInseminacion.split('/').reverse().join('-')); dg=Math.max(0,Math.floor((hoy-ins)/864e5));}
-    let sem, est=a.estadoReproductivo||'parida';
-    if(dpp<=60&&dpp>0){sem={color:'#3b82f6',txt:'🔵 Secado ('+dpp+'d)',tipo:'secado'};est='seca';}else if(diasPP<=60)sem={color:'#22c55e',txt:'🟢 Recuperación',tipo:'verde'};else if(diasPP<=150)sem={color:'#f59e0b',txt:'🟡 Ventana Monta',tipo:'amarillo'};else sem={color:'#ef4444',txt:'🔴 ALERTA Vacía',tipo:'rojo'};
-    return {diasPP,diasParaParto:dpp,fechaProxParto:fpp.toLocaleDateString('es-CO'),semaforo:sem,estadoLactancia:est,avisoSecado:dpp<=60&&dpp>0,diasGestacion:dg};
-};
-
+const getGMD = (h) => { if(h.length<2) return 0; const f=h[0], l=h[h.length-1], pF=f.fecha.split('/'), pL=l.fecha.split('/'); const d1=new Date(pF[2],pF[1]-1,pF[0]), d2=new Date(pL[2],pL[1]-1,pL[0]); const diff=(d2-d1)/864e5; return diff<1?0:Math.max(0,Math.min((l.peso-f.peso)/diff,2.5)); };
+const getRendimiento = (h, gmdF=null) => { if(h.length<2) return {nivel:'azul',texto:'Registre más',cm:0,color:'azul'}; const g=gmdF||getGMD(h), r=g>0?g/0.8:0, c=((g-0.8)/0.8)*100; return r>=1.2?{nivel:'verde',texto:'Excelente',cm:c,color:'#22c55e'}:r>=0.9?{nivel:'azul',texto:'Bueno',cm:c,color:'#3b82f6'}:r>=0.7?{nivel:'naranja',texto:'Regular',cm:c,color:'#f59e0b'}:{nivel:'rojo',texto:'Bajo',cm:c,color:'#ef4444'}; };
+const calcRepro = (a) => { if(a.proposito!=='leche'&&!a.fechaUltimoParto) return null; if(!a.fechaUltimoParto) return {diasPP:0,diasParaParto:999,fechaProxParto:null,semaforo:{color:'#6b7280',txt:'📅 Sin registro',tipo:'gris'},estadoLactancia:'novilla',avisoSecado:false,diasGestacion:a.diasGestacion||0}; const hoy=new Date(), parto=new Date(a.fechaUltimoParto.split('/').reverse().join('-')), diasPP=Math.max(0,Math.floor((hoy-parto)/864e5)); const fpp=new Date(parto); fpp.setDate(parto.getDate()+285); const dpp=Math.floor((fpp-hoy)/864e5); let dg=a.diasGestacion||0; if(a.fechaUltimaInseminacion){const ins=new Date(a.fechaUltimaInseminacion.split('/').reverse().join('-')); dg=Math.max(0,Math.floor((hoy-ins)/864e5));} let sem, est=a.estadoReproductivo||'parida'; if(dpp<=60&&dpp>0){sem={color:'#3b82f6',txt:'🔵 Secado ('+dpp+'d)',tipo:'secado'};est='seca';}else if(diasPP<=60)sem={color:'#22c55e',txt:'🟢 Recuperación',tipo:'verde'};else if(diasPP<=150)sem={color:'#f59e0b',txt:'🟡 Ventana Monta',tipo:'amarillo'};else sem={color:'#ef4444',txt:'🔴 ALERTA Vacía',tipo:'rojo'}; return {diasPP,diasParaParto:dpp,fechaProxParto:fpp.toLocaleDateString('es-CO'),semaforo:sem,estadoLactancia:est,avisoSecado:dpp<=60&&dpp>0,diasGestacion:dg}; };
 const getEtapa = (pv,rep) => { var e=rep?rep.estadoLactancia:'auto'; if(e==='seca')return{nombre:'Vaca Seca',clase:'etapa-madurez',icono:'🥛',min:300,max:600,ureaBloqueada:false,color:'#3b82f6',siguiente:'Venta'}; if(e==='parida')return{nombre:'Producción',clase:'etapa-ceba',icono:'🐄',min:400,max:800,ureaBloqueada:false,color:'#22c55e',siguiente:'Venta'}; if(pv<150)return{nombre:'Cría',clase:'etapa-inicio',icono:'🐮',min:0,max:150,ureaBloqueada:true,color:'#ffb900',siguiente:'Levante'}; if(pv<350)return{nombre:'Levante',clase:'etapa-desarrollo',icono:'🐂',min:150,max:350,ureaBloqueada:false,color:'#60a5fa',siguiente:'Ceba'}; return{nombre:'Ceba',clase:'etapa-madurez',icono:'🐃',min:350,max:500,ureaBloqueada:false,color:'#fb923c',siguiente:'Venta'}; };
 const getProgresoEtapa = (pv,e) => Math.min(100,Math.max(0,((pv-e.min)/(e.max-e.min))*100));
 const getCostoAlimentosCustom = (aid,p) => { if(!DB_CACHE.asignacionesAlimentos||!DB_CACHE.asignacionesAlimentos[aid])return 0; return DB_CACHE.asignacionesAlimentos[aid].reduce((s,a)=>{if(!a.activo)return s;const i=DB_CACHE.inventario[a.alimentoId]; return i?s+(p*(i.unidad==='g'?i.dosisPorKg*0.001:i.dosisPorKg)*i.precioUnitario):s;},0); };
@@ -455,73 +363,23 @@ const getAllSanidad = () => [...CATALOGO_SANIDAD.map(p=>({...p,esBase:true})),..
 const getCostoSanidadDiario = (aid) => { let t=0; const apps = DB_CACHE.aplicaciones ? DB_CACHE.aplicaciones.filter(x=>x.animalId===aid) : []; apps.forEach(ap=>{const p=getAllSanidad().find(x=>x.id===ap.productoId);if(p&&p.diasEfecto>0)t+=(ap.costo||0)/p.diasEfecto;});return t; };
 const getCostoSanidadTotal = (aid) => { const apps = DB_CACHE.aplicaciones ? DB_CACHE.aplicaciones.filter(x=>x.animalId===aid) : []; return apps.reduce((s,a)=>s+(a.costo||0),0); };
 const calcularROIA = (g,p,c) => c>0?(g*p)/c:0;
-const calcularIngresoDiario = (a, gmd, precioKG) => {
-    let ing=0; if(gmd>0) ing+=gmd*precioKG;
-    if(a.proposito==='leche'&&a.litrosLeche>0) ing+=a.litrosLeche*(getCfg('precioLeche')||1200);
-    if(a.proposito==='leche'&&(a.estadoReproductivo==='parida'||a.estadoReproductivo==='seca')) ing+=(getCfg('valorCria')||450000)/(getCfg('intervaloPartos')||400);
-    return ing;
-};
+const calcularIngresoDiario = (a, gmd, precioKG) => { let ing=0; if(gmd>0) ing+=gmd*precioKG; if(a.proposito==='leche'&&a.litrosLeche>0) ing+=a.litrosLeche*(getCfg('precioLeche')||1200); if(a.proposito==='leche'&&(a.estadoReproductivo==='parida'||a.estadoReproductivo==='seca')) ing+=(getCfg('valorCria')||450000)/(getCfg('intervaloPartos')||400); return ing; };
 const getAguaDiaria = (pv, prop, ll=0) => prop==='leche'?pv*0.1+ll*3:pv*0.1;
 const getLoteName = (id) => DB_CACHE.lotes.find(x=>x.id===id)?.nombre||'General';
 const getAnimalesByLote = (lid) => DB_CACHE.animales.filter(a=>a.loteId===lid);
 
-// ✅ Función para generar reporte PDF del hato
-function generarReporteHatoPDF() {
-    const printDiv = document.getElementById('printView');
-    const fecha = new Date().toLocaleDateString();
-    const totalAnimales = DB_CACHE.animales.length;
-    const pesoTotal = DB_CACHE.animales.reduce((s,a)=>s+a.historial[a.historial.length-1].peso,0);
-    const valorTotal = pesoTotal * (getCfg('precioKG')||9800);
-    
-    let animalesHTML = '';
-    DB_CACHE.animales.forEach(a => {
-        const p = a.historial[a.historial.length-1].peso;
-        const gmd = getGMD(a.historial);
-        animalesHTML += `<tr><td>${a.nombre}</td><td>${p} kg</td><td>${gmd>0?gmd.toFixed(2):'--'}</td><td>${getLoteName(a.loteId)}</td><td>$${fm(p*(getCfg('precioKG')||9800))}</td></tr>`;
-    });
-    
-    printDiv.innerHTML = `
-        <div class="print-header">
-            <div class="print-title">GANADERO ÉLITE PRO</div>
-            <div class="print-sub">Reporte General del Hato - Generado: ${fecha}</div>
-        </div>
-        <div class="print-grid">
-            <div class="print-card">
-                <h4>📊 Resumen General</h4>
-                <p>Total animales: <b>${totalAnimales}</b></p>                <p>Peso total: <b>${fm(pesoTotal)} kg</b></p>
-                <p>Valor total: <b>$${fm(valorTotal)}</b></p>
-                <p>Peso promedio: <b>${totalAnimales>0?fm(pesoTotal/totalAnimales):0} kg</b></p>
-                <p>Lotes: <b>${DB_CACHE.lotes.length}</b></p>
-            </div>
-            <div class="print-card">
-                <h4>💰 Parámetros Económicos</h4>
-                <p>Precio kg en pie: <b>$${fm(getCfg('precioKG')||9800)}</b></p>
-                <p>Costo fijo mensual: <b>$${fm(getCfg('costosFijosMensuales')||300000)}</b></p>
-            </div>
-        </div>
-        <div class="print-card">
-            <h4>🐄 Listado de Animales</h4>
-            <table class="print-table">
-                <thead><tr><th>Nombre</th><th>Peso</th><th>GMD</th><th>Lote</th><th>Valor</th></tr></thead>
-                <tbody>${animalesHTML}</tbody>
-            </table>
-        </div>
-        <div class="print-footer">Generado automáticamente por GANADERO ÉLITE PRO v${APP_VERSION} · 100% Offline</div>
-    `;
-    window.print();
-}
-
+// ✅ FLUJO DE CAJA SIMPLIFICADO
 const generarFlujoCajaMensual = (meses=6) => {
-    const cf=[]; let saldo=0; const cfM=getCfg('costosFijosMensuales')||300000; const precioBase=getCfg('precioKG')||9800; const estacionalidad=[1.0,1.0,1.0,1.05,1.05,1.1]; let breakEven=null, maxNeg=0;
+    const cf=[]; let saldo=0; const cfM=getCfg('costosFijosMensuales')||300000; const precioBase=getCfg('precioKG')||9800; const est=[1.0,1.0,1.0,1.05,1.05,1.1]; let breakEven=null, maxNeg=0;
     DB_CACHE.animales.forEach(a => {
         let p=a.historial[a.historial.length-1].peso; const gmdReal=getGMD(a.historial);
         for(let m=0; m<meses; m++){
             const pMes=gmdReal>0?p+(gmdReal*30):p; let venta=0;
-            if(a.proposito==='carne'&&p>=480&&gmdReal>0&&(m>0||p>=490)){venta=p*(precioBase*estacionalidad[m%6])*0.95; p=0;} else if(p>0&&gmdReal>0) p=pMes;
+            if(a.proposito==='carne'&&p>=480&&gmdReal>0&&(m>0||p>=490)){venta=p*(precioBase*est[m%6])*0.95; p=0;} else if(p>0&&gmdReal>0) p=pMes;
             const cd=getCostoDiarioConFD(p,a.proposito,calcRepro(a)?.estadoLactancia||'auto'), ingDia=calcularIngresoDiario(a,gmdReal,precioBase);
             const ingTotal=venta+(ingDia*30), costoVar=cd*30+getCostoSanidadDiario(a.id)*30, neto=ingTotal-costoVar-(a===DB_CACHE.animales[0]?cfM:0);
-            saldo+=neto; if(!cf[m]) cf[m]={mes:m+1,ingresos:0,costosVar:0,fijos:0,neto:0,saldo:0};
-            cf[m].ingresos+=ingTotal; cf[m].costosVar+=costoVar; cf[m].fijos+=(a===DB_CACHE.animales[0]?cfM:0); cf[m].neto+=neto; cf[m].saldo=saldo;
+            saldo+=neto; if(!cf[m]) cf[m]={mes:m+1,ingresos:0,gastos:0,neto:0,saldo:0};
+            cf[m].ingresos+=ingTotal; cf[m].gastos+=costoVar+(a===DB_CACHE.animales[0]?cfM:0); cf[m].neto+=neto; cf[m].saldo=saldo;
             if(saldo>0&&!breakEven) breakEven=m+1; if(saldo<maxNeg) maxNeg=saldo;
         }
     });
@@ -532,19 +390,18 @@ const getAlertasAnimal = (a) => {
     const pv=a.historial[a.historial.length-1].peso, gmd=getGMD(a.historial), et=getEtapa(pv,calcRepro(a));
     const cd=getCostoDiario(pv,a.proposito,et.estadoLactancia), cdC=getCostoAlimentosCustom(a.id,pv);
     const roia=calcularROIA(gmd,getCfg('precioKG'),cd+cdC); let al=[];
-    if(roia<1.0&&gmd>0){if(!a.tags)a.tags=[];if(!a.tags.includes('Descarte'))a.tags.push('Descarte');al.push({t:'r',m:'📉 ROIA <1.0. Evaluar descarte.',icon:'fa-chart-line'});} else if(a.tags){a.tags=a.tags.filter(t=>t!=='Descarte');}
-    if(a.fechaNacimiento){const ed=Math.floor((new Date()-new Date(a.fechaNacimiento))/864e5);if(ed>=15&&ed<=30)al.push({t:'warning',m:'✂️ Descornado/palpar',icon:'fa-calendar-check'});if(ed>=210&&pv<=150&&et.nombre==='Cría')al.push({t:'info',m:'🍼 Destete recomendado',icon:'fa-baby-carriage'});}
+    if(roia<1.0&&gmd>0){if(!a.tags)a.tags=[];if(!a.tags.includes('Descarte'))a.tags.push('Descarte');al.push({t:'r',m:'📉 ROIA <1.0. Evaluar descarte.',icon:'fa-chart-line'});} else if(a.tags){a.tags=a.tags.filter(t=>t!=='Descarte');}    if(a.fechaNacimiento){const ed=Math.floor((new Date()-new Date(a.fechaNacimiento))/864e5);if(ed>=15&&ed<=30)al.push({t:'warning',m:'✂️ Descornado/palpar',icon:'fa-calendar-check'});if(ed>=210&&pv<=150&&et.nombre==='Cría')al.push({t:'info',m:'🍼 Destete recomendado',icon:'fa-baby-carriage'});}
     if(gmd>0&&gmd<0.4)al.push({t:'purple',m:'⚠️ GMD bajo (<0.4)',icon:'fa-arrow-trend-down'});
     if(a.proposito==='leche'&&!a.fechaUltimoParto&&pv>=320)al.push({t:'info',m:'🐂 Habilitar monta',icon:'fa-venus-mars'});
     var tm=false,tiv=false; const apps = DB_CACHE.aplicaciones ? DB_CACHE.aplicaciones.filter(x=>x.animalId===a.id) : [];
-    apps.forEach(ap=>{const pr=getAllSanidad().find(x=>x.id===ap.productoId); if(pr){if(pr.id==='modificador'&&getDiasDesde(ap.fecha)<pr.diasEfecto)tm=true;if(pr.id.includes('ivermectina')&&getDiasDesde(ap.fecha)<pr.diasEfecto)tiv=true;if(pr.retiro>0&&getDiasDesde(ap.fecha)<pr.retiro){al.push({t:'r',m:'🚫 VEDA: '+pr.nombre,icon:'fa-clock'});a.bloqueadoPorRetiro=true;}else a.bloqueadoPorRetiro=false;}});    if(gmd>0&&gmd<0.4&&!tm)al.push({t:'purple',m:'Aplicar Modificador',icon:'fa-flask'}); if(!tiv)al.push({t:'r',m:'Desparasitación vencida',icon:'fa-shield-virus'}); return al; 
+    apps.forEach(ap=>{const pr=getAllSanidad().find(x=>x.id===ap.productoId); if(pr){if(pr.id==='modificador'&&getDiasDesde(ap.fecha)<pr.diasEfecto)tm=true;if(pr.id.includes('ivermectina')&&getDiasDesde(ap.fecha)<pr.diasEfecto)tiv=true;if(pr.retiro>0&&getDiasDesde(ap.fecha)<pr.retiro){al.push({t:'r',m:'🚫 VEDA: '+pr.nombre,icon:'fa-clock'});a.bloqueadoPorRetiro=true;}else a.bloqueadoPorRetiro=false;}});
+    if(gmd>0&&gmd<0.4&&!tm)al.push({t:'purple',m:'Aplicar Modificador',icon:'fa-flask'}); if(!tiv)al.push({t:'r',m:'Desparasitación vencida',icon:'fa-shield-virus'}); return al; 
 };
 
 const actualizarTransiciones = () => { let c=false; DB_CACHE.animales.forEach(a=>{if(a.transicionActiva&&a.transicionDias<7){a.transicionDias++;c=true;if(a.transicionDias>=7){a.transicionActiva=false;showToast(`✅ ${a.nombre}: Transición ok`);}}});if(c)save(); };
 const calcularAutonomiaBodega = () => { const ct={pasto:0,salvado:0,melaza:0,levadura:0,bicarb:0,sal:0,urea:0}, fd=getCfg('factoresDesperdicio')||{}; DB_CACHE.animales.forEach(a=>{const p=a.historial[a.historial.length-1].peso, d=getDiet(p,a.proposito,calcRepro(a)?.estadoLactancia||'auto',a.transicionDias||0,0,true); Object.keys(ct).forEach(k=>ct[k]+=(d[k]||0)*(1+(fd[k]||0))); }); const au={}; const st=getCfg('stock')||{}; Object.keys(ct).forEach(k=>{const s=st[k]||0, c=ct[k]||0.001; au[k]=c>0?Math.floor(s/c):999;}); return {consumo:ct, autonomia:au}; };
 const descontarInventarioDiario = () => { const {consumo}=calcularAutonomiaBodega(); const st=getCfg('stock')||{}; Object.keys(consumo).forEach(k=>{if(st[k]!==undefined){st[k]=Math.max(0,st[k]-consumo[k]);if(st[k]<consumo[k]*3)showToast(`⚠️ Stock bajo: ${NM[k]}`,5000);}}); setCfg('stock', st); save(); };
 
-// ✅ NOTIFICACIONES INTELIGENTES
 const verificarNotificaciones = () => {
     const alertas=[]; const hoy=new Date();
     DB_CACHE.animales.forEach(a => {
@@ -560,7 +417,6 @@ const verificarNotificaciones = () => {
     alertas.forEach(a=>showToast(a.msg, 6000));
 };
 
-// ✅ GRÁFICO SVG
 const renderGraficoEvolucion = (historial) => {
     if(historial.length<2) return '<div style="text-align:center;color:var(--text-muted);padding:12px;font-size:.75rem;background:rgba(255,255,255,.03);border-radius:10px;margin-top:8px">Se necesitan ≥2 pesajes</div>';
     const datos=historial.map(h=>{const p=h.fecha.split('/'); return {fecha:new Date(p[2],p[1]-1,p[0]),peso:h.peso,fechaStr:h.fecha};}).sort((a,b)=>a.fecha-b.fecha);
@@ -573,30 +429,22 @@ const renderGraficoEvolucion = (historial) => {
     return `<div class="chart-box"><svg viewBox="0 0 ${w} ${h}" style="display:block">${gridY}<path d="${pathD}" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>${circles}${dates}</svg></div>`;
 };
 
-// ✅ CÁMARA & WAKE LOCK
 let wakeLock = null;
-async function requestWakeLock() {
-    if('wakeLock' in navigator) { try { wakeLock = await navigator.wakeLock.request('screen'); wakeLock.addEventListener('release', ()=>{ wakeLock=null; }); } catch(e){} }
-}
+async function requestWakeLock() { if('wakeLock' in navigator) { try { wakeLock = await navigator.wakeLock.request('screen'); wakeLock.addEventListener('release', ()=>{ wakeLock=null; }); } catch(e){} } }
 function releaseWakeLock() { if(wakeLock) { wakeLock.release(); wakeLock=null; } }
 
-// ✅ FUNCIÓN MEJORADA PARA SUBIR FOTOS (GALERÍA + CÁMARA + VALIDACIÓN)
 async function handlePhotoUpload(file, animalId) {
     if(!file) return;
     if(!file.type.startsWith('image/')) return showToast('⚠️ Solo imágenes');
     if(file.size > 5 * 1024 * 1024) return showToast('⚠️ Máximo 5MB');
-    
-    const img = new Image();    img.onload = () => {
-        const canvas = document.createElement('canvas');
-        const MAX = 800; let w = img.width, h = img.height;
+    const img = new Image();
+    img.onload = () => {
+        const canvas = document.createElement('canvas');        const MAX = 800; let w = img.width, h = img.height;
         if(w > h) { if(w > MAX) { h *= MAX/w; w = MAX; } } else { if(h > MAX) { w *= MAX/h; h = MAX; } }
         canvas.width = w; canvas.height = h;
         canvas.getContext('2d').drawImage(img, 0, 0, w, h);
         const a = DB_CACHE.animales.find(x => x.id === animalId);
-        if(a) { 
-            a.foto = canvas.toDataURL('image/jpeg', 0.7); 
-            save(); showProfile(animalId); showToast('✅ Foto guardada'); 
-        }
+        if(a) { a.foto = canvas.toDataURL('image/jpeg', 0.7); save(); showProfile(animalId); showToast('✅ Foto guardada'); }
     };
     img.onerror = () => showToast('⚠️ Error al cargar');
     img.src = URL.createObjectURL(file);
@@ -635,12 +483,12 @@ function renderInicio() {
         getAlertasAnimal(a).forEach(s=>als.push({nombre:a.nombre,t:s.t,m:s.m,icon:s.icon}));
         const diet=getDiet(p,a.proposito,ea,a.transicionDias||0,rep?.diasGestacion||0);
         Object.keys(totalDiet).forEach(k=>totalDiet[k]+=diet[k]||0);
-    });    const prom=ta?tKg/ta:0, pctB=ta?((est.verde+est.azul)/ta)*100:0, fc=generarFlujoCajaMensual(6), ab=calcularAutonomiaBodega().autonomia;
+    });
+    const prom=ta?tKg/ta:0, pctB=ta?((est.verde+est.azul)/ta)*100:0, fc=generarFlujoCajaMensual(6), ab=calcularAutonomiaBodega().autonomia;
 
     let html=`<div class="card" style="background:linear-gradient(135deg,rgba(255,185,0,.08),rgba(255,185,0,.02));border-color:rgba(255,185,0,.2)">
         <div class="row-label mb6" style="font-weight:600;color:var(--accent)"><i class="fa-solid fa-coins"></i> PRECIO KG EN PIE</div>
-        <div style="display:flex;align-items:center;gap:6px"><span style="font-size:1.1rem;font-weight:700;color:var(--accent)">$</span>
-        <input id="inpPKG" type="number" value="${getCfg('precioKG')||9800}" style="font-size:1.1rem;font-weight:600;text-align:center;background:transparent;border:none;color:var(--accent);padding:8px;width:100%"><span style="font-size:.7rem;color:var(--text-muted)">COP</span></div>
+        <div style="display:flex;align-items:center;gap:6px"><span style="font-size:1.1rem;font-weight:700;color:var(--accent)">$</span>        <input id="inpPKG" type="number" value="${getCfg('precioKG')||9800}" style="font-size:1.1rem;font-weight:600;text-align:center;background:transparent;border:none;color:var(--accent);padding:8px;width:100%"><span style="font-size:.7rem;color:var(--text-muted)">COP</span></div>
         <button class="btn btn-green mt8" onclick="setCfg('precioKG',parseFloat(document.getElementById('inpPKG').value)||0);save();renderInicio();showToast('✅ Precio actualizado')"><i class="fa-solid fa-check"></i> ACTUALIZAR</button></div>
     <div class="card"><div class="row-label mb6" style="font-weight:600"><i class="fa-solid fa-chart-pie"></i> RESUMEN</div><div class="stats-grid">
         <div class="stat-item"><div class="row-label"><i class="fa-solid fa-users"></i> Cabezas</div><div class="row-val">${ta}</div></div>
@@ -670,7 +518,7 @@ function renderInicio() {
         <div class="cf-box"><div class="val" style="color:var(--accent)">${fc.breakEven}m</div><div class="lbl">Punto Equilibrio</div></div>
         <div class="cf-box"><div class="val">${fc.roi}%</div><div class="lbl">ROI Est.</div></div></div>
         <table class="cf-table"><thead><tr><th>Mes</th><th>Ingresos</th><th>Gastos</th><th>Neto</th><th>Saldo</th></tr></thead><tbody>`;
-        fc.flujo.forEach(f=>{html+=`<tr><td>${f.mes}</td><td class="cf-pos">$${fm(f.ingresos)}</td><td class="cf-neg">$${fm(f.costosVar+f.fijos)}</td><td class="${f.neto>=0?'cf-pos':'cf-neg'}">$${fm(f.neto)}</td><td class="${f.saldo>=0?'cf-pos':'cf-neg'}" style="font-weight:600">$${fm(f.saldo)}</td></tr>`;});
+        fc.flujo.forEach(f=>{html+=`<tr><td>${f.mes}</td><td class="cf-pos">$${fm(f.ingresos)}</td><td class="cf-neg">$${fm(f.gastos)}</td><td class="${f.neto>=0?'cf-pos':'cf-neg'}">$${fm(f.neto)}</td><td class="${f.saldo>=0?'cf-pos':'cf-neg'}" style="font-weight:600">$${fm(f.saldo)}</td></tr>`;});
         html+=`</tbody></table></div>`;
     }
     if(als.length){html+=`<div class="card"><div style="font-weight:600;font-size:.7rem;margin-bottom:8px;color:var(--text-muted)"><i class="fa-solid fa-bell"></i> ALERTAS</div>`;als.slice(0,5).forEach(a=>{const cl=a.t==='r'?'alert-danger':a.t==='purple'?'alert-purple':'alert-warning';html+=`<div class="alert-item ${cl}"><i class="fa-solid ${a.icon}"></i><div><b>${a.nombre||''}</b>: ${a.m}</div></div>`;});html+='</div>';}
@@ -684,14 +532,12 @@ function renderInicio() {
 function renderLotes(){let h=`<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><span style="font-weight:600;color:var(--accent)"><i class="fa-solid fa-layer-group"></i> LOTES</span><button class="btn btn-sm btn-gold" style="width:auto;padding:7px 12px" onclick="showAddLoteModal()"><i class="fa-solid fa-plus"></i> Crear</button></div>`;if(!DB_CACHE.lotes.length)h+='<div style="text-align:center;padding:20px;color:var(--text-muted)">Sin lotes</div>';DB_CACHE.lotes.forEach(l=>{const na=getAnimalesByLote(l.id).length,pt=getAnimalesByLote(l.id).reduce((s,a)=>s+a.historial[a.historial.length-1].peso,0);h+=`<div class="lote-card" style="border-color:${l.color}30" onclick="animalFilterLote='${l.id}';goPage('animales')"><div style="position:absolute;top:0;left:0;width:4px;height:100%;background:${l.color};border-radius:4px 0 0 4px"></div><div class="lote-header"><div><div class="lote-name">${l.nombre}</div><div class="lote-stats"><b>${na}</b> · <b>${fm(pt)}kg</b></div></div><div style="display:flex;gap:6px" onclick="event.stopPropagation()"><div class="lote-color" style="background:${l.color}" onclick="showEditLoteColor('${l.id}')"></div><button class="btn btn-sm btn-danger" style="width:28px;padding:0;height:28px" onclick="event.stopPropagation();deleteLote('${l.id}')"><i class="fa-solid fa-trash"></i></button></div></div></div>`;});h+='</div>';document.getElementById('v-lotes').innerHTML=h;}
 
 // ✅ RENDER ANIMALES: AUTO-RETRY + SIN BOTONES EXTRA
-function renderAnimales(){    // ✅ Diagnóstico automático: si no hay datos, muestra spinner y reintenta
+function renderAnimales(){
     if (DB_CACHE.animales.length === 0) {
         document.getElementById('v-animales').innerHTML = `<div style="text-align:center;padding:40px 20px;color:var(--text-muted)">
             <i class="fa-solid fa-spinner fa-spin" style="font-size:2.5rem;margin-bottom:12px;color:var(--accent)"></i>
             <div style="font-size:0.9rem;font-weight:600">Cargando base de datos...</div>
-        </div>`;
-        setTimeout(renderAnimales, 800); // Auto-reintento cada 0.8s
-        return;
+        </div>`;        setTimeout(renderAnimales, 800); return;
     }
 
     let f = DB_CACHE.animales;
@@ -733,14 +579,14 @@ function renderAnimales(){    // ✅ Diagnóstico automático: si no hay datos, 
             ${ret?'<div class="retiro-badge">🚫 VEDA</div>':''}
             <div class="cm" style="color:${r.cm>=0?'var(--success)':'var(--danger)'}">${r.cm>=0?'+':''}${r.cm.toFixed(1)}%</div>
         </div>`;
-    });    h += '</div>';
+    });
+    h += '</div>';
     document.getElementById('v-animales').innerHTML = h;
     
     const si = document.getElementById('animSearch');
     if(si){
         si.addEventListener('input', e => {
-            clearTimeout(searchTimeout);
-            searchTimeout = setTimeout(() => {
+            clearTimeout(searchTimeout);            searchTimeout = setTimeout(() => {
                 animalSearch = e.target.value.trim();
                 sessionStorage.setItem('searchAnim', animalSearch);
                 renderAnimales();
@@ -756,43 +602,39 @@ function renderInsumoSanidad(){let h=`<div class="card" style="padding:14px 16px
 function saveInventario(){let st=getCfg('stock')||{}; let pr=getCfg('precios')||{}; let u=getCfg('unidadesPrecio')||{}; AL.forEach(id=>{const prEl=document.getElementById(`pr-${id}`),stEl=document.getElementById(`st-${id}`);if(prEl) pr[id]=parseFloat(prEl.value)||0;if(stEl) st[id]=parseFloat(stEl.value)||0;if(!u[id]) u[id]='kg';}); setCfg('stock', st); setCfg('precios', pr); setCfg('unidadesPrecio', u); save(); showToast('✅ Inventario actualizado');}
 function saveInventarioSanidad(){let stS=getCfg('stockSanidad')||{}; let prS=getCfg('preciosSanidad')||{}; getAllSanidad().forEach(p=>{const prEl=document.getElementById(`pr-${p.id}`),stEl=document.getElementById(`st-${p.id}`);if(prEl) { prS[p.id]=parseFloat(prEl.value)||0; if(!p.esBase){const c=DB_CACHE.sanidad[p.id]; if(c) c.precioML=prS[p.id];} }if(stEl) stS[p.id]=parseFloat(stEl.value)||0;}); setCfg('stockSanidad', stS); setCfg('preciosSanidad', prS); save(); showToast('✅ Sanidad actualizada');}
 
-// ✅ RENDER CONFIGURACIÓN CON BOTÓN PDF
-function renderConfig(){const ls=lastSaveTime?formatTimeAgo(lastSaveTime):'Nunca';document.getElementById('v-config').innerHTML=`<div class="card"><div class="config-item" onclick="exportData()"><i class="fa-solid fa-download"></i><div class="cfg-text"><span>Exportar Respaldo</span><small>JSON completo</small></div><i class="fa-solid fa-chevron-right" style="color:var(--text-muted)"></i></div><div class="config-item" onclick="importData()"><i class="fa-solid fa-upload"></i><div class="cfg-text"><span>Importar Datos</span><small>Restaurar archivo</small></div><i class="fa-solid fa-chevron-right" style="color:var(--text-muted)"></i></div><div class="config-item" onclick="generarReporteHatoPDF()"><i class="fa-solid fa-file-pdf"></i><div class="cfg-text"><span>Reporte PDF del Hato</span><small>Exportar informe general</small></div><i class="fa-solid fa-chevron-right" style="color:var(--text-muted)"></i></div><div class="config-item" onclick="if(confirm('⚠️ ¿Borrar TODO?')){clearAllData();}"><i class="fa-solid fa-trash-can" style="color:var(--danger)"></i><div class="cfg-text"><span style="color:var(--danger)">Borrar Todo</span><small>Eliminar base de datos</small></div><i class="fa-solid fa-chevron-right" style="color:var(--text-muted)"></i></div><div class="row"><span class="row-label"><i class="fa-solid fa-calculator"></i> Descontar inventario diario</span><button class="btn btn-sm btn-green" style="width:auto;padding:8px 14px;margin:0" onclick="descontarInventarioDiario();renderInsumos()"><i class="fa-solid fa-arrow-down"></i> Ejecutar</button></div><div class="row"><span class="row-label"><i class="fa-solid fa-floppy-disk"></i> Auto-guardado</span><span class="row-val" style="color:var(--success)">✅ Activo</span></div><div class="row"><span class="row-label"><i class="fa-solid fa-clock"></i> Último guardado</span><span class="row-val">${ls}</span></div></div><div class="card" style="text-align:center;padding:24px 18px"><div style="font-size:2rem;margin-bottom:8px"><svg class="crown-svg" viewBox="0 0 24 24" style="width:44px;height:44px"><path d="M2.5 18.5l1.5-12 5.5 4 2.5-6 2.5 6 5.5-4 1.5 12h-19z"/></svg></div><div style="font-weight:700;color:var(--accent)">GANADERO ÉLITE PRO</div><div style="font-size:.65rem;color:var(--text-muted);margin-top:4px">v${APP_VERSION} (IndexedDB)</div><input type="file" id="importFile" accept=".json" style="display:none" onchange="handleImport(event)"></div>`;}
+function generarReporteHatoPDF() {
+    const printDiv = document.getElementById('printView');
+    const fecha = new Date().toLocaleDateString();
+    const totalAnimales = DB_CACHE.animales.length;
+    const pesoTotal = DB_CACHE.animales.reduce((s,a)=>s+a.historial[a.historial.length-1].peso,0);
+    const valorTotal = pesoTotal * (getCfg('precioKG')||9800);
+    let animalesHTML = '';
+    DB_CACHE.animales.forEach(a => {
+        const p = a.historial[a.historial.length-1].peso; const gmd = getGMD(a.historial);
+        animalesHTML += `<tr><td>${a.nombre}</td><td>${p} kg</td><td>${gmd>0?gmd.toFixed(2):'--'}</td><td>${getLoteName(a.loteId)}</td><td>$${fm(p*(getCfg('precioKG')||9800))}</td></tr>`;
+    });
+    printDiv.innerHTML = `
+        <div class="print-header"><div class="print-title">GANADERO ÉLITE PRO</div><div class="print-sub">Reporte General del Hato - Generado: ${fecha}</div></div>
+        <div class="print-grid"><div class="print-card"><h4>📊 Resumen</h4><p>Total: <b>${totalAnimales}</b></p><p>Peso: <b>${fm(pesoTotal)} kg</b></p><p>Valor: <b>$${fm(valorTotal)}</b></p></div>
+        <div class="print-card"><h4>💰 Parámetros</h4><p>Precio kg: <b>$${fm(getCfg('precioKG')||9800)}</b></p><p>Costo fijo: <b>$${fm(getCfg('costosFijosMensuales')||300000)}</b></p></div></div>
+        <div class="print-card"><h4>🐄 Listado</h4><table class="print-table"><thead><tr><th>Nombre</th><th>Peso</th><th>GMD</th><th>Lote</th><th>Valor</th></tr></thead><tbody>${animalesHTML}</tbody></table></div>
+        <div class="print-footer">Generado por GANADERO ÉLITE PRO v${APP_VERSION} · 100% Offline</div>`;
+    window.print();
+}
+
+function renderConfig(){const ls=lastSaveTime?formatTimeAgo(lastSaveTime):'Nunca';document.getElementById('v-config').innerHTML=`<div class="card"><div class="config-item" onclick="exportData()"><i class="fa-solid fa-download"></i><div class="cfg-text"><span>Exportar Respaldo</span><small>JSON completo</small></div><i class="fa-solid fa-chevron-right" style="color:var(--text-muted)"></i></div><div class="config-item" onclick="importData()"><i class="fa-solid fa-upload"></i><div class="cfg-text"><span>Importar Datos</span><small>Restaurar archivo</small></div><i class="fa-solid fa-chevron-right" style="color:var(--text-muted)"></i></div><div class="config-item" onclick="generarReporteHatoPDF()"><i class="fa-solid fa-file-pdf"></i><div class="cfg-text"><span>Reporte PDF del Hato</span><small>Exportar informe</small></div><i class="fa-solid fa-chevron-right" style="color:var(--text-muted)"></i></div><div class="config-item" onclick="if(confirm('⚠️ ¿Borrar TODO?')){clearAllData();}"><i class="fa-solid fa-trash-can" style="color:var(--danger)"></i><div class="cfg-text"><span style="color:var(--danger)">Borrar Todo</span><small>Eliminar base de datos</small></div><i class="fa-solid fa-chevron-right" style="color:var(--text-muted)"></i></div><div class="row"><span class="row-label"><i class="fa-solid fa-calculator"></i> Descontar inventario diario</span><button class="btn btn-sm btn-green" style="width:auto;padding:8px 14px;margin:0" onclick="descontarInventarioDiario();renderInsumos()"><i class="fa-solid fa-arrow-down"></i> Ejecutar</button></div><div class="row"><span class="row-label"><i class="fa-solid fa-floppy-disk"></i> Auto-guardado</span><span class="row-val" style="color:var(--success)">✅ Activo</span></div><div class="row"><span class="row-label"><i class="fa-solid fa-clock"></i> Último guardado</span><span class="row-val">${ls}</span></div></div><div class="card" style="text-align:center;padding:24px 18px"><div style="font-size:2rem;margin-bottom:8px"><svg class="crown-svg" viewBox="0 0 24 24" style="width:44px;height:44px"><path d="M2.5 18.5l1.5-12 5.5 4 2.5-6 2.5 6 5.5-4 1.5 12h-19z"/></svg></div><div style="font-weight:700;color:var(--accent)">GANADERO ÉLITE PRO</div><div style="font-size:.65rem;color:var(--text-muted);margin-top:4px">v${APP_VERSION}</div><input type="file" id="importFile" accept=".json" style="display:none" onchange="handleImport(event)"></div>`;}
 function exportData(){const b=new Blob([JSON.stringify(DB_CACHE)],{type:'application/json'}),u=URL.createObjectURL(b),a=document.createElement('a');a.href=u;a.download=`ganadero_backup_v${APP_VERSION}_${new Date().toISOString().slice(0,10)}.json`;a.click();showToast('✅ Respaldo descargado');}
 function importData(){document.getElementById('importFile').click();}
 function handleImport(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=async ev=>{try{const d=JSON.parse(ev.target.result);if(d.animales&&d.lotes){await clearAllData(); await initCacheFromJSON(d); showToast('✅ Datos importados'); renderInicio(); }else showToast('⚠️ Archivo inválido');}catch{showToast('⚠️ Error al leer');}};r.readAsText(f);}
-
-async function clearAllData() {
-    if(isIndexedDB) {
-        await DB.clear('animales'); await DB.clear('lotes'); await DB.clear('config'); await DB.clear('inventario'); await DB.clear('sanidad');
-    }
-    localStorage.clear();
-    location.reload();
-}
+async function clearAllData() { if(isIndexedDB) { await DB.clear('animales'); await DB.clear('lotes'); await DB.clear('config'); await DB.clear('inventario'); await DB.clear('sanidad'); } localStorage.clear(); location.reload(); }
 async function initCacheFromJSON(d) {
-    DB_CACHE.animales = d.animales || [];
-    DB_CACHE.lotes = d.lotes || [];
-    DB_CACHE.config = {
-        precios: d.precios, stock: d.stock, preciosSanidad: d.preciosSanidad, stockSanidad: d.stockSanidad,
-        precioKG: d.precioKG, precioLeche: d.precioLeche, valorCria: d.valorCria, intervaloPartos: d.intervaloPartos,
-        costosFijosMensuales: d.costosFijosMensuales, factoresDesperdicio: d.factoresDesperdicio, unidadesPrecio: d.unidadesPrecio
-    };
+    DB_CACHE.animales = d.animales || []; DB_CACHE.lotes = d.lotes || [];
+    DB_CACHE.config = { precios: d.precios, stock: d.stock, preciosSanidad: d.preciosSanidad, stockSanidad: d.stockSanidad, precioKG: d.precioKG, precioLeche: d.precioLeche, valorCria: d.valorCria, intervaloPartos: d.intervaloPartos, costosFijosMensuales: d.costosFijosMensuales, factoresDesperdicio: d.factoresDesperdicio, unidadesPrecio: d.unidadesPrecio };
     DB_CACHE.inventario = {}; (d.alimentosCustom||[]).forEach(i => DB_CACHE.inventario[i.id] = i);
     DB_CACHE.sanidad = {}; (d.sanidadCustom||[]).forEach(s => DB_CACHE.sanidad[s.id] = s);
-    DB_CACHE.aplicaciones = d.aplicaciones || [];
-    DB_CACHE.asignacionesAlimentos = d.asignacionesAlimentos || {};
-    
-    if(isIndexedDB) {        await Promise.all([
-            ...DB_CACHE.animales.map(a => DB.put('animales', a)),
-            ...DB_CACHE.lotes.map(l => DB.put('lotes', l)),
-            Object.keys(DB_CACHE.config).map(k => DB.put('config', {key:k, value:DB_CACHE.config[k]})),
-            Object.values(DB_CACHE.inventario).map(i => DB.put('inventario', i)),
-            Object.values(DB_CACHE.sanidad).map(s => DB.put('sanidad', s))
-        ]);
-    }
+    DB_CACHE.aplicaciones = d.aplicaciones || []; DB_CACHE.asignacionesAlimentos = d.asignacionesAlimentos || {};
+    if(isIndexedDB) { await Promise.all([ ...DB_CACHE.animales.map(a => DB.put('animales', a)), ...DB_CACHE.lotes.map(l => DB.put('lotes', l)), Object.keys(DB_CACHE.config).map(k => DB.put('config', {key:k, value:DB_CACHE.config[k]})), Object.values(DB_CACHE.inventario).map(i => DB.put('inventario', i)), Object.values(DB_CACHE.sanidad).map(s => DB.put('sanidad', s)) ]); }
 }
-
-// ✅ FUNCIÓN AUXILIAR PARA COLORES DE MÉTRICAS
 const getColorMetrica = (valor, umbralBajo=0, umbralAlto=null) => {
     if(valor < umbralBajo) return 'var(--danger)';
     if(umbralAlto && valor >= umbralAlto) return 'var(--success)';
@@ -800,7 +642,7 @@ const getColorMetrica = (valor, umbralBajo=0, umbralAlto=null) => {
     return 'var(--text-muted)';
 };
 
-// ==================== PERFIL COMPLETO CON MEJORAS ====================
+// ==================== PERFIL COMPLETO ====================
 function showProfile(id){
     const a=DB_CACHE.animales.find(x=>x.id===id);if(!a)return;
     const p=a.historial[a.historial.length-1].peso,rep=calcRepro(a),et=getEtapa(p,rep);
@@ -809,7 +651,6 @@ function showProfile(id){
     let etxt='--';if(a.fechaNacimiento){const n=new Date(a.fechaNacimiento),h=new Date(),d=Math.ceil(Math.abs(h-n)/864e5);etxt=d>60?`${Math.floor(d/30)}m`:`${d}d`;}
     const mama=a.madreId?(DB_CACHE.animales.find(x=>x.id==a.madreId)?.nombre||'--'):'--';
     const fotoStyle = a.foto ? `background-image:url('${a.foto}')` : '';
-    
     const gv = gmd > 0 ? gmd : 0;
     const cd = getCostoDiario(p, a.proposito, rep?.estadoLactancia || 'auto');
     const csd = getCostoSanidadDiario(id);
@@ -823,81 +664,46 @@ function showProfile(id){
     const proy30 = gv > 0 ? p + (gv * 30) : p;
     const proy60 = gv > 0 ? p + (gv * 60) : p;
     const proy120 = gv > 0 ? p + (gv * 120) : p;
-    
-    // ✅ Colores dinámicos automáticos
     const gmdColor = getColorMetrica(gmd, 0.3, 0.8);
     const mgColor = mgDiario >= 0 ? 'var(--success)' : 'var(--danger)';
     const mgSign = mgDiario >= 0 ? '+' : '-';
     
     let html=`<div class="sp-container">
         <div class="sp-header">
-            <button class="sp-back" onclick="closeProfile()" aria-label="Volver"><i class="fa-solid fa-arrow-left"></i></button>            <div class="sp-header-title">${a.nombre}</div>
+            <button class="sp-back" onclick="closeProfile()" aria-label="Volver"><i class="fa-solid fa-arrow-left"></i></button>
+            <div class="sp-header-title">${a.nombre}</div>
             <div class="sp-header-actions">
                 <button class="sp-back" onclick="shareAnimal(${id})" style="font-size:0.9rem;width:30px;height:30px" aria-label="Compartir"><i class="fa-solid fa-share-nodes"></i></button>
                 <button class="sp-back" onclick="confirmDeleteAnimal(${id})" style="font-size:0.9rem;width:30px;height:30px;color:var(--danger)" aria-label="Eliminar"><i class="fa-solid fa-trash-can"></i></button>
             </div>
         </div>
-
         <div class="sp-hero">
-            <!-- ✅ INPUT DE FOTO: Sin capture="environment" para permitir galería -->
             <input type="file" id="photoInput" accept="image/*" style="display:none" onchange="handlePhotoUpload(this.files[0], ${id})">
-            <div class="sp-avatar-large" style="${fotoStyle}; cursor:pointer" onclick="document.getElementById('photoInput').click()" aria-label="Cambiar foto">
-                ${!a.foto ? '<span style="font-size:2rem">🐄</span>' : ''}
-            </div>
+            <div class="sp-avatar-large" style="${fotoStyle}; cursor:pointer" onclick="document.getElementById('photoInput').click()" aria-label="Cambiar foto">${!a.foto ? '<span style="font-size:2rem">🐄</span>' : ''}</div>
             <div class="sp-hero-name">${a.nombre}</div>
             <div class="sp-hero-badges">
                 <span class="sp-badge" style="border-color:${et.color};color:${et.color}">${et.nombre}</span>
                 <span class="sp-badge">${getLoteName(a.loteId)}</span>
-                <span class="sp-badge">${a.proposito==='carne'?'🥩 Carne':'🥛 Leche'}</span>
-            </div>
-            
+                <span class="sp-badge">${a.proposito==='carne'?'🥩 Carne':'🥛 Leche'}</span>            </div>
             <div class="sp-metrics" style="grid-template-columns: repeat(3, 1fr);">
-                <div class="sp-metric">
-                    <span class="val">${fm(p)} kg</span>
-                    <span class="lbl">Peso Actual</span>
-                </div>
-                <div class="sp-metric">
-                    <span class="val" style="color:${gmdColor}">${gmd!==0?gmd.toFixed(2):'--'}</span>
-                    <span class="lbl">GMD (kg/d)</span>
-                </div>
-                <div class="sp-metric">
-                    <span class="val" style="color:var(--accent)">$${fm(valA)}</span>
-                    <span class="lbl">Valor</span>
-                </div>
+                <div class="sp-metric"><span class="val">${fm(p)} kg</span><span class="lbl">Peso Actual</span></div>
+                <div class="sp-metric"><span class="val" style="color:${gmdColor}">${gmd!==0?gmd.toFixed(2):'--'}</span><span class="lbl">GMD (kg/d)</span></div>
+                <div class="sp-metric"><span class="val" style="color:var(--accent)">$${fm(valA)}</span><span class="lbl">Valor</span></div>
             </div>
-            <div style="font-size:0.7rem;color:var(--text-muted);margin-top:12px;">
-                Edad: <b>${etxt}</b> · Mama: <b>${mama}</b> · Retiro: <b>${a.bloqueadoPorRetiro?'⚠️ Sí':'✅ No'}</b>
-            </div>
+            <div style="font-size:0.7rem;color:var(--text-muted);margin-top:12px;">Edad: <b>${etxt}</b> · Mama: <b>${mama}</b> · Retiro: <b>${a.bloqueadoPorRetiro?'⚠️ Sí':'✅ No'}</b></div>
         </div>
-
         <div class="sp-content">
             ${getAlertasAnimal(a).map(s => `<div class="alert-item alert-${s.t==='r'?'danger':s.t==='purple'?'purple':'warning'}" style="margin-bottom:12px"><i class="fa-solid ${s.icon}"></i> ${s.m}</div>`).join('')}
-
-            <div class="sp-card">
-                <div class="sp-card-header"><div class="sp-card-title"><i class="fa-solid fa-chart-line"></i> Evolución de Peso</div></div>
-                ${renderGraficoEvolucion(a.historial)}
-            </div>
-
+            <div class="sp-card"><div class="sp-card-header"><div class="sp-card-title"><i class="fa-solid fa-chart-line"></i> Evolución de Peso</div></div>${renderGraficoEvolucion(a.historial)}</div>
             <div class="sp-card">
                 <div class="sp-card-header"><div class="sp-card-title"><i class="fa-solid fa-chart-line"></i> RENTABILIDAD</div></div>
-                <div class="sp-metrics" style="grid-template-columns: repeat(3, 1fr);">                    <div class="sp-metric">
-                        <span class="val" style="color: ${mgColor}">${mgSign}$${fm(Math.abs(mgDiario))}</span>
-                        <span class="lbl">Margen Diario</span>
-                    </div>
-                    <div class="sp-metric">
-                        <span class="val">${roia.toFixed(2)}x</span>
-                        <span class="lbl">ROIA</span>
-                    </div>
-                    <div class="sp-metric">
-                        <span class="val">${ckp !== null ? '$' + fm(ckp) : '--'}</span>
-                        <span class="lbl">Costo/kg</span>
-                    </div>
+                <div class="sp-metrics" style="grid-template-columns: repeat(3, 1fr);">
+                    <div class="sp-metric"><span class="val" style="color: ${mgColor}">${mgSign}$${fm(Math.abs(mgDiario))}</span><span class="lbl">Margen Diario</span></div>
+                    <div class="sp-metric"><span class="val">${roia.toFixed(2)}x</span><span class="lbl">ROIA</span></div>
+                    <div class="sp-metric"><span class="val">${ckp !== null ? '$' + fm(ckp) : '--'}</span><span class="lbl">Costo/kg</span></div>
                 </div>
-                <div style="font-size: 0.65rem; text-align: center; color: var(--text-muted); margin-top: 8px;">
-                    Ingreso: $${fm(ingresoDiario)} · Costo: $${fm(costoDiarioTotal)} · Agua: ${agua.toFixed(1)} L/d
-                </div>
+                <div style="font-size: 0.65rem; text-align: center; color: var(--text-muted); margin-top: 8px;">Ingreso: $${fm(ingresoDiario)} · Costo: $${fm(costoDiarioTotal)} · Agua: ${agua.toFixed(1)} L/d</div>
             </div>
-
             <div class="sp-card">
                 <div class="sp-card-header"><div class="sp-card-title"><i class="fa-solid fa-calendar-week"></i> PROYECCIONES</div></div>
                 <div class="sp-metrics" style="grid-template-columns: repeat(4, 1fr);">
@@ -909,7 +715,6 @@ function showProfile(id){
                 <div class="progress" style="margin-top: 12px;"><div class="progress-fill" style="width: ${Math.min(100, (p / 500) * 100)}%; background: var(--accent);"></div></div>
                 <div style="font-size: 0.6rem; text-align: center; color: var(--text-muted);">${fm(p)} / 500 kg (${Math.min(100, (p / 500) * 100).toFixed(0)}%)</div>
             </div>
-
             <div class="sp-card">
                 <div class="sp-card-header"><div class="sp-card-title"><i class="fa-solid fa-wheat-awn"></i> Dieta & Costos</div><button class="btn btn-sm btn-purple" style="width:auto;padding:4px 8px;margin:0;font-size:0.6rem" onclick="showModalAsignarAlimento(${id})">+ Alimento</button></div>
                 <div class="row"><span class="row-label"><i class="fa-solid fa-receipt"></i> Costo Diario Total</span><span class="row-val" style="color:var(--warning)">$ ${fm(costoDiarioTotal)}</span></div>
@@ -923,7 +728,6 @@ function showProfile(id){
                     return `<div class="row"><span class="row-label"><i class="fa-solid ${IC[k]}"></i> ${NM[k]}</span><span class="row-val">${dp}${u} ${msNote}</span></div>`;
                 }).join('')}
             </div>
-
             ${a.proposito === 'leche' && rep ? `
             <div class="sp-card" style="border-left:4px solid ${rep.semaforo.color}">
                 <div class="sp-card-header"><div class="sp-card-title" style="color:${rep.semaforo.color}"><i class="fa-solid fa-heart"></i> Reproductivo</div></div>
@@ -932,16 +736,13 @@ function showProfile(id){
                 <div class="row"><span class="row-label"><i class="fa-solid fa-baby"></i> Próximo parto</span><span class="row-val">${rep.fechaProxParto || '--'}</span></div>                ${rep.avisoSecado ? '<div style="margin-top:8px;background:rgba(59,130,246,.1);color:#60a5fa;padding:8px;border-radius:8px;font-size:.75rem;text-align:center">💧 <b>Dieta Seca:</b> Iniciar en 60 días</div>' : ''}
                 <button class="btn btn-sm btn-purple mt8" onclick="showReproModal(${id})"><i class="fa-solid fa-pen"></i> Registrar Evento</button>
             </div>` : ''}
-
         </div>
-
         <div class="sp-actions-bar">
             <button class="btn btn-gold" onclick="updateWeight(${id})"><i class="fa-solid fa-scale-balanced"></i> Pesaje</button>
             <button class="btn btn-purple" onclick="openAplicarProducto(${id})"><i class="fa-solid fa-syringe"></i> Sanidad</button>
             <button class="btn btn-green" onclick="showModalAsignarAlimento(${id})"><i class="fa-solid fa-plus"></i> Alimento</button>
         </div>
     </div>`;
-    
     document.querySelectorAll('.page').forEach(el=>el.classList.add('hidden'));
     document.getElementById('v-perfil').classList.remove('hidden');
     document.getElementById('v-perfil').innerHTML=html;
@@ -978,22 +779,63 @@ function showModalGestionAlimentos(){showModal(`<div style="font-weight:700;marg
 async function guardarAlimentoCustom(){const n=document.getElementById('acNombre').value.trim(),d=parseFloat(document.getElementById('acDosis').value),pt=parseFloat(document.getElementById('acPrecioTotal').value),ct=parseFloat(document.getElementById('acCantidadTotal').value);if(!n||isNaN(d)||isNaN(pt)||isNaN(ct))return showToast('⚠️ Completa');const id='ac_'+Date.now();const item={id,nombre:n,icono:document.getElementById('acIcono').value,unidad:document.getElementById('acUnidad').value,dosisPorKg:d,precioUnitario:pt/ct,stock:ct};DB_CACHE.inventario[id]=item;if(isIndexedDB) await DB.put('inventario', item); document.querySelector('.modal-overlay').remove(); showToast('✅ Agregado'); renderInsumos(); }
 async function deleteAlimentoCustom(id){if(!confirm('¿Eliminar?'))return;delete DB_CACHE.inventario[id];if(isIndexedDB) await DB.clear('inventario'); Object.values(DB_CACHE.inventario).forEach(i => DB.put('inventario', i)); renderInsumos();}
 function showModalGestionSanidad(){showModal(`<div style="font-weight:700;margin-bottom:12px;color:var(--accent)"><i class="fa-solid fa-plus"></i> NUEVO</div><div class="flex-col gap8"><input id="scNombre" type="text" placeholder="Nombre"><div class="grid"><select id="scIcono"><option value="fa-syringe">💉</option><option value="fa-pills">💊</option></select><input id="scColor" type="color" value="#a78bfa" style="width:100%;height:38px"></div><input id="scDosis" type="number" step="0.01" placeholder="ml/kg"><div class="grid"><input id="scEfecto" type="number" placeholder="Días efecto"><input id="scRetiro" type="number" placeholder="Días retiro"></div><div class="grid"><input id="scPrecioTotal" type="number" placeholder="Precio $"><input id="scMlTotal" type="number" placeholder="Mililitros"></div><button class="btn btn-green" onclick="guardarSanidadCustom()"><i class="fa-solid fa-check"></i> GUARDAR</button></div>`);}
-async function guardarSanidadCustom(){const n=document.getElementById('scNombre').value.trim(),d=parseFloat(document.getElementById('scDosis').value),ef=parseInt(document.getElementById('scEfecto').value)||0,ret=parseInt(document.getElementById('scRetiro').value)||0,pt=parseFloat(document.getElementById('scPrecioTotal').value),ml=parseFloat(document.getElementById('scMlTotal').value);if(!n||isNaN(d)||isNaN(pt)||isNaN(ml))return showToast('⚠️ Completa');const id='sc_'+Date.now();const item={id,nombre:n,icono:document.getElementById('scIcono').value,color:document.getElementById('scColor').value,dosisPorKg:d,diasEfecto:ef,retiro:ret,precioML:pt/ml,stockML:ml};DB_CACHE.sanidad[id]=item;if(isIndexedDB) await DB.put('sanidad', item); document.querySelector('.modal-overlay').remove(); showToast('✅ Agregado'); renderInsumos(); }async function deleteSanidadCustom(id){if(!confirm('¿Eliminar?'))return;delete DB_CACHE.sanidad[id];if(isIndexedDB) await DB.clear('sanidad'); Object.values(DB_CACHE.sanidad).forEach(s => DB.put('sanidad', s)); renderInsumos();}
+async function guardarSanidadCustom(){const n=document.getElementById('scNombre').value.trim(),d=parseFloat(document.getElementById('scDosis').value),ef=parseInt(document.getElementById('scEfecto').value)||0,ret=parseInt(document.getElementById('scRetiro').value)||0,pt=parseFloat(document.getElementById('scPrecioTotal').value),ml=parseFloat(document.getElementById('scMlTotal').value);if(!n||isNaN(d)||isNaN(pt)||isNaN(ml))return showToast('⚠️ Completa');const id='sc_'+Date.now();const item={id,nombre:n,icono:document.getElementById('scIcono').value,color:document.getElementById('scColor').value,dosisPorKg:d,diasEfecto:ef,retiro:ret,precioML:pt/ml,stockML:ml};DB_CACHE.sanidad[id]=item;if(isIndexedDB) await DB.put('sanidad', item); document.querySelector('.modal-overlay').remove(); showToast('✅ Agregado'); renderInsumos(); }
+async function deleteSanidadCustom(id){if(!confirm('¿Eliminar?'))return;delete DB_CACHE.sanidad[id];if(isIndexedDB) await DB.clear('sanidad'); Object.values(DB_CACHE.sanidad).forEach(s => DB.put('sanidad', s)); renderInsumos();}
 
-<!-- ✅ REGISTRO DE PWA AGRESIVA -->
-<!-- ✅ En <head> -->
-<link rel="manifest" href="./manifest.json">
-<meta name="theme-color" content="#ffb900">
+// ==================== INICIO DE APP ROBUSTO ====================const appContainer = document.getElementById('appContainer');
+const loader = document.getElementById('loadingScreen');
+const statusEl = document.getElementById('loaderStatus');
+const hideLoader = () => { if(loader) { loader.classList.add('hidden'); setTimeout(() => { if(loader) loader.style.display = 'none'; }, 600); } if(appContainer) appContainer.style.display = 'flex'; };
+const forceLoad = setTimeout(() => { hideLoader(); goPage('inicio'); }, 4000);
 
-<!-- ✅ Justo antes de </body> -->
-<script>
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('./sw.js')
-        .then(() => console.log('[PWA] ✅ Activo'))
-        .catch(e => console.error('[PWA] ❌', e));
-    });
+(async () => {
+  try {
+    statusEl.textContent = 'Conectando base de datos...';
+    await DB.open();
+    statusEl.textContent = 'Sincronizando registros...';
+    await migrateFromLocalStorage();
+    
+    if(isIndexedDB) {
+      DB_CACHE.animales = await DB.getAll('animales');
+      DB_CACHE.lotes = await DB.getAll('lotes');
+      const configs = await DB.getAll('config'); configs.forEach(c => DB_CACHE.config[c.key] = c.value);
+      const inv = await DB.getAll('inventario'); inv.forEach(i => DB_CACHE.inventario[i.id] = i);
+      const san = await DB.getAll('sanidad'); san.forEach(s => DB_CACHE.sanidad[s.id] = s);
+    } else {
+      const old = localStorage.getItem('ganadero_elite_v4_5_0');
+      if(old) { const d = JSON.parse(old); DB_CACHE.animales = d.animales || []; DB_CACHE.lotes = d.lotes || []; DB_CACHE.config = { precios: d.precios, stock: d.stock, precioKG: d.precioKG }; }
+    }
+
+    if(DB_CACHE.animales.length === 0 && DB_CACHE.lotes.length === 0) {
+      DB_CACHE.lotes = [{id:'lot_general',nombre:'General',color:'#ffb900'}];
+      if(isIndexedDB) await DB.put('lotes', DB_CACHE.lotes[0]);
+    }
+    if(!DB_CACHE.config.precios) DB_CACHE.config.precios = { pasto:80, salvado:900, melaza:1400, levadura:9000, bicarb:2500, sal:3000, urea:4000 };
+    if(!DB_CACHE.config.stock) DB_CACHE.config.stock = { pasto:500, salvado:200, melaza:50, levadura:10, bicarb:5, sal:2, urea:20 };
+    if(!DB_CACHE.config.precioKG) DB_CACHE.config.precioKG = 9800;
+    if(!DB_CACHE.config.factoresDesperdicio) DB_CACHE.config.factoresDesperdicio = { pasto:0.15, salvado:0.08, melaza:0.05, levadura:0.02, bicarb:0.03, sal:0.03, urea:0.02 };
+    if(!DB_CACHE.config.unidadesPrecio) DB_CACHE.config.unidadesPrecio = { pasto:'kg', salvado:'kg', melaza:'kg', levadura:'kg', bicarb:'kg', sal:'kg', urea:'kg' };
+
+    clearTimeout(forceLoad);
+    statusEl.textContent = 'Listo';
+    hideLoader();
+    verificarNotificaciones();
+    goPage('inicio');
+  } catch(e) {
+    console.error('Error crítico al iniciar:', e);
+    clearTimeout(forceLoad);
+    hideLoader();
+    goPage('inicio');
   }
+})();
+
+// ✅ PWA REGISTRO AUTOMÁTICO
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {    navigator.serviceWorker.register('./sw.js')
+      .then(() => console.log('[PWA] ✅ Service Worker registrado'))
+      .catch(e => console.warn('[PWA] ⚠️ Error SW:', e));
+  });
+}
 </script>
 </body>
 </html>
