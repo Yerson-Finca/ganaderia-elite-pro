@@ -1,19 +1,25 @@
 {
-  "name": "Ganadero Élite Pro",
-  "short_name": "GanaderoElite",
+  "name": "GANADERO ÉLITE PRO",
+  "short_name": "GANADERO",
   "description": "Gestión ganadera profesional 100% offline",
   "start_url": "./index.html",
-  "scope": "./",
   "display": "standalone",
-  "background_color": "#030303",
+  "background_color": "#0a0a0c",
   "theme_color": "#ffb900",
-  "orientation": "any",
+  "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect fill='%23ffb900' width='512' height='512' rx='96'/%3E%3Cpath fill='%23030303' d='M80 360l40-220 120 90 80-150 80 150 120-90 40 220H80z'/%3E%3C/svg%3E",
+      "src": "./assets/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./assets/icons/icon-512x512.png",
       "sizes": "512x512",
-      "type": "image/svg+xml",
+      "type": "image/png",
       "purpose": "any maskable"
     }
-  ]
+  ],
+  "scope": "./"
 }
