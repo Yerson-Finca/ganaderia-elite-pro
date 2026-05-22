@@ -981,12 +981,17 @@ function showModalGestionSanidad(){showModal(`<div style="font-weight:700;margin
 async function guardarSanidadCustom(){const n=document.getElementById('scNombre').value.trim(),d=parseFloat(document.getElementById('scDosis').value),ef=parseInt(document.getElementById('scEfecto').value)||0,ret=parseInt(document.getElementById('scRetiro').value)||0,pt=parseFloat(document.getElementById('scPrecioTotal').value),ml=parseFloat(document.getElementById('scMlTotal').value);if(!n||isNaN(d)||isNaN(pt)||isNaN(ml))return showToast('⚠️ Completa');const id='sc_'+Date.now();const item={id,nombre:n,icono:document.getElementById('scIcono').value,color:document.getElementById('scColor').value,dosisPorKg:d,diasEfecto:ef,retiro:ret,precioML:pt/ml,stockML:ml};DB_CACHE.sanidad[id]=item;if(isIndexedDB) await DB.put('sanidad', item); document.querySelector('.modal-overlay').remove(); showToast('✅ Agregado'); renderInsumos(); }async function deleteSanidadCustom(id){if(!confirm('¿Eliminar?'))return;delete DB_CACHE.sanidad[id];if(isIndexedDB) await DB.clear('sanidad'); Object.values(DB_CACHE.sanidad).forEach(s => DB.put('sanidad', s)); renderInsumos();}
 
 <!-- ✅ REGISTRO DE PWA AGRESIVA -->
+<!-- ✅ En <head> -->
+<link rel="manifest" href="./manifest.json">
+<meta name="theme-color" content="#ffb900">
+
+<!-- ✅ Justo antes de </body> -->
 <script>
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-      navigator.serviceWorker.register('./service-worker.js')
-        .then(reg => console.log('[PWA] ✅ Service Worker registrado:', reg.scope))
-        .catch(err => console.warn('[PWA] ⚠️ Error registro SW:', err));
+      navigator.serviceWorker.register('./sw.js')
+        .then(() => console.log('[PWA] ✅ Activo'))
+        .catch(e => console.error('[PWA] ❌', e));
     });
   }
 </script>
