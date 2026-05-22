@@ -980,31 +980,15 @@ async function deleteAlimentoCustom(id){if(!confirm('¿Eliminar?'))return;delete
 function showModalGestionSanidad(){showModal(`<div style="font-weight:700;margin-bottom:12px;color:var(--accent)"><i class="fa-solid fa-plus"></i> NUEVO</div><div class="flex-col gap8"><input id="scNombre" type="text" placeholder="Nombre"><div class="grid"><select id="scIcono"><option value="fa-syringe">💉</option><option value="fa-pills">💊</option></select><input id="scColor" type="color" value="#a78bfa" style="width:100%;height:38px"></div><input id="scDosis" type="number" step="0.01" placeholder="ml/kg"><div class="grid"><input id="scEfecto" type="number" placeholder="Días efecto"><input id="scRetiro" type="number" placeholder="Días retiro"></div><div class="grid"><input id="scPrecioTotal" type="number" placeholder="Precio $"><input id="scMlTotal" type="number" placeholder="Mililitros"></div><button class="btn btn-green" onclick="guardarSanidadCustom()"><i class="fa-solid fa-check"></i> GUARDAR</button></div>`);}
 async function guardarSanidadCustom(){const n=document.getElementById('scNombre').value.trim(),d=parseFloat(document.getElementById('scDosis').value),ef=parseInt(document.getElementById('scEfecto').value)||0,ret=parseInt(document.getElementById('scRetiro').value)||0,pt=parseFloat(document.getElementById('scPrecioTotal').value),ml=parseFloat(document.getElementById('scMlTotal').value);if(!n||isNaN(d)||isNaN(pt)||isNaN(ml))return showToast('⚠️ Completa');const id='sc_'+Date.now();const item={id,nombre:n,icono:document.getElementById('scIcono').value,color:document.getElementById('scColor').value,dosisPorKg:d,diasEfecto:ef,retiro:ret,precioML:pt/ml,stockML:ml};DB_CACHE.sanidad[id]=item;if(isIndexedDB) await DB.put('sanidad', item); document.querySelector('.modal-overlay').remove(); showToast('✅ Agregado'); renderInsumos(); }async function deleteSanidadCustom(id){if(!confirm('¿Eliminar?'))return;delete DB_CACHE.sanidad[id];if(isIndexedDB) await DB.clear('sanidad'); Object.values(DB_CACHE.sanidad).forEach(s => DB.put('sanidad', s)); renderInsumos();}
 
-// ==================== INICIO DE APP ====================
-setTimeout(() => {
-    const loader = document.getElementById('loadingScreen');
-    if(loader && loader.style.display !== 'none') {
-        const app = document.getElementById('appContainer');
-        app.style.display = 'flex';
-        loader.classList.add('fade-out');
-        setTimeout(() => loader.style.display = 'none', 500);
-        goPage('inicio');
-    }
-}, 5000);
-
-(async () => {
-    try {
-        await loadAllData();
-    } catch(e) {
-        console.error('Error crítico:', e);
-        const loader = document.getElementById('loadingScreen');
-        if(loader) {
-            loader.innerHTML = '<div style="color:var(--danger);text-align:center">Error cargando. Intentando modo seguro...</div>';
-            document.getElementById('appContainer').style.display = 'flex';
-            setTimeout(() => { loader.style.display='none'; goPage('inicio'); }, 1500);
-        }
-    }
-})();
+<!-- ✅ REGISTRO DE PWA AGRESIVA -->
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./service-worker.js')
+        .then(reg => console.log('[PWA] ✅ Service Worker registrado:', reg.scope))
+        .catch(err => console.warn('[PWA] ⚠️ Error registro SW:', err));
+    });
+  }
 </script>
 </body>
 </html>
