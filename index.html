@@ -26,7 +26,6 @@
         .aurora { position:fixed; top:0; left:0; width:100%; height:100%; background:radial-gradient(circle at 25% 25%,#1a160a 0%,transparent 45%),radial-gradient(circle at 75% 75%,#0f1a1a 0%,transparent 45%); z-index:-1; filter:blur(80px); opacity:0.5; }
         .app { width:100%; max-width:480px; position:relative; display:flex; flex-direction:column; gap:12px; }
         
-        /* ✅ PANTALLA DE CARGA (SPLASH SCREEN) */
         .loading-screen { position:fixed; inset:0; background:var(--bg); z-index:9999; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:20px; transition: opacity 0.5s ease, visibility 0.5s ease; }
         .loading-screen.hidden { opacity:0; visibility:hidden; pointer-events:none; }
         .loader-icon { width:56px; height:56px; border-radius:50%; background:linear-gradient(135deg, var(--accent), #e6a500); box-shadow:0 0 30px rgba(255,185,0,0.35); display:flex; align-items:center; justify-content:center; margin-bottom:8px; animation:breathe 3s infinite ease-in-out; }
@@ -47,7 +46,8 @@
         .bottom-nav { position:fixed; bottom:16px; left:50%; transform:translateX(-50%); width:92%; max-width:380px; height:56px; display:flex; justify-content:space-around; align-items:center; z-index:500; background:rgba(18,18,20,0.9); backdrop-filter:blur(16px); border:1px solid rgba(255,255,255,.1); border-radius:24px; box-shadow:0 4px 20px rgba(0,0,0,.5); }
         .nav-item { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; color:var(--text-muted); font-size:.5rem; cursor:pointer; transition:.2s; font-weight:600; text-transform:uppercase; letter-spacing:.03em; }
         .nav-item i { font-size:1rem; margin-bottom:1px; transition:.15s; }
-        .nav-item.active { color:var(--accent); }        .nav-item.active i { transform:translateY(-1px); }
+        .nav-item.active { color:var(--accent); }
+        .nav-item.active i { transform:translateY(-1px); }
         .nav-center { width:44px; height:44px; border-radius:50%; background:linear-gradient(135deg,#ffb900,#e6a500); color:#000; font-size:1.2rem; display:flex; align-items:center; justify-content:center; border:2px solid rgba(255,255,255,.2); box-shadow:0 4px 16px rgba(255,185,0,.25); cursor:pointer; border:none; transition:transform .15s; margin-top:-22px; }
         .nav-center:active { transform:scale(.92); }
         .card { background:var(--card-bg); border:1px solid var(--card-border); border-radius:var(--radius); padding:14px; box-shadow:var(--shadow-card); margin-bottom:10px; }
@@ -77,17 +77,11 @@
         .estado-pildora.e .num { color:var(--success); } .estado-pildora.b .num { color:var(--info); } .estado-pildora.r .num { color:var(--warning); } .estado-pildora.m .num { color:var(--danger); }
         .progress { width:100%; height:5px; background:rgba(255,255,255,.06); border-radius:3px; overflow:hidden; margin:6px 0; }
         .progress-fill { height:100%; border-radius:3px; transition:width .6s ease; }
-        .alert-banner { background:rgba(239,68,68,.08); border:1px solid rgba(239,68,68,.2); border-radius:var(--radius); padding:12px 14px; margin-bottom:10px; display:flex; align-items:center; justify-content:space-between; }
-        .alert-banner-text { display:flex; align-items:center; gap:8px; font-size:.75rem; font-weight:600; color:#f87171; }
-        .alert-banner-text i { font-size:1rem; color:var(--danger); }
         .alert-item { display:flex; align-items:flex-start; gap:10px; padding:10px; border-radius:var(--radius-sm); margin-bottom:6px; font-size:.7rem; font-weight:500; border-left:3px solid transparent; background:rgba(255,255,255,.02); }
         .alert-danger { border-left-color:var(--danger); background:rgba(239,68,68,.05); } 
         .alert-warning { border-left-color:var(--warning); background:rgba(251,191,36,.05); } 
         .alert-info { border-left-color:var(--info); background:rgba(59,130,246,.05); } 
         .alert-purple { border-left-color:var(--purple); background:rgba(167,139,250,.05); }
-        .alert-actions { margin-left:auto; display:flex; gap:6px; }
-        .alert-action-btn { background:rgba(255,255,255,.08); border:1px solid var(--card-border); color:var(--text-muted); padding:4px 8px; border-radius:6px; font-size:.6rem; cursor:pointer; }
-        .alert-action-btn:active { background:rgba(255,255,255,.15); color:var(--text); }
         .grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
         .animal-card { background:rgba(255,255,255,.02); border:1px solid var(--card-border); border-radius:var(--radius); padding:12px 8px 10px; text-align:center; cursor:pointer; position:relative; transition:.2s; }
         .animal-card:active { background:var(--accent-soft); border-color:var(--accent-border); transform:translateY(-2px); }
@@ -96,7 +90,8 @@
         .etapa-inicio { background:var(--accent-soft); color:var(--accent); border:1px solid var(--accent-border); } .etapa-desarrollo { background:rgba(59,130,246,.1); color:#60a5fa; border:1px solid rgba(59,130,246,.2); } .etapa-ceba { background:rgba(245,158,11,.1); color:#fb923c; border:1px solid rgba(245,158,11,.2); } .etapa-madurez { background:rgba(239,68,68,.1); color:#f87171; border:1px solid rgba(239,68,68,.2); }
         .animal-card .weight { color:var(--accent); font-weight:700; font-size:.9rem; margin:1px 0; }
         .animal-card .cm { font-size:.6rem; font-weight:500; margin-top:1px; }
-        .animal-card .retiro-badge { display:inline-block; background:rgba(239,68,68,.15); color:#f87171; padding:1px 5px; border-radius:6px; font-size:.45rem; margin-top:2px; }        .mini-led { position:absolute; top:8px; right:8px; width:8px; height:8px; border-radius:50%; }
+        .animal-card .retiro-badge { display:inline-block; background:rgba(239,68,68,.15); color:#f87171; padding:1px 5px; border-radius:6px; font-size:.45rem; margin-top:2px; }
+        .mini-led { position:absolute; top:8px; right:8px; width:8px; height:8px; border-radius:50%; }
         .ml-g { background:#22c55e; } .ml-b { background:#3b82f6; } .ml-o { background:#f59e0b; } .ml-r { background:#ef4444; } .ml-x { background:#6b7280; }
         .lock-icon { position:absolute; top:6px; left:8px; font-size:.6rem; color:var(--accent); }
         .section-title { display:flex; align-items:center; gap:6px; font-size:.65rem; font-weight:600; letter-spacing:.05em; text-transform:uppercase; color:var(--text-muted); margin:14px 0 6px; padding-bottom:4px; border-bottom:1px solid rgba(255,255,255,.04); }
@@ -145,7 +140,8 @@
         .config-item .cfg-text { flex:1; margin-left:8px; } .config-item .cfg-text span { display:block; font-size:.75rem; font-weight:500; } .config-item .cfg-text small { font-size:.55rem; color:var(--text-muted); }
         .filter-chips { display:flex; gap:4px; overflow-x:auto; padding:3px 0 6px; -webkit-overflow-scrolling:touch; } .filter-chips::-webkit-scrollbar { display:none; }
         .chip { padding:5px 10px; border-radius:14px; border:1px solid var(--card-border); background:rgba(255,255,255,.04); font-size:.6rem; font-weight:500; color:var(--text-muted); cursor:pointer; white-space:nowrap; transition:.2s; }
-        .chip.active { background:var(--accent); color:#000; border-color:var(--accent-border); }        .crown-svg { width:16px; height:16px; fill:var(--accent); flex-shrink:0; }
+        .chip.active { background:var(--accent); color:#000; border-color:var(--accent-border); }
+        .crown-svg { width:16px; height:16px; fill:var(--accent); flex-shrink:0; }
         .insumo-item { background:rgba(255,255,255,.02); border:1px solid var(--card-border); border-radius:var(--radius-sm); padding:12px; margin-bottom:8px; }
         .insumo-item-header { display:flex; align-items:center; gap:8px; margin-bottom:8px; }
         .insumo-item-header i { font-size:1rem; color:var(--accent); } .insumo-item-header .info { flex:1; } .insumo-item-header .info .name { font-weight:500; font-size:.75rem; } .insumo-item-header .info .consumo { font-size:.55rem; color:var(--text-muted); } .insumo-item-header .dias { font-size:.6rem; font-weight:600; margin-left:auto; }
@@ -190,22 +186,21 @@
 <div class="app hidden" id="appContainer">
     <header id="mainHeader">
         <h1><svg class="crown-svg" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M2.5 18.5l1.5-12 5.5 4 2.5-6 2.5 6 5.5-4 1.5 12h-19z"/></svg>GANADERO ÉLITE<span class="pro-tag">PRO</span></h1>
-        <div class="header-actions">
-            <span id="saveIndicator" class="save-indicator"><i class="fa-solid fa-check"></i></span>
-            <div class="alert-badge-container config-btn" onclick="goPage('alertas')" aria-label="Notificaciones">
-                <i class="fa-solid fa-bell"></i>
-                <span id="alertCountBadge" class="alert-badge">0</span>            </div>
-            <div class="config-btn" onclick="goPage('config')" aria-label="Configuración"><i class="fa-solid fa-gear"></i></div>
-        </div>
+        <div class="config-btn" onclick="goPage('config')" aria-label="Configuración"><i class="fa-solid fa-gear"></i></div>
     </header>
-    <div id="v-inicio" class="page"></div><div id="v-lotes" class="hidden page"></div><div id="v-animales" class="hidden page"></div><div id="v-insumos" class="hidden page"></div><div id="v-alertas" class="hidden page"></div><div id="v-config" class="hidden page"></div><div id="v-perfil" class="hidden page"></div>
+    <div id="v-inicio" class="page"></div>
+    <div id="v-lotes" class="hidden page"></div>
+    <div id="v-animales" class="hidden page"></div>
+    <div id="v-insumos" class="hidden page"></div>
+    <div id="v-alertas" class="hidden page"></div>
+    <div id="v-config" class="hidden page"></div>
+    <div id="v-perfil" class="hidden page"></div>
 </div>
 
-<!-- ✅ PANTALLA DE CARGA (SPLASH SCREEN) -->
 <div id="loadingScreen" class="loading-screen">
     <div class="loader-icon"><i class="fa-solid fa-cow"></i></div>
     <div class="loader-title">GANADERO ÉLITE</div>
-    <div class="loader-version">v4.8.1 PRO</div>
+    <div class="loader-version">v4.9.0 PRO</div>
     <div class="loader-track"><div class="loader-fill"></div></div>
 </div>
 
@@ -219,7 +214,7 @@
 
 <script>
 // ==================== CONFIGURACIÓN GLOBAL ====================
-const APP_VERSION = '4.8.1';
+const APP_VERSION = '4.9.0';
 const STORAGE_KEY = 'ganadero_elite_v' + APP_VERSION.replace('.','_');
 let DB = { animales: [], lotes: [], config: {}, inventario: {}, sanidad: {}, aplicaciones: [], asignacionesAlimentos: {} };
 let lastSaveTime = null, saveTimeout = null, insumoTab = 'alimentos', searchTimeout = null;
@@ -239,30 +234,6 @@ const DATOS_POR_DEFECTO = {
     inventario: {}, sanidad: {}, aplicaciones: [], asignacionesAlimentos: {}
 };
 
-// ✅ INDEXEDDB PARA FOTOS (ASÍNCRONO, NO BLOQUEA INICIO)
-const PHOTO_DB = {
-    db: null,
-    init: () => new Promise(r => {
-        if (!window.indexedDB) return r();
-        const req = indexedDB.open('GE_Fotos_v1', 1);
-        req.onupgradeneeded = e => e.target.result.createObjectStore('fotos', { keyPath: 'id' });
-        req.onsuccess = e => { PHOTO_DB.db = e.target.result; r(); };
-        req.onerror = () => r();
-    }),
-    save: (id, data) => {
-        if (!PHOTO_DB.db) return;
-        const tx = PHOTO_DB.db.transaction('fotos', 'readwrite');
-        tx.objectStore('fotos').put({ id, data });
-    },
-    get: (id) => new Promise(r => {
-        if (!PHOTO_DB.db) return r(null);
-        const tx = PHOTO_DB.db.transaction('fotos', 'readonly');
-        const req = tx.objectStore('fotos').get(id);
-        req.onsuccess = () => r(req.result?.data || null);
-        req.onerror = () => r(null);
-    })
-};
-
 // ==================== UTILIDADES ====================
 function getCfg(k) { return DB.config[k]; }
 function setCfg(k, v) { DB.config[k] = v; guardarDatos(); }
@@ -273,7 +244,7 @@ const showModal = (h) => { const o = document.createElement('div'); o.className 
 const getDiasDesde = (f) => { if (!f) return 999; var p = f.split('/'); if (p.length < 3) return 999; return Math.floor((new Date() - new Date(p[2], p[1] - 1, p[0])) / 864e5); };
 const randColor = () => ['#ffb900', '#22c55e', '#3b82f6', '#ef4444', '#a78bfa', '#f59e0b', '#ec4899', '#14b8a6'][Math.floor(Math.random() * 8)];
 const formatTimeAgo = (ts) => { if (!ts) return 'Nunca'; const diff = Math.floor((Date.now() - ts) / 1000); if (diff < 60) return 'hace ' + diff + 's'; if (diff < 3600) return 'hace ' + Math.floor(diff / 60) + 'min'; if (diff < 86400) return 'hace ' + Math.floor(diff / 3600) + 'h'; return 'hace ' + Math.floor(diff / 86400) + 'd'; };
-const guardarDatos = () => { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(DB)); const el = document.getElementById('saveIndicator'); if (el) { el.classList.add('visible'); clearTimeout(saveTimeout); saveTimeout = setTimeout(() => el.classList.remove('visible'), 1500); } lastSaveTime = Date.now(); return true; } catch(e) { console.error('Err:', e); showToast('⚠️ Error guardando'); return false; } };
+const guardarDatos = () => { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(DB)); lastSaveTime = Date.now(); return true; } catch(e) { console.error('Err:', e); showToast('⚠️ Error guardando'); return false; } };
 
 // ==================== CONSTANTES Y LÓGICA ====================
 const AL = ['pasto', 'salvado', 'melaza', 'levadura', 'bicarb', 'sal', 'urea'];
@@ -302,12 +273,11 @@ const getDiet = (pv, prop, estado, td = 0, dg = 0, incluirFD = false) => {
     const ureaOk = !(pv < TRIGGERS.ureaMinWeight || dg >= TRIGGERS.pregnancyUreaBlockDay);
     const calcMicro = (f, pv, ms) => f.type === 'pv' ? pv * f.factor : ms * f.factor;
     
-    // Distribución: 50% pasto, 30% salvado, 20% melaza
+    // ✅ CORRECCIÓN: Variables bien definidas
     let msPasto = msTotal * 0.50;
     let msSalvado = msTotal * 0.30;
     let msMelaza = msTotal * 0.20;
     
-    // Ajustes por etapa
     if (p === 'carne') { 
         if (esTernera) msMelaza += msTotal * 0.02;
         else if (st === 'venta') msMelaza += msTotal * 0.03;
@@ -433,13 +403,12 @@ const generarAlertasCompletas = () => {
 
 const verificarNotificaciones = () => {
     const criticas = generarAlertasCompletas().filter(a => a.tipo === 'critical');
-    const badge = document.getElementById('alertCountBadge');
-    if (badge) { if (criticas.length > 0) { badge.textContent = criticas.length; badge.classList.add('show'); } else { badge.classList.remove('show'); } }
     if (criticas.length) showToast(`⚠️ ${criticas.length} alertas críticas`, 6000);
 };
 
 const renderGraficoEvolucion = (historial) => {
-    if (historial.length < 2) return '<div style="text-align:center;color:var(--text-muted);padding:10px;font-size:.7rem;background:rgba(255,255,255,.03);border-radius:8px">Se necesitan ≥2 pesajes</div>';    const datos = historial.map(h => { const p = h.fecha.split('/'); return { fecha: new Date(p[2], p[1] - 1, p[0]), peso: h.peso, fechaStr: h.fecha }; }).sort((a, b) => a.fecha - b.fecha);
+    if (historial.length < 2) return '<div style="text-align:center;color:var(--text-muted);padding:10px;font-size:.7rem;background:rgba(255,255,255,.03);border-radius:8px">Se necesitan ≥2 pesajes</div>';
+    const datos = historial.map(h => { const p = h.fecha.split('/'); return { fecha: new Date(p[2], p[1] - 1, p[0]), peso: h.peso, fechaStr: h.fecha }; }).sort((a, b) => a.fecha - b.fecha);
     const minP = Math.min(...datos.map(d => d.peso)) * 0.95, maxP = Math.max(...datos.map(d => d.peso)) * 1.05, w = 300, h = 110, pad = { t: 10, r: 10, b: 20, l: 30 }, cw = w - pad.l - pad.r, ch = h - pad.t - pad.b;
     const pts = datos.map((d, i) => ({ x: pad.l + (i / (datos.length - 1)) * cw, y: pad.t + ch - ((d.peso - minP) / (maxP - minP)) * ch, peso: d.peso, fecha: d.fechaStr }));
     const pathD = pts.map((p, i) => `${i === 0 ? 'M' : 'L'}${p.x},${p.y}`).join(' ');
@@ -453,7 +422,6 @@ let wakeLock = null;
 async function requestWakeLock() { if ('wakeLock' in navigator) { try { wakeLock = await navigator.wakeLock.request('screen'); wakeLock.addEventListener('release', () => { wakeLock = null; }); } catch (e) { } } }
 function releaseWakeLock() { if (wakeLock) { wakeLock.release(); wakeLock = null; } }
 
-// ✅ FUNCIÓN DE FOTOS CON INDEXEDDB
 async function handlePhotoUpload(file, animalId) {
     if (!file || !file.type.startsWith('image/')) return showToast('⚠️ Solo imágenes');
     if (file.size > 5 * 1024 * 1024) return showToast('⚠️ Máximo 5MB');
@@ -466,8 +434,8 @@ async function handlePhotoUpload(file, animalId) {
             canvas.width = w; canvas.height = h;
             canvas.getContext('2d').drawImage(img, 0, 0, w, h);
             const dataUrl = canvas.toDataURL('image/jpeg', 0.5);
-            PHOTO_DB.save(animalId, dataUrl);
-            showProfile(animalId); showToast('✅ Foto guardada');
+            const a = DB.animales.find(x => x.id === animalId);
+            if (a) { a.foto = dataUrl; guardarDatos(); showProfile(animalId); showToast('✅ Foto guardada'); }
         };
         img.src = URL.createObjectURL(file);
     } catch(e) { showToast('⚠️ Error al procesar foto'); }
@@ -493,13 +461,10 @@ document.querySelectorAll('.nav-item').forEach(n => n.addEventListener('click', 
 // ==================== RENDERS ====================
 function renderInicio() {
     const ta = DB.animales.length; let tKg = 0, est = { verde: 0, azul: 0, naranja: 0, rojo: 0, gris: 0 };
-    let totalDiet = { pasto: 0, salvado: 0, melaza: 0, urea: 0, bicarb: 0, sal: 0, levadura: 0 };
-    const alertas = generarAlertasCompletas();
-    const criticas = alertas.filter(a => a.tipo === 'critical');
-    DB.animales.forEach(a => { const p = a.historial[a.historial.length - 1].peso; tKg += p; est[getRendimiento(a.historial, getGMD(a.historial)).nivel]++; const diet = getDiet(p, a.proposito, calcRepro(a)?.estadoLactancia || 'auto', a.transicionDias || 0); Object.keys(totalDiet).forEach(k => totalDiet[k] += diet[k] || 0); });
+    const criticas = generarAlertasCompletas().filter(a => a.tipo === 'critical');
+    DB.animales.forEach(a => { const p = a.historial[a.historial.length - 1].peso; tKg += p; est[getRendimiento(a.historial, getGMD(a.historial)).nivel]++; });
     const prom = ta ? tKg / ta : 0, ab = calcularAutonomiaBodega().autonomia, fc = generarFlujoCajaMensual(6);
     let html = '';
-    if (criticas.length > 0) html += `<div class="alert-banner"><div class="alert-banner-text"><i class="fa-solid fa-triangle-exclamation"></i> <span>${criticas.length} Alertas Críticas Activas</span></div><button class="btn btn-sm btn-danger" style="width:auto;padding:4px 8px;margin:0" onclick="goPage('alertas')">Ver</button></div>`;
     html += `<div class="card"><div class="row-label mb6" style="font-weight:600;color:var(--accent)"><i class="fa-solid fa-coins"></i> PRECIO KG EN PIE</div><div style="display:flex;align-items:center;gap:6px"><span style="font-size:1rem;font-weight:700;color:var(--accent)">$</span><input id="inpPKG" type="number" value="${getCfg('precioKG') || 9800}" style="font-size:1rem;font-weight:600;text-align:center;background:transparent;border:none;color:var(--accent);padding:6px;width:100%"><span style="font-size:.6rem;color:var(--text-muted)">COP</span></div><button class="btn btn-green mt8" onclick="setCfg('precioKG',parseFloat(document.getElementById('inpPKG').value)||0);renderInicio();showToast('✅ Actualizado')"><i class="fa-solid fa-check"></i> ACTUALIZAR</button></div>`;
     html += `<div class="card"><div class="stats-grid"><div class="stat-item"><div class="row-label"><i class="fa-solid fa-users"></i> Cabezas</div><div class="row-val">${ta}</div></div><div class="stat-item"><div class="row-label"><i class="fa-solid fa-weight-scale"></i> Peso Total</div><div class="row-val">${fm(tKg)} kg</div></div><div class="stat-item"><div class="row-label"><i class="fa-solid fa-calculator"></i> Promedio</div><div class="row-val">${fm(prom)} kg</div></div><div class="stat-item"><div class="row-label"><i class="fa-solid fa-sack-dollar"></i> Valor Hato</div><div class="row-val" style="color:var(--accent)">$${fm(tKg * (getCfg('precioKG') || 9800))}</div></div></div></div>`;
     html += `<div class="card"><div class="row-label mb6" style="font-weight:600;color:var(--text-muted)"><i class="fa-solid fa-warehouse"></i> AUTONOMÍA</div><div class="grid">${['pasto','salvado','melaza'].map(k=>`<div class="stat-item"><div class="row-label">${NM[k]}</div><div class="row-val" style="color:${ab[k]<7?'var(--danger)':ab[k]<14?'var(--warning)':'var(--success)'}">${ab[k]===999?'∞':ab[k]}d</div></div>`).join('')}</div></div>`;
@@ -512,7 +477,6 @@ function renderInicio() {
     document.getElementById('v-inicio').innerHTML = html;
 }
 
-// ✅ RENDER LOTES CORREGIDO (sintaxis)
 function renderLotes() { 
     let h = `<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><span style="font-weight:600;color:var(--accent)"><i class="fa-solid fa-layer-group"></i> LOTES</span><button class="btn btn-sm btn-gold" style="width:auto;padding:5px 10px" onclick="showAddLoteModal()"><i class="fa-solid fa-plus"></i> Crear</button></div>`; 
     if (!DB.lotes.length) h += '<div style="text-align:center;padding:16px;color:var(--text-muted);font-size:.8rem">Sin lotes</div>'; 
@@ -520,7 +484,7 @@ function renderLotes() {
         const na = getAnimalesByLote(l.id).length, pt = getAnimalesByLote(l.id).reduce((s, a) => s + a.historial[a.historial.length - 1].peso, 0); 
         h += `<div class="lote-card" style="border-color:${l.color}30" onclick="animalFilterLote='${l.id}';goPage('animales')"><div style="position:absolute;top:0;left:0;width:3px;height:100%;background:${l.color}"></div><div class="lote-header"><div><div class="lote-name">${l.nombre}</div><div class="lote-stats"><b>${na}</b> · <b>${fm(pt)}kg</b></div></div><div style="display:flex;gap:4px" onclick="event.stopPropagation()"><div class="lote-color" style="background:${l.color}" onclick="showEditLoteColor('${l.id}')"></div><button class="btn btn-sm btn-danger" style="width:24px;padding:0;height:24px;font-size:.6rem" onclick="event.stopPropagation();deleteLote('${l.id}')"><i class="fa-solid fa-trash"></i></button></div></div></div>`; 
     }); 
-    h += '</div>';  // ✅ CORREGIDO
+    h += '</div>';
     document.getElementById('v-lotes').innerHTML = h; 
 }
 
@@ -559,7 +523,7 @@ function renderConfig() { const ls = lastSaveTime ? formatTimeAgo(lastSaveTime) 
 function exportData() { const b = new Blob([JSON.stringify(DB)], { type: 'application/json' }), u = URL.createObjectURL(b), a = document.createElement('a'); a.href = u; a.download = `ganadero_backup_${new Date().toISOString().slice(0, 10)}.json`; a.click(); showToast('✅ Respaldo'); }
 function importData() { document.getElementById('importFile').click(); }
 function handleImport(e) { const f = e.target.files[0]; if (!f) return; const r = new FileReader(); r.onload = async ev => { try { const d = JSON.parse(ev.target.result); if (d.animales && d.lotes) { DB = d; guardarDatos(); showToast('✅ Importado'); renderInicio(); } else showToast('⚠️ Inválido'); } catch { showToast('⚠️ Error'); } }; r.readAsText(f); }
-async function clearAllData() { localStorage.clear(); if(window.indexedDB) indexedDB.deleteDatabase('GE_Fotos_v1'); location.reload(); }
+function clearAllData() { localStorage.clear(); location.reload(); }
 
 function renderAlertas() {
     const todas = generarAlertasCompletas();
@@ -588,7 +552,6 @@ const getColorMetrica = (valor, umbralBajo = 0, umbralAlto = null) => {
     return 'var(--text-muted)';
 };
 
-// ✅ SHOW PROFILE CORREGIDO
 async function showProfile(id) {
     const a = DB.animales.find(x => x.id === id); if (!a) return;
     const p = a.historial[a.historial.length - 1].peso, rep = calcRepro(a), et = getEtapa(p, rep);
@@ -596,9 +559,7 @@ async function showProfile(id) {
     const valA = p * (getCfg('precioKG') || 9800), progPct = getProgresoEtapa(p, et);
     let etxt = '--'; if (a.fechaNacimiento) { const n = new Date(a.fechaNacimiento), h = new Date(), d = Math.ceil(Math.abs(h - n) / 864e5); etxt = d > 60 ? `${Math.floor(d / 30)}m` : `${d}d`; }
     const mama = a.madreId ? (DB.animales.find(x => x.id == a.madreId)?.nombre || '--') : '--';
-    
-    let fotoStyle = '';
-    const fotoDb = await PHOTO_DB.get(id);    if (fotoDb) fotoStyle = `background-image:url('${fotoDb}');`;
+    const fotoStyle = a.foto ? `background-image:url('${a.foto}');` : '';
     
     const gv = gmd > 0 ? gmd : 0, cd = getCostoDiario(p, a.proposito, rep?.estadoLactancia || 'auto');
     const csd = getCostoSanidadDiario(id), cdC = getCostoAlimentosCustom(id, p), costoDiarioTotal = cd + cdC + csd;
@@ -609,7 +570,7 @@ async function showProfile(id) {
     
     let html = `<div class="sp-container">
         <div class="sp-header"><button class="sp-back" onclick="closeProfile()"><i class="fa-solid fa-arrow-left"></i></button><div class="sp-header-title">${a.nombre}</div><div class="sp-header-actions"><button class="sp-back" onclick="shareAnimal(${id})"><i class="fa-solid fa-share-nodes"></i></button><button class="sp-back" onclick="confirmDeleteAnimal(${id})" style="color:var(--danger)"><i class="fa-solid fa-trash-can"></i></button></div></div>
-        <div class="sp-hero"><input type="file" id="photoInput" accept="image/*" style="display:none" onchange="handlePhotoUpload(this.files[0], ${id})"><div class="sp-avatar-large" style="${fotoStyle}" onclick="document.getElementById('photoInput').click()">${!fotoDb ? '🐄' : ''}</div><div class="sp-hero-name">${a.nombre}</div><div class="sp-hero-badges"><span class="sp-badge" style="border-color:${et.color};color:${et.color}">${et.nombre}</span><span class="sp-badge">${getLoteName(a.loteId)}</span><span class="sp-badge">${a.proposito === 'carne' ? '🥩 Carne' : '🥛 Leche'}</span></div>
+        <div class="sp-hero"><input type="file" id="photoInput" accept="image/*" style="display:none" onchange="handlePhotoUpload(this.files[0], ${id})"><div class="sp-avatar-large" style="${fotoStyle}" onclick="document.getElementById('photoInput').click()">${!a.foto ? '🐄' : ''}</div><div class="sp-hero-name">${a.nombre}</div><div class="sp-hero-badges"><span class="sp-badge" style="border-color:${et.color};color:${et.color}">${et.nombre}</span><span class="sp-badge">${getLoteName(a.loteId)}</span><span class="sp-badge">${a.proposito === 'carne' ? '🥩 Carne' : '🥛 Leche'}</span></div>
         <div class="sp-metrics"><div class="sp-metric"><span class="val">${fm(p)} kg</span><span class="lbl">Peso</span></div><div class="sp-metric"><span class="val" style="color:${gmdColor}">${gmd !== 0 ? gmd.toFixed(2) : '--'}</span><span class="lbl">GMD</span></div><div class="sp-metric"><span class="val" style="color:var(--accent)">$${fm(valA)}</span><span class="lbl">Valor</span></div></div>
         <div style="font-size:.65rem;color:var(--text-muted);margin-top:8px">Edad: <b>${etxt}</b> · Mama: <b>${mama}</b> · Retiro: <b>${a.bloqueadoPorRetiro ? '⚠️ Sí' : '✅ No'}</b></div></div>
         <div class="sp-content">
@@ -647,7 +608,8 @@ function verificarRetiro(id) { const a = DB.animales.find(x => x.id === id); if 
 function showModalAsignarAlimento(id) { const d = Object.values(DB.inventario); if (!d.length) return showToast('⚠️ Crea alimentos primero'); const as = DB.asignacionesAlimentos ? DB.asignacionesAlimentos[id] : [], ids = as ? as.map(a => a.alimentoId) : []; let opts = ''; d.forEach(i => { if (ids.indexOf(i.id) === -1) opts += `<option value="${i.id}">${i.nombre}</option>`; }); if (!opts) return showToast('✅ Todos asignados'); showModal(`<div style="font-weight:700;margin-bottom:10px;color:var(--accent)"><i class="fa-solid fa-wheat-awn"></i> ASIGNAR</div><div class="flex-col gap8"><select id="selAlimentoCustom">${opts}</select><input id="cantidadDiaria" type="number" step="any" placeholder="Cantidad"><button class="btn btn-green mt6" onclick="asignarAlimentoConStock(${id})"><i class="fa-solid fa-check"></i> ASIGNAR</button><button class="btn btn-gray" onclick="document.querySelector('.modal-overlay').remove()">CANCELAR</button></div>`); }
 function asignarAlimentoConStock(id) { const s = document.getElementById('selAlimentoCustom'), c = parseFloat(document.getElementById('cantidadDiaria').value); if (!s || isNaN(c) || c <= 0) return showToast('⚠️ Inválido'); const aid = s.value, al = DB.inventario[aid]; if (!al) return; if (c > al.stock) return showToast('⚠️ Stock bajo'); al.stock -= c; if (!DB.asignacionesAlimentos) DB.asignacionesAlimentos = {}; if (!DB.asignacionesAlimentos[id]) DB.asignacionesAlimentos[id] = []; DB.asignacionesAlimentos[id].push({ alimentoId: aid, cantidadDiaria: c, activo: true }); guardarDatos(); document.querySelector('.modal-overlay').remove(); showToast('✅ Asignado'); showProfile(id); }
 function toggleAlimentoCustom(id, aid) { if (!DB.asignacionesAlimentos || !DB.asignacionesAlimentos[id]) return; const i = DB.asignacionesAlimentos[id].findIndex(a => a.alimentoId === aid); if (i > -1) { if (DB.asignacionesAlimentos[id][i].activo) { if (confirm('¿Quitar?')) { DB.asignacionesAlimentos[id].splice(i, 1); guardarDatos(); showProfile(id); } } else { DB.asignacionesAlimentos[id][i].activo = true; guardarDatos(); showProfile(id); } } }
-function showReproModal(id) { showModal(`<div style="font-weight:700;margin-bottom:10px;color:var(--accent)"><i class="fa-solid fa-calendar-check"></i> REGISTRO</div><div class="flex-col gap8"><select id="reTipo"><option value="parto">🐣 Parto</option><option value="insem">🐄 Inseminación</option><option value="secado">🛑 Secado</option></select><input id="reFecha" type="date"><button class="btn btn-green mt6" onclick="guardarRepro(${id})"><i class="fa-solid fa-check"></i> GUARDAR</button><button class="btn btn-gray" onclick="document.querySelector('.modal-overlay').remove()">CANCELAR</button></div>`); }function guardarRepro(id) { const t = document.getElementById('reTipo').value, f = document.getElementById('reFecha').value; if (!f) return showToast('⚠️ Selecciona fecha'); const fd = f.split('-').reverse().join('/'), a = DB.animales.find(x => x.id === id); if (t === 'parto') { a.fechaUltimoParto = fd; a.estadoReproductivo = 'parida'; a.diasGestacion = 0; } if (t === 'insem') { a.fechaUltimaInseminacion = fd; a.estadoReproductivo = 'gestando'; } if (t === 'secado') { a.estadoReproductivo = 'seca'; } guardarDatos(); document.querySelector('.modal-overlay').remove(); recalcularTodo(id); showToast('✅ Registrado'); }
+function showReproModal(id) { showModal(`<div style="font-weight:700;margin-bottom:10px;color:var(--accent)"><i class="fa-solid fa-calendar-check"></i> REGISTRO</div><div class="flex-col gap8"><select id="reTipo"><option value="parto">🐣 Parto</option><option value="insem">🐄 Inseminación</option><option value="secado">🛑 Secado</option></select><input id="reFecha" type="date"><button class="btn btn-green mt6" onclick="guardarRepro(${id})"><i class="fa-solid fa-check"></i> GUARDAR</button><button class="btn btn-gray" onclick="document.querySelector('.modal-overlay').remove()">CANCELAR</button></div>`); }
+function guardarRepro(id) { const t = document.getElementById('reTipo').value, f = document.getElementById('reFecha').value; if (!f) return showToast('⚠️ Selecciona fecha'); const fd = f.split('-').reverse().join('/'), a = DB.animales.find(x => x.id === id); if (t === 'parto') { a.fechaUltimoParto = fd; a.estadoReproductivo = 'parida'; a.diasGestacion = 0; } if (t === 'insem') { a.fechaUltimaInseminacion = fd; a.estadoReproductivo = 'gestando'; } if (t === 'secado') { a.estadoReproductivo = 'seca'; } guardarDatos(); document.querySelector('.modal-overlay').remove(); recalcularTodo(id); showToast('✅ Registrado'); }
 function showModalGestionAlimentos() { showModal(`<div style="font-weight:700;margin-bottom:10px;color:var(--accent)"><i class="fa-solid fa-plus"></i> NUEVO ALIMENTO</div><div class="flex-col gap6"><input id="acNombre" type="text" placeholder="Nombre"><div class="grid"><select id="acIcono"><option value="fa-wheat-awn">🌾 Grano</option><option value="fa-seedling">🌱 Forraje</option></select><select id="acUnidad"><option value="kg">Kilogramos</option><option value="g">Gramos</option></select></div><div class="grid"><input id="acDosis" type="number" step="0.001" placeholder="Dosis/kg"><input id="acPrecioTotal" type="number" placeholder="Precio $"></div><div class="grid"><input id="acCantidadTotal" type="number" step="0.1" placeholder="Cantidad"><input id="acPrecioUnitario" type="text" readonly placeholder="Auto..."></div><button class="btn btn-green mt6" onclick="guardarAlimentoCustom()"><i class="fa-solid fa-check"></i> GUARDAR</button></div>`); }
 function guardarAlimentoCustom() { const n = document.getElementById('acNombre').value.trim(), d = parseFloat(document.getElementById('acDosis').value), pt = parseFloat(document.getElementById('acPrecioTotal').value), ct = parseFloat(document.getElementById('acCantidadTotal').value); if (!n || isNaN(d) || isNaN(pt) || isNaN(ct)) return showToast('⚠️ Completa'); const id = 'ac_' + Date.now(); const item = { id, nombre: n, icono: document.getElementById('acIcono').value, unidad: document.getElementById('acUnidad').value, dosisPorKg: d, precioUnitario: pt / ct, stock: ct }; DB.inventario[id] = item; guardarDatos(); document.querySelector('.modal-overlay').remove(); showToast('✅ Agregado'); renderInsumos(); }
 function deleteAlimentoCustom(id) { if (!confirm('¿Eliminar?')) return; delete DB.inventario[id]; guardarDatos(); renderInsumos(); }
@@ -655,58 +617,47 @@ function showModalGestionSanidad() { showModal(`<div style="font-weight:700;marg
 function guardarSanidadCustom() { const n = document.getElementById('scNombre').value.trim(), d = parseFloat(document.getElementById('scDosis').value), ef = parseInt(document.getElementById('scEfecto').value) || 0, ret = parseInt(document.getElementById('scRetiro').value) || 0, pt = parseFloat(document.getElementById('scPrecioTotal').value), ml = parseFloat(document.getElementById('scMlTotal').value); if (!n || isNaN(d) || isNaN(pt) || isNaN(ml)) return showToast('⚠️ Completa'); const id = 'sc_' + Date.now(); const item = { id, nombre: n, icono: document.getElementById('scIcono').value, color: document.getElementById('scColor').value, dosisPorKg: d, diasEfecto: ef, retiro: ret, precioML: pt / ml, stockML: ml }; DB.sanidad[id] = item; guardarDatos(); document.querySelector('.modal-overlay').remove(); showToast('✅ Agregado'); renderInsumos(); }
 function deleteSanidadCustom(id) { if (!confirm('¿Eliminar?')) return; delete DB.sanidad[id]; guardarDatos(); renderInsumos(); }
 
-// ==================== 🛡️ ARRANQUE CONTROLADO ====================
-// Espera a que todo el HTML y CSS estén listos antes de iniciar la carga
-document.addEventListener('DOMContentLoaded', iniciarApp);
-
-function iniciarApp() {
+// ==================== ARRANQUE ====================
+// Función de inicio inmediata que fuerza la entrada
+(function() {
     try {
-        // 1. Carga de datos principal (localStorage)
+        // Cargar datos del localStorage
         const datos = localStorage.getItem(STORAGE_KEY);
-        DB = datos ? { ...DATOS_POR_DEFECTO, ...JSON.parse(datos) } : JSON.parse(JSON.stringify(DATOS_POR_DEFECTO));
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(DB));
-    } catch (e) {
-        console.warn('⚠️ Error cargando datos, usando valores por defecto:', e);
-        DB = JSON.parse(JSON.stringify(DATOS_POR_DEFECTO));
+        if (datos) {
+            DB = JSON.parse(datos);
+        } else {
+            DB = JSON.parse(JSON.stringify(DATOS_POR_DEFECTO));
+        }
+        guardarDatos(); // persistir
+        
+        // Ocultar loader y mostrar app
+        const loader = document.getElementById('loadingScreen');
+        const app = document.getElementById('appContainer');
+        const nav = document.getElementById('mainNav');
+        
+        if (loader) loader.classList.add('hidden');
+        if (app) app.classList.remove('hidden');
+        if (nav) nav.classList.remove('hidden');
+        
+        // Renderizar inicio
+        renderInicio();
+        
+        // Verificar notificaciones después
+        setTimeout(() => verificarNotificaciones(), 1000);
+        
+    } catch(e) {
+        console.error('Error iniciando app:', e);
+        // Forzar visibilidad
+        const loader = document.getElementById('loadingScreen');
+        const app = document.getElementById('appContainer');
+        const nav = document.getElementById('mainNav');
+        if (loader) loader.classList.add('hidden');
+        if (app) app.classList.remove('hidden');
+        if (nav) nav.classList.remove('hidden');
     }
-    
-    // 2. Iniciamos la DB de fotos en segundo plano (asíncrono)
-    setTimeout(() => PHOTO_DB.init(), 100);
+})();
 
-    // 3. Transición de pantalla: Ocultar Splash y mostrar App
-    const loader = document.getElementById('loadingScreen');
-    const app = document.getElementById('appContainer');
-    const nav = document.getElementById('mainNav');
-    
-    // Animación de salida
-    if (loader) loader.classList.add('hidden');
-    
-    // Mostramos la app y navegación
-    if (app) app.classList.remove('hidden');
-    if (nav) nav.classList.remove('hidden');
-    
-    // Renderizamos la primera página
-    try { 
-        if (typeof goPage === 'function') goPage('inicio'); 
-    } catch (e) { console.warn('Error render:', e); }
-    
-    // Verificación de alertas
-    setTimeout(() => { try { if (typeof verificarNotificaciones === 'function') verificarNotificaciones(); } catch(e){} }, 800);
-}
-
-// Fallback extremo: si hay un error de sintaxis en otro lado, esto fuerza la entrada
-window.onerror = function(msg, url, lineNo, columnNo, error) {
-    console.warn('Error capturado, forzando entrada:', msg);
-    const loader = document.getElementById('loadingScreen');
-    const app = document.getElementById('appContainer');
-    const nav = document.getElementById('mainNav');
-    if (loader) loader.classList.add('hidden');
-    if (app) app.classList.remove('hidden');
-    if (nav) nav.classList.remove('hidden');
-    return false;
-};
-
-if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js').then(r => console.log('[PWA] ✅ OK:', r.scope)).catch(e => console.warn('[PWA] ❌', e)); }); }
+if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js').catch(e => console.warn('[PWA]', e)); }); }
 </script>
 </body>
 </html>
