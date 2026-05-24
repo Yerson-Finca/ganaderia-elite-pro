@@ -216,8 +216,6 @@ const APP_VERSION = '4.7.0';
 const STORAGE_KEY = 'ganadero_elite_v' + APP_VERSION.replace('.','_');
 let DB = { animales: [], lotes: [], config: {}, inventario: {}, sanidad: {}, aplicaciones: [], asignacionesAlimentos: {} };
 let lastSaveTime = null, autoSaveTimer = null, saveTimeout = null, insumoTab = 'alimentos', searchTimeout = null;
-let dbInstance = null;
-let isIndexedDB = true;
 
 // ==================== DATOS POR DEFECTO INICIALES ====================
 const DATOS_POR_DEFECTO = {
@@ -237,75 +235,63 @@ const DATOS_POR_DEFECTO = {
     asignacionesAlimentos: {}
 };
 
-// ==================== SISTEMA DE BASE DE DATOS ====================
-async function cargarDatos() {
+// ==================== SISTEMA DE CARGA BLINDADO ====================
+function iniciarApp() {
+    const timeoutSeguridad = setTimeout(entrarApp, 2000);
     try {
-        // Intentar cargar desde localStorage
         const datosGuardados = localStorage.getItem(STORAGE_KEY);
         if (datosGuardados) {
-            const parsed = JSON.parse(datosGuardados);
-            DB = { ...DATOS_POR_DEFECTO, ...parsed };
-            console.log('✅ Datos cargados desde localStorage');
+            DB = { ...DATOS_POR_DEFECTO, ...JSON.parse(datosGuardados) };
         } else {
-            // Intentar migrar desde versión anterior
-            const oldData = localStorage.getItem('ganadero_elite_v4_5_0');
-            if (oldData) {
+            const oldData = localStorage.getItem('ganadero_elite_v4_5_0');            if (oldData) {
                 const parsed = JSON.parse(oldData);
                 DB.animales = parsed.animales || [];
-                DB.lotes = parsed.lotes || [{ id: 'lot_general', nombre: 'General', color: '#ffb900' }];
+                DB.lotes = parsed.lotes || DATOS_POR_DEFECTO.lotes;
                 DB.config = { ...DATOS_POR_DEFECTO.config, ...parsed };
-                DB.inventario = {};
-                DB.sanidad = {};
-                (parsed.alimentosCustom || []).forEach(i => DB.inventario[i.id] = i);
-                (parsed.sanidadCustom || []).forEach(s => DB.sanidad[s.id] = s);
+                if (parsed.alimentosCustom) parsed.alimentosCustom.forEach(i => DB.inventario[i.id] = i);
+                if (parsed.sanidadCustom) parsed.sanidadCustom.forEach(s => DB.sanidad[s.id] = s);
                 DB.aplicaciones = parsed.aplicaciones || [];
                 DB.asignacionesAlimentos = parsed.asignacionesAlimentos || {};
-                console.log('✅ Datos migrados desde versión anterior');
             } else {
-                // Datos iniciales por defecto
                 DB = JSON.parse(JSON.stringify(DATOS_POR_DEFECTO));
-                console.log('✅ Datos por defecto inicializados');
             }
         }
-        
-        // Guardar inmediatamente para persistir
         localStorage.setItem(STORAGE_KEY, JSON.stringify(DB));
-        
-        // Ocultar loading y mostrar app
-        const loader = document.getElementById('loadingScreen');
-        const app = document.getElementById('appContainer');
-        loader.classList.add('fade-out');
-        setTimeout(() => loader.style.display = 'none', 500);
-        app.style.display = 'flex';
-        
-        // Inicializar notificaciones y UI
-        setTimeout(() => {
-            verificarNotificaciones();
-            goPage('inicio');
-        }, 100);
-        
+        clearTimeout(timeoutSeguridad);
+        entrarApp();
     } catch (error) {
         console.error('Error cargando datos:', error);
-        const loader = document.getElementById('loadingScreen');
-        loader.innerHTML = '<div style="color:var(--danger);text-align:center;padding:20px">❌ Error al cargar<br><button onclick="location.reload()" style="margin-top:15px;padding:10px 20px;background:#ffb900;color:#000;border:none;border-radius:10px">Reintentar</button></div>';
+        clearTimeout(timeoutSeguridad);
+        entrarApp();
     }
 }
 
-function guardarDatos() {
+function entrarApp() {
+    if (window.appYaIniciada) return;
+    window.appYaIniciada = true;
+    const loader = document.getElementById('loadingScreen');
+    if (loader) {
+        loader.style.opacity = '0';
+        loader.style.pointerEvents = 'none';
+        setTimeout(() => { if(loader) loader.style.display = 'none'; }, 300);
+    }
+    const app = document.getElementById('appContainer');
+    if (app) app.style.display = 'flex';
     try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(DB));
-        if (window.saveIndicatorTimeout) clearTimeout(window.saveIndicatorTimeout);
-        const el = document.getElementById('saveIndicator');
-        if (el) { el.classList.add('visible'); window.saveIndicatorTimeout = setTimeout(() => el.classList.remove('visible'), 2000); }
-        lastSaveTime = Date.now();
-        return true;
-    } catch(e) { console.error('Error guardando:', e); showToast('⚠️ Error al guardar'); return false; }
+        if (typeof goPage === 'function') goPage('inicio');
+    } catch (e) {
+        console.warn('Error renderizando:', e);
+        document.getElementById('v-inicio').innerHTML = '<div class="card"><p>⚠️ Error al cargar. Intenta recargar.</p></div>';
+    }
+    setTimeout(() => { if (typeof verificarNotificaciones === 'function') verificarNotificaciones(); }, 500);
 }
+
+document.addEventListener('DOMContentLoaded', iniciarApp);
+if (document.readyState !== 'loading') iniciarApp();
 
 // ==================== FUNCIONES DE ACCESO A DATOS ====================
 function getCfg(k) { return DB.config[k]; }
 function setCfg(k, v) { DB.config[k] = v; guardarDatos(); }
-
 // ==================== UTILIDADES ====================
 const fm = (n) => { if (isNaN(n) || n === null || n === undefined) return '0'; n = Math.round(n); var s = String(n); var r = ''; var c = 0; for (var i = s.length - 1; i >= 0; i--) { if (c > 0 && c % 3 === 0) r = '.' + r; r = s.charAt(i) + r; c++; } return r; };
 const showToast = (m, d = 3000) => { const t = document.createElement('div'); t.className = 'toast'; t.innerHTML = m; document.getElementById('toastContainer').appendChild(t); setTimeout(() => t.remove(), d); };
@@ -313,7 +299,7 @@ const showModal = (h) => { const o = document.createElement('div'); o.className 
 const getDiasDesde = (f) => { if (!f) return 999; var p = f.split('/'); if (p.length < 3) return 999; return Math.floor((new Date() - new Date(p[2], p[1] - 1, p[0])) / 864e5); };
 const randColor = () => ['#ffb900', '#22c55e', '#3b82f6', '#ef4444', '#a78bfa', '#f59e0b', '#ec4899', '#14b8a6'][Math.floor(Math.random() * 8)];
 const formatTimeAgo = (ts) => { if (!ts) return 'Nunca'; const diff = Math.floor((Date.now() - ts) / 1000); if (diff < 60) return 'hace ' + diff + 's'; if (diff < 3600) return 'hace ' + Math.floor(diff / 60) + 'min'; if (diff < 86400) return 'hace ' + Math.floor(diff / 3600) + 'h'; return 'hace ' + Math.floor(diff / 86400) + 'd'; };
-const queueAutoSave = () => guardarDatos();
+const guardarDatos = () => { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(DB)); if (window.saveIndicatorTimeout) clearTimeout(window.saveIndicatorTimeout); const el = document.getElementById('saveIndicator'); if (el) { el.classList.add('visible'); window.saveIndicatorTimeout = setTimeout(() => el.classList.remove('visible'), 2000); } lastSaveTime = Date.now(); return true; } catch(e) { console.error('Error guardando:', e); showToast('⚠️ Error al guardar'); return false; } };
 
 // ==================== CONSTANTES ====================
 const AL = ['pasto', 'salvado', 'melaza', 'levadura', 'bicarb', 'sal', 'urea'];
@@ -335,22 +321,28 @@ const CATALOGO_SANIDAD = [
     { id: 'hierro', nombre: 'Hierro Dextrano', dosis: 100, diasEfecto: 30, retiro: 0, icono: 'fa-droplet', color: '#f87171' }
 ];
 
-// ==================== MOTOR NUTRICIONAL ====================
+// ==================== MOTOR NUTRICIONAL (PASTOREO 6%) ====================
 const getDiet = (pv, prop, estado, transicionDias = 0, diasGestacion = 0, incluirFD = false) => {
     if (pv < 20) return { pasto: 0, salvado: 0, melaza: 0, urea: 0, bicarb: 0, sal: 0, levadura: 0, _meta: { ureaBloqueada: false, motivo: null } };
+    // ✅ SUPLEMENTO 6% PARA PASTOREO: El animal come del campo, esto es solo lo extra
     const msTotalRequerida = pv * CONSUMO_MS_PV;
+    const baseSuplemento = msTotalRequerida * 0.06; // Solo 6% como suplemento
     const esTernera = pv < 150, p = prop || 'carne', st = estado || 'auto';
     const ureaPermitida = !(pv < TRIGGERS.ureaMinWeight || diasGestacion >= TRIGGERS.pregnancyUreaBlockDay);
     const calcMicro = (f, pv, ms) => f.type === 'pv' ? pv * f.factor : ms * f.factor;
-    let msPasto = msTotalRequerida * 0.90, msSalvado = msTotalRequerida * 0.10, msMelaza = 0;
-    if (p === 'carne') { if (esTernera) msMelaza = msTotalRequerida * 0.02; else if (st === 'venta') msMelaza = msTotalRequerida * 0.05; else msMelaza = msTotalRequerida * 0.03; }
-    else if (p === 'leche') { if (st === 'parida') msMelaza = msTotalRequerida * 0.03; else if (st === 'seca') msMelaza = msTotalRequerida * 0.01; else msMelaza = msTotalRequerida * 0.01; }
+    
+    // Distribución del suplemento (6% total)
+    let msPasto = baseSuplemento * 0.50, msSalvado = baseSuplemento * 0.30, msMelaza = baseSuplemento * 0.20;
+    
     const toFresco = (ms, fMS, u) => u === 'kg' ? ms / fMS : (ms / fMS) * 1000;
     let pastoFresco = toFresco(msPasto, FACTOR_MS.pasto, 'kg');
     if (pastoFresco > pv * TRIGGERS.maxRumenVolumePct) pastoFresco = pv * TRIGGERS.maxRumenVolumePct;
+    
     let dieta = {
-        pasto: pastoFresco, salvado: toFresco(msSalvado, FACTOR_MS.salvado, 'kg'), melaza: toFresco(msMelaza, FACTOR_MS.melaza, 'kg'),
-        levadura: calcMicro(MICRO_FORMULAS.levadura, pv, msTotalRequerida), bicarb: calcMicro(MICRO_FORMULAS.bicarb, pv, msTotalRequerida),
+        pasto: pastoFresco, 
+        salvado: toFresco(msSalvado, FACTOR_MS.salvado, 'kg'), 
+        melaza: toFresco(msMelaza, FACTOR_MS.melaza, 'kg'),        levadura: calcMicro(MICRO_FORMULAS.levadura, pv, msTotalRequerida), 
+        bicarb: calcMicro(MICRO_FORMULAS.bicarb, pv, msTotalRequerida),
         sal: calcMicro(MICRO_FORMULAS.sal, pv, msTotalRequerida),
         urea: ureaPermitida ? Math.min(calcMicro(MICRO_FORMULAS.urea, pv, msTotalRequerida), msTotalRequerida * 0.11 * 1000) : 0,
         _meta: { ureaBloqueada: !ureaPermitida, motivo: pv < TRIGGERS.ureaMinWeight ? 'Peso<150kg' : 'Gestación>210d' }
@@ -398,8 +390,7 @@ const calcRepro = (a) => {
     if (!a.fechaUltimoParto) return { diasPP: 0, diasParaParto: 999, fechaProxParto: null, semaforo: { color: '#6b7280', txt: '📅 Sin registro', tipo: 'gris' }, estadoLactancia: 'novilla', avisoSecado: false, diasGestacion: a.diasGestacion || 0 };
     const hoy = new Date(), parto = new Date(a.fechaUltimoParto.split('/').reverse().join('-')), diasPP = Math.max(0, Math.floor((hoy - parto) / 864e5));
     const fpp = new Date(parto); fpp.setDate(parto.getDate() + 285); const dpp = Math.floor((fpp - hoy) / 864e5);
-    let dg = a.diasGestacion || 0; if (a.fechaUltimaInseminacion) { const ins = new Date(a.fechaUltimaInseminacion.split('/').reverse().join('-')); dg = Math.max(0, Math.floor((hoy - ins) / 864e5)); }
-    let sem, est = a.estadoReproductivo || 'parida';
+    let dg = a.diasGestacion || 0; if (a.fechaUltimaInseminacion) { const ins = new Date(a.fechaUltimaInseminacion.split('/').reverse().join('-')); dg = Math.max(0, Math.floor((hoy - ins) / 864e5)); }    let sem, est = a.estadoReproductivo || 'parida';
     if (dpp <= 60 && dpp > 0) { sem = { color: '#3b82f6', txt: '🔵 Secado (' + dpp + 'd)', tipo: 'secado' }; est = 'seca'; } else if (diasPP <= 60) sem = { color: '#22c55e', txt: '🟢 Recuperación', tipo: 'verde' }; else if (diasPP <= 150) sem = { color: '#f59e0b', txt: '🟡 Ventana Monta', tipo: 'amarillo' }; else sem = { color: '#ef4444', txt: '🔴 ALERTA Vacía', tipo: 'rojo' };
     return { diasPP, diasParaParto: dpp, fechaProxParto: fpp.toLocaleDateString('es-CO'), semaforo: sem, estadoLactancia: est, avisoSecado: dpp <= 60 && dpp > 0, diasGestacion: dg };
 };
@@ -448,8 +439,7 @@ const getAlertasAnimal = (a) => {
     if (a.proposito === 'leche' && !a.fechaUltimoParto && pv >= 320) al.push({ t: 'info', m: '🐂 Habilitar monta', icon: 'fa-venus-mars' });
     var tm = false, tiv = false; const apps = DB.aplicaciones ? DB.aplicaciones.filter(x => x.animalId === a.id) : [];
     apps.forEach(ap => { const pr = getAllSanidad().find(x => x.id === ap.productoId); if (pr) { if (pr.id === 'modificador' && getDiasDesde(ap.fecha) < pr.diasEfecto) tm = true; if (pr.id.includes('ivermectina') && getDiasDesde(ap.fecha) < pr.diasEfecto) tiv = true; if (pr.retiro > 0 && getDiasDesde(ap.fecha) < pr.retiro) { al.push({ t: 'r', m: '🚫 VEDA: ' + pr.nombre, icon: 'fa-clock' }); a.bloqueadoPorRetiro = true; } else a.bloqueadoPorRetiro = false; } });
-    if (gmd > 0 && gmd < 0.4 && !tm) al.push({ t: 'purple', m: 'Aplicar Modificador', icon: 'fa-flask' }); if (!tiv) al.push({ t: 'r', m: 'Desparasitación vencida', icon: 'fa-shield-virus' }); return al;
-};
+    if (gmd > 0 && gmd < 0.4 && !tm) al.push({ t: 'purple', m: 'Aplicar Modificador', icon: 'fa-flask' }); if (!tiv) al.push({ t: 'r', m: 'Desparasitación vencida', icon: 'fa-shield-virus' }); return al;};
 
 const actualizarTransiciones = () => { let c = false; DB.animales.forEach(a => { if (a.transicionActiva && a.transicionDias < 7) { a.transicionDias++; c = true; if (a.transicionDias >= 7) { a.transicionActiva = false; showToast(`✅ ${a.nombre}: Transición ok`); } } }); if (c) guardarDatos(); };
 const calcularAutonomiaBodega = () => { const ct = { pasto: 0, salvado: 0, melaza: 0, levadura: 0, bicarb: 0, sal: 0, urea: 0 }, fd = getCfg('factoresDesperdicio') || {}; DB.animales.forEach(a => { const p = a.historial[a.historial.length - 1].peso, d = getDiet(p, a.proposito, calcRepro(a)?.estadoLactancia || 'auto', a.transicionDias || 0, 0, true); Object.keys(ct).forEach(k => ct[k] += (d[k] || 0) * (1 + (fd[k] || 0))); }); const au = {}; const st = getCfg('stock') || {}; Object.keys(ct).forEach(k => { const s = st[k] || 0, c = ct[k] || 0.001; au[k] = c > 0 ? Math.floor(s / c) : 999; }); return { consumo: ct, autonomia: au }; };
@@ -498,8 +488,7 @@ async function handlePhotoUpload(file, animalId) {
         canvas.width = w; canvas.height = h;
         canvas.getContext('2d').drawImage(img, 0, 0, w, h);
         const a = DB.animales.find(x => x.id === animalId);
-        if (a) { a.foto = canvas.toDataURL('image/jpeg', 0.7); guardarDatos(); showProfile(animalId); showToast('✅ Foto guardada'); }
-    };
+        if (a) { a.foto = canvas.toDataURL('image/jpeg', 0.7); guardarDatos(); showProfile(animalId); showToast('✅ Foto guardada'); }    };
     img.onerror = () => showToast('⚠️ Error al cargar');
     img.src = URL.createObjectURL(file);
 }
@@ -548,12 +537,11 @@ function renderInicio() {
         <button class="btn btn-green mt8" onclick="setCfg('precioKG',parseFloat(document.getElementById('inpPKG').value)||0);renderInicio();showToast('✅ Precio actualizado')"><i class="fa-solid fa-check"></i> ACTUALIZAR</button></div>
     <div class="card"><div class="row-label mb6" style="font-weight:600"><i class="fa-solid fa-chart-pie"></i> RESUMEN</div><div class="stats-grid">
         <div class="stat-item"><div class="row-label"><i class="fa-solid fa-users"></i> Cabezas</div><div class="row-val">${ta}</div></div>
-        <div class="stat-item"><div class="row-label"><i class="fa-solid fa-weight-scale"></i> Peso Total</div><div class="row-val">${fm(tKg)} kg</div></div>
-        <div class="stat-item"><div class="row-label"><i class="fa-solid fa-calculator"></i> Promedio</div><div class="row-val">${fm(prom)} kg</div></div>
+        <div class="stat-item"><div class="row-label"><i class="fa-solid fa-weight-scale"></i> Peso Total</div><div class="row-val">${fm(tKg)} kg</div></div>        <div class="stat-item"><div class="row-label"><i class="fa-solid fa-calculator"></i> Promedio</div><div class="row-val">${fm(prom)} kg</div></div>
         <div class="stat-item"><div class="row-label"><i class="fa-solid fa-sack-dollar"></i> Valor Hato</div><div class="row-val" style="color:var(--accent)">$${fm(tKg * (getCfg('precioKG') || 9800))}</div></div></div></div>`;
 
     if (ta > 0) {
-        html += `<div class="card"><div style="font-weight:600;font-size:.7rem;margin-bottom:10px;color:var(--text-muted)"><i class="fa-solid fa-wheat-awn"></i> DIETA DIARIA TOTAL (HATO) <span class="ms-badge">MS+FD</span></div>`;
+        html += `<div class="card"><div style="font-weight:600;font-size:.7rem;margin-bottom:10px;color:var(--text-muted)"><i class="fa-solid fa-wheat-awn"></i> SUPLEMENTO DIARIO (HATO) <span class="ms-badge">6% PV</span></div>`;
         AL.forEach(k => {
             const val = totalDiet[k], unit = UNIDAD[k];
             const display = unit === 'kg' ? val.toFixed(1) : Math.round(val);
@@ -599,7 +587,6 @@ function renderLotes() {
     h += '</div>';
     document.getElementById('v-lotes').innerHTML = h;
 }
-
 function renderAnimales() {
     if (DB.animales.length === 0) {
         document.getElementById('v-animales').innerHTML = `<div style="text-align:center;padding:40px 20px;color:var(--text-muted)"><i class="fa-solid fa-cow" style="font-size:2rem;margin-bottom:12px"></i><div style="font-size:0.9rem;font-weight:600">No hay animales registrados</div><button class="btn btn-gold mt8" style="width:auto;padding:8px 16px;margin:0 auto" onclick="showAddAnimalModal()">+ Agregar</button></div>`;
@@ -648,8 +635,7 @@ function renderAnimales() {
     const si = document.getElementById('animSearch');
     if (si) {
         si.addEventListener('input', e => {
-            clearTimeout(searchTimeout);
-            searchTimeout = setTimeout(() => {
+            clearTimeout(searchTimeout);            searchTimeout = setTimeout(() => {
                 animalSearch = e.target.value.trim();
                 sessionStorage.setItem('searchAnim', animalSearch);
                 renderAnimales();
@@ -698,8 +684,7 @@ function generarReporteHatoPDF() {
     window.print();
 }
 
-const getColorMetrica = (valor, umbralBajo = 0, umbralAlto = null) => {
-    if (valor < umbralBajo) return 'var(--danger)';
+const getColorMetrica = (valor, umbralBajo = 0, umbralAlto = null) => {    if (valor < umbralBajo) return 'var(--danger)';
     if (umbralAlto && valor >= umbralAlto) return 'var(--success)';
     if (valor > umbralBajo) return 'var(--warning)';
     return 'var(--text-muted)';
@@ -748,8 +733,7 @@ function showProfile(id) {
             <div class="sp-hero-badges">
                 <span class="sp-badge" style="border-color:${et.color};color:${et.color}">${et.nombre}</span>
                 <span class="sp-badge">${getLoteName(a.loteId)}</span>
-                <span class="sp-badge">${a.proposito === 'carne' ? '🥩 Carne' : '🥛 Leche'}</span>
-            </div>
+                <span class="sp-badge">${a.proposito === 'carne' ? '🥩 Carne' : '🥛 Leche'}</span>            </div>
             <div class="sp-metrics" style="grid-template-columns: repeat(3, 1fr);">
                 <div class="sp-metric"><span class="val">${fm(p)} kg</span><span class="lbl">Peso Actual</span></div>
                 <div class="sp-metric"><span class="val" style="color:${gmdColor}">${gmd !== 0 ? gmd.toFixed(2) : '--'}</span><span class="lbl">GMD (kg/d)</span></div>
@@ -798,8 +782,7 @@ function showProfile(id) {
                 <div class="sp-card-header"><div class="sp-card-title" style="color:${rep.semaforo.color}"><i class="fa-solid fa-heart"></i> Reproductivo</div></div>
                 <div style="text-align:center;padding:8px;background:${rep.semaforo.color}15;border-radius:12px;margin-bottom:10px"><div style="font-size:1.1rem;font-weight:700;color:${rep.semaforo.color}">${rep.semaforo.txt}</div></div>
                 <div class="row"><span class="row-label"><i class="fa-solid fa-clock"></i> Días Post-Parto</span><span class="row-val">${rep.diasPP}d</span></div>
-                <div class="row"><span class="row-label"><i class="fa-solid fa-baby"></i> Próximo parto</span><span class="row-val">${rep.fechaProxParto || '--'}</span></div>
-                ${rep.avisoSecado ? '<div style="margin-top:8px;background:rgba(59,130,246,.1);color:#60a5fa;padding:8px;border-radius:8px;font-size:.75rem;text-align:center">💧 <b>Dieta Seca:</b> Iniciar en 60 días</div>' : ''}
+                <div class="row"><span class="row-label"><i class="fa-solid fa-baby"></i> Próximo parto</span><span class="row-val">${rep.fechaProxParto || '--'}</span></div>                ${rep.avisoSecado ? '<div style="margin-top:8px;background:rgba(59,130,246,.1);color:#60a5fa;padding:8px;border-radius:8px;font-size:.75rem;text-align:center">💧 <b>Dieta Seca:</b> Iniciar en 60 días</div>' : ''}
                 <button class="btn btn-sm btn-purple mt8" onclick="showReproModal(${id})"><i class="fa-solid fa-pen"></i> Registrar Evento</button>
             </div>` : ''}
         </div>
@@ -845,8 +828,13 @@ function showModalGestionSanidad() { showModal(`<div style="font-weight:700;marg
 function guardarSanidadCustom() { const n = document.getElementById('scNombre').value.trim(), d = parseFloat(document.getElementById('scDosis').value), ef = parseInt(document.getElementById('scEfecto').value) || 0, ret = parseInt(document.getElementById('scRetiro').value) || 0, pt = parseFloat(document.getElementById('scPrecioTotal').value), ml = parseFloat(document.getElementById('scMlTotal').value); if (!n || isNaN(d) || isNaN(pt) || isNaN(ml)) return showToast('⚠️ Completa'); const id = 'sc_' + Date.now(); const item = { id, nombre: n, icono: document.getElementById('scIcono').value, color: document.getElementById('scColor').value, dosisPorKg: d, diasEfecto: ef, retiro: ret, precioML: pt / ml, stockML: ml }; DB.sanidad[id] = item; guardarDatos(); document.querySelector('.modal-overlay').remove(); showToast('✅ Agregado'); renderInsumos(); }
 function deleteSanidadCustom(id) { if (!confirm('¿Eliminar?')) return; delete DB.sanidad[id]; guardarDatos(); renderInsumos(); }
 
-// ==================== INICIO DE APP ====================
-cargarDatos();
+// ==================== PWA REGISTRO ====================
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')            .then(reg => console.log('[PWA] ✅ Registrado:', reg.scope))
+            .catch(err => console.warn('[PWA] ❌ Error:', err));
+    });
+}
 </script>
 </body>
 </html>
