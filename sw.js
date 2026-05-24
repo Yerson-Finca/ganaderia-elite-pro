@@ -1,33 +1,30 @@
-const CACHE_NAME = 'ganadero-v4.6.2';
-// ✅ Solo tus 3 archivos reales
-const ASSETS = ['./', './index.html', './manifest.json'];
+// sw.js - Service Worker robusto para offline total
+const CACHE_VERSION = 'v4.7.0';
+const CACHE_NAME = `ganadero-elite-${CACHE_VERSION}`;
+const PRECACHE = ['./', './index.html', './manifest.json'];
 
 self.addEventListener('install', e => {
-  e.waitUntil(caches.open(CACHE_NAME).then(c => c.addAll(ASSETS)));
-  self.skipWaiting();
+  e.waitUntil(caches.open(CACHE_NAME).then(c => c.addAll(PRECACHE)).then(() => self.skipWaiting()));
 });
 
 self.addEventListener('activate', e => {
-  e.waitUntil(caches.keys().then(k => Promise.all(k.filter(n => n !== CACHE_NAME).map(n => caches.delete(n)))));
+  e.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k)))));
   self.clients.claim();
 });
 
 self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET') return;
   e.respondWith(
-    caches.match(e.request).then(res => {
-      if (res) return res; // 1️⃣ Sirve desde caché
-      return fetch(e.request).then(net => {
-        if (net && net.status === 200) {
-          const clone = net.clone();
-          caches.open(CACHE_NAME).then(c => c.put(e.request, clone)); // 2️⃣ Guarda para la próxima
+    caches.match(e.request).then(cached => {
+      if (cached) return cached;
+      return fetch(e.request).then(res => {
+        if (res && res.status === 200 && e.request.url.startsWith(self.location.origin)) {
+          const clone = res.clone();
+          caches.open(CACHE_NAME).then(c => c.put(e.request, clone));
         }
-        return net;
+        return res;
       }).catch(() => {
-        // 3️⃣ Si no hay internet y es HTML → devuelve index.html
-        if (e.request.headers.get('accept')?.includes('text/html')) {
-          return caches.match('./index.html');
-        }
+        if (e.request.headers.get('accept')?.includes('text/html')) return caches.match('./index.html');
         return new Response('Offline', { status: 503 });
       });
     })
