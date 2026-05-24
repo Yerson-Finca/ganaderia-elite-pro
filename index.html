@@ -1,10 +1,3 @@
-El problema es que el script está al final del HTML, por lo que el evento `DOMContentLoaded` **ya ocurrió antes** de que el script se ejecutara, por eso el "listener" nunca se activa y la app se queda congelada en la pantalla de carga.
-
-Aquí tienes el **código completo y corregido**. He implementado un **sistema de arranque robusto** que detecta si el documento ya está listo y fuerza la entrada de forma segura.
-
-Copia todo este bloque y reemplaza tu `index.html`:
-
-```html
 <!DOCTYPE html>
 <html lang="es-CO">
 <head>
@@ -54,8 +47,7 @@ Copia todo este bloque y reemplaza tu `index.html`:
         .bottom-nav { position:fixed; bottom:16px; left:50%; transform:translateX(-50%); width:92%; max-width:380px; height:56px; display:flex; justify-content:space-around; align-items:center; z-index:500; background:rgba(18,18,20,0.9); backdrop-filter:blur(16px); border:1px solid rgba(255,255,255,.1); border-radius:24px; box-shadow:0 4px 20px rgba(0,0,0,.5); }
         .nav-item { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; color:var(--text-muted); font-size:.5rem; cursor:pointer; transition:.2s; font-weight:600; text-transform:uppercase; letter-spacing:.03em; }
         .nav-item i { font-size:1rem; margin-bottom:1px; transition:.15s; }
-        .nav-item.active { color:var(--accent); }
-        .nav-item.active i { transform:translateY(-1px); }
+        .nav-item.active { color:var(--accent); }        .nav-item.active i { transform:translateY(-1px); }
         .nav-center { width:44px; height:44px; border-radius:50%; background:linear-gradient(135deg,#ffb900,#e6a500); color:#000; font-size:1.2rem; display:flex; align-items:center; justify-content:center; border:2px solid rgba(255,255,255,.2); box-shadow:0 4px 16px rgba(255,185,0,.25); cursor:pointer; border:none; transition:transform .15s; margin-top:-22px; }
         .nav-center:active { transform:scale(.92); }
         .card { background:var(--card-bg); border:1px solid var(--card-border); border-radius:var(--radius); padding:14px; box-shadow:var(--shadow-card); margin-bottom:10px; }
@@ -104,8 +96,7 @@ Copia todo este bloque y reemplaza tu `index.html`:
         .etapa-inicio { background:var(--accent-soft); color:var(--accent); border:1px solid var(--accent-border); } .etapa-desarrollo { background:rgba(59,130,246,.1); color:#60a5fa; border:1px solid rgba(59,130,246,.2); } .etapa-ceba { background:rgba(245,158,11,.1); color:#fb923c; border:1px solid rgba(245,158,11,.2); } .etapa-madurez { background:rgba(239,68,68,.1); color:#f87171; border:1px solid rgba(239,68,68,.2); }
         .animal-card .weight { color:var(--accent); font-weight:700; font-size:.9rem; margin:1px 0; }
         .animal-card .cm { font-size:.6rem; font-weight:500; margin-top:1px; }
-        .animal-card .retiro-badge { display:inline-block; background:rgba(239,68,68,.15); color:#f87171; padding:1px 5px; border-radius:6px; font-size:.45rem; margin-top:2px; }
-        .mini-led { position:absolute; top:8px; right:8px; width:8px; height:8px; border-radius:50%; }
+        .animal-card .retiro-badge { display:inline-block; background:rgba(239,68,68,.15); color:#f87171; padding:1px 5px; border-radius:6px; font-size:.45rem; margin-top:2px; }        .mini-led { position:absolute; top:8px; right:8px; width:8px; height:8px; border-radius:50%; }
         .ml-g { background:#22c55e; } .ml-b { background:#3b82f6; } .ml-o { background:#f59e0b; } .ml-r { background:#ef4444; } .ml-x { background:#6b7280; }
         .lock-icon { position:absolute; top:6px; left:8px; font-size:.6rem; color:var(--accent); }
         .section-title { display:flex; align-items:center; gap:6px; font-size:.65rem; font-weight:600; letter-spacing:.05em; text-transform:uppercase; color:var(--text-muted); margin:14px 0 6px; padding-bottom:4px; border-bottom:1px solid rgba(255,255,255,.04); }
@@ -154,8 +145,7 @@ Copia todo este bloque y reemplaza tu `index.html`:
         .config-item .cfg-text { flex:1; margin-left:8px; } .config-item .cfg-text span { display:block; font-size:.75rem; font-weight:500; } .config-item .cfg-text small { font-size:.55rem; color:var(--text-muted); }
         .filter-chips { display:flex; gap:4px; overflow-x:auto; padding:3px 0 6px; -webkit-overflow-scrolling:touch; } .filter-chips::-webkit-scrollbar { display:none; }
         .chip { padding:5px 10px; border-radius:14px; border:1px solid var(--card-border); background:rgba(255,255,255,.04); font-size:.6rem; font-weight:500; color:var(--text-muted); cursor:pointer; white-space:nowrap; transition:.2s; }
-        .chip.active { background:var(--accent); color:#000; border-color:var(--accent-border); }
-        .crown-svg { width:16px; height:16px; fill:var(--accent); flex-shrink:0; }
+        .chip.active { background:var(--accent); color:#000; border-color:var(--accent-border); }        .crown-svg { width:16px; height:16px; fill:var(--accent); flex-shrink:0; }
         .insumo-item { background:rgba(255,255,255,.02); border:1px solid var(--card-border); border-radius:var(--radius-sm); padding:12px; margin-bottom:8px; }
         .insumo-item-header { display:flex; align-items:center; gap:8px; margin-bottom:8px; }
         .insumo-item-header i { font-size:1rem; color:var(--accent); } .insumo-item-header .info { flex:1; } .insumo-item-header .info .name { font-weight:500; font-size:.75rem; } .insumo-item-header .info .consumo { font-size:.55rem; color:var(--text-muted); } .insumo-item-header .dias { font-size:.6rem; font-weight:600; margin-left:auto; }
@@ -204,8 +194,7 @@ Copia todo este bloque y reemplaza tu `index.html`:
             <span id="saveIndicator" class="save-indicator"><i class="fa-solid fa-check"></i></span>
             <div class="alert-badge-container config-btn" onclick="goPage('alertas')" aria-label="Notificaciones">
                 <i class="fa-solid fa-bell"></i>
-                <span id="alertCountBadge" class="alert-badge">0</span>
-            </div>
+                <span id="alertCountBadge" class="alert-badge">0</span>            </div>
             <div class="config-btn" onclick="goPage('config')" aria-label="Configuración"><i class="fa-solid fa-gear"></i></div>
         </div>
     </header>
@@ -254,8 +243,7 @@ const PHOTO_DB = {
         if (!indexedDB) return r();
         try {
             const req = indexedDB.open('GE_Fotos_v1', 1);
-            req.onupgradeneeded = e => e.target.result.createObjectStore('fotos', {keyPath:'id'});
-            req.onsuccess = e => { PHOTO_DB.db = e.target.result; r(); };
+            req.onupgradeneeded = e => e.target.result.createObjectStore('fotos', {keyPath:'id'});            req.onsuccess = e => { PHOTO_DB.db = e.target.result; r(); };
             req.onerror = () => r();
         } catch(e) { r(); }
     }),
@@ -304,8 +292,7 @@ const getDiet = (pv, prop, estado, td=0, dg=0, incluirFD=false) => {
     let pF=toF(msP,FACTOR_MS.pasto,'kg'); if(pF>pv*TRIGGERS.maxRumenVolumePct)pF=pv*TRIGGERS.maxRumenVolumePct;
     let d={pasto:pF,salvado:toF(msS,FACTOR_MS.salvado,'kg'),melaza:toF(msM,FACTOR_MS.melaza,'kg'),levadura:calcMicro(MICRO_FORMULAS.levadura,pv,msTotal),bicarb:calcMicro(MICRO_FORMULAS.bicarb,pv,msTotal),sal:calcMicro(MICRO_FORMULAS.sal,pv,msTotal),urea:ureaOk?Math.min(calcMicro(MICRO_FORMULAS.urea,pv,msTotal),msTotal*0.11*1000):0,_meta:{ureaBloqueada:!ureaOk,motivo:pv<TRIGGERS.ureaMinWeight?'Peso<150':'Gest>210d'}};
     if(td>0&&td<7){const f=td/7,a={pasto:(pv*0.03*0.95)/FACTOR_MS.pasto,salvado:(pv*0.03*0.05)/FACTOR_MS.salvado,melaza:(pv*0.03*0.01)/FACTOR_MS.melaza,urea:0,bicarb:(pv*0.03*0.1)*1000,sal:(pv*0.03*0.15)*1000,levadura:(pv*0.05/1000)*1000};Object.keys(d).forEach(k=>{if(k!=='_meta')d[k]=a[k]+(d[k]-a[k])*f;});}
-    if(incluirFD){const fd=getCfg('factoresDesperdicio')||{};Object.keys(d).forEach(k=>{if(k!=='_meta'&&fd[k])d[k]*=(1+fd[k]);});}
-    return d;
+    if(incluirFD){const fd=getCfg('factoresDesperdicio')||{};Object.keys(d).forEach(k=>{if(k!=='_meta'&&fd[k])d[k]*=(1+fd[k]);});}    return d;
 };
 
 const getCostoDiario = (pv,prop,estado) => {const d=getDiet(pv,prop,estado,0,0,false),pr=getCfg('precios')||{},u=getCfg('unidadesPrecio')||{};return Object.keys(d).filter(k=>k!=='_meta').reduce((s,k)=>{const c=d[k],p=pr[k]||0,uc=u[k]||'kg';let f=1;if(UNIDAD[k]==='g'&&uc==='kg')f=0.001;return s+(c*p*f);},0);};
@@ -354,8 +341,7 @@ async function handlePhotoUpload(file, animalId) {
 function shareAnimal(id) { const a=DB.animales.find(x=>x.id===id);if(!a)return;const p=a.historial[a.historial.length-1].peso,g=getGMD(a.historial);const txt=`🐂 *${a.nombre}*\nPeso: ${p}kg | GMD: ${g>0?g.toFixed(2):'--'}\nValor: $${fm(p*getCfg('precioKG'))}\nLote: ${getLoteName(a.loteId)}`; if(navigator.share){navigator.share({title:`Ficha ${a.nombre}`,text:txt}).catch(()=>{});}else{navigator.clipboard.writeText(txt).then(()=>showToast('✅ Copiado'));} }
 
 // ==================== NAVEGACIÓN ====================
-let animalFilterLote = sessionStorage.getItem('filterLote') || 'all';
-let animalSearch = sessionStorage.getItem('searchAnim') || '';
+let animalFilterLote = sessionStorage.getItem('filterLote') || 'all';let animalSearch = sessionStorage.getItem('searchAnim') || '';
 
 function goPage(p) {
     document.querySelector('header').classList.remove('hidden');
@@ -404,8 +390,7 @@ function renderInsumoSanidad() { let h=`<div class="card" style="padding:12px 14
 function saveInventario() { let st=getCfg('stock')||{}; let pr=getCfg('precios')||{}; let u=getCfg('unidadesPrecio')||{}; AL.forEach(id=>{const pE=document.getElementById(`pr-${id}`),sE=document.getElementById(`st-${id}`);if(pE)pr[id]=parseFloat(pE.value)||0;if(sE)st[id]=parseFloat(sE.value)||0;if(!u[id])u[id]='kg';}); setCfg('stock',st); setCfg('precios',pr); setCfg('unidadesPrecio',u); guardarDatos(); showToast('✅ Inventario'); }
 function saveInventarioSanidad() { let sS=getCfg('stockSanidad')||{}; let pS=getCfg('preciosSanidad')||{}; getAllSanidad().forEach(p=>{const pE=document.getElementById(`pr-${p.id}`),sE=document.getElementById(`st-${p.id}`);if(pE){pS[p.id]=parseFloat(pE.value)||0;if(!p.esBase){const c=DB.sanidad[p.id];if(c)c.precioML=pS[p.id];}}if(sE)sS[p.id]=parseFloat(sE.value)||0;}); setCfg('stockSanidad',sS); setCfg('preciosSanidad',pS); guardarDatos(); showToast('✅ Sanidad'); }
 
-function renderConfig() { const ls=lastSaveTime?formatTimeAgo(lastSaveTime):'Nunca'; document.getElementById('v-config').innerHTML=`<div class="card"><div class="config-item" onclick="exportData()"><i class="fa-solid fa-download"></i><div class="cfg-text"><span>Exportar Respaldo</span><small>JSON completo</small></div><i class="fa-solid fa-chevron-right" style="color:var(--text-muted);font-size:.7rem"></i></div><div class="config-item" onclick="importData()"><i class="fa-solid fa-upload"></i><div class="cfg-text"><span>Importar Datos</span><small>Restaurar archivo</small></div><i class="fa-solid fa-chevron-right" style="color:var(--text-muted);font-size:.7rem"></i></div><div class="config-item" onclick="if(confirm('⚠️ ¿Borrar TODO?')){clearAllData();}"><i class="fa-solid fa-trash-can" style="color:var(--danger)"></i><div class="cfg-text"><span style="color:var(--danger)">Borrar Todo</span><small>Reiniciar app</small></div><i class="fa-solid fa-chevron-right" style="color:var(--text-muted);font-size:.7rem"></i></div><div class="row"><span class="row-label"><i class="fa-solid fa-calculator"></i> Descontar inventario</span><button class="btn btn-sm btn-green" style="width:auto;padding:4px 8px;margin:0" onclick="descontarInventarioDiario();renderInsumos()"><i class="fa-solid fa-arrow-down"></i></button></div><div class="row"><span class="row-label"><i class="fa-solid fa-floppy-disk"></i> Auto-guardado</span><span class="row-val" style="color:var(--success)">✅</span></div><div class="row"><span class="row-label"><i class="fa-solid fa-clock"></i> Último guardado</span><span class="row-val" style="font-size:.75rem">${ls}</span></div></div><div class="card" style="text-align:center;padding:16px 12px"><div style="font-size:1.5rem;margin-bottom:4px"><svg class="crown-svg" viewBox="0 0 24 24" style="width:36px;height:36px"><path d="M2.5 18.5l1.5-12 5.5 4 2.5-6 2.5 6 5.5-4 1.5 12h-19z"/></svg></div><div style="font-weight:700;color:var(--accent);font-size:.9rem">GANADERO ÉLITE</div><div style="font-size:.6rem;color:var(--text-muted);margin-top:2px">v${APP_VERSION}</div><input type="file" id="importFile" accept=".json" style="display:none" onchange="handleImport(event)"></div>`; }
-function exportData() { const b=new Blob([JSON.stringify(DB)],{type:'application/json'}),u=URL.createObjectURL(b),a=document.createElement('a');a.href=u;a.download=`ganadero_backup_${new Date().toISOString().slice(0,10)}.json`;a.click();showToast('✅ Respaldo'); }
+function renderConfig() { const ls=lastSaveTime?formatTimeAgo(lastSaveTime):'Nunca'; document.getElementById('v-config').innerHTML=`<div class="card"><div class="config-item" onclick="exportData()"><i class="fa-solid fa-download"></i><div class="cfg-text"><span>Exportar Respaldo</span><small>JSON completo</small></div><i class="fa-solid fa-chevron-right" style="color:var(--text-muted);font-size:.7rem"></i></div><div class="config-item" onclick="importData()"><i class="fa-solid fa-upload"></i><div class="cfg-text"><span>Importar Datos</span><small>Restaurar archivo</small></div><i class="fa-solid fa-chevron-right" style="color:var(--text-muted);font-size:.7rem"></i></div><div class="config-item" onclick="if(confirm('⚠️ ¿Borrar TODO?')){clearAllData();}"><i class="fa-solid fa-trash-can" style="color:var(--danger)"></i><div class="cfg-text"><span style="color:var(--danger)">Borrar Todo</span><small>Reiniciar app</small></div><i class="fa-solid fa-chevron-right" style="color:var(--text-muted);font-size:.7rem"></i></div><div class="row"><span class="row-label"><i class="fa-solid fa-calculator"></i> Descontar inventario</span><button class="btn btn-sm btn-green" style="width:auto;padding:4px 8px;margin:0" onclick="descontarInventarioDiario();renderInsumos()"><i class="fa-solid fa-arrow-down"></i></button></div><div class="row"><span class="row-label"><i class="fa-solid fa-floppy-disk"></i> Auto-guardado</span><span class="row-val" style="color:var(--success)">✅</span></div><div class="row"><span class="row-label"><i class="fa-solid fa-clock"></i> Último guardado</span><span class="row-val" style="font-size:.75rem">${ls}</span></div></div><div class="card" style="text-align:center;padding:16px 12px"><div style="font-size:1.5rem;margin-bottom:4px"><svg class="crown-svg" viewBox="0 0 24 24" style="width:36px;height:36px"><path d="M2.5 18.5l1.5-12 5.5 4 2.5-6 2.5 6 5.5-4 1.5 12h-19z"/></svg></div><div style="font-weight:700;color:var(--accent);font-size:.9rem">GANADERO ÉLITE</div><div style="font-size:.6rem;color:var(--text-muted);margin-top:2px">v${APP_VERSION}</div><input type="file" id="importFile" accept=".json" style="display:none" onchange="handleImport(event)"></div>`; }function exportData() { const b=new Blob([JSON.stringify(DB)],{type:'application/json'}),u=URL.createObjectURL(b),a=document.createElement('a');a.href=u;a.download=`ganadero_backup_${new Date().toISOString().slice(0,10)}.json`;a.click();showToast('✅ Respaldo'); }
 function importData() { document.getElementById('importFile').click(); }
 function handleImport(e) { const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=async ev=>{try{const d=JSON.parse(ev.target.result);if(d.animales&&d.lotes){DB=d;guardarDatos();showToast('✅ Importado');renderInicio();}else showToast('⚠️ Inválido');}catch{showToast('⚠️ Error');}};r.readAsText(f); }
 async function clearAllData() { localStorage.clear(); if(indexedDB)indexedDB.deleteDatabase('GE_Fotos_v1'); location.reload(); }
@@ -454,8 +439,7 @@ function closeProfile() { releaseWakeLock();document.getElementById('v-perfil').
 function toggleOrigenFields() { const o=document.getElementById('addOrig')?.value,n=document.getElementById('nacimientoFields'),c=document.getElementById('compradoFields');if(n)n.classList.toggle('hidden',o!=='nacimiento');if(c)c.classList.toggle('hidden',o!=='comprado'); }
 function showAddAnimalModal() { let opts=DB.lotes.map(l=>`<option value="${l.id}">${l.nombre}</option>`).join(''),moms='<option value="">-- Sin Madre --</option>';DB.animales.forEach(a=>{if(a.proposito==='leche')moms+=`<option value="${a.id}">${a.nombre}</option>`;});showModal(`<div style="font-weight:700;margin-bottom:10px;color:var(--accent);font-size:.9rem"><i class="fa-solid fa-cow"></i> NUEVO ANIMAL</div><div class="flex-col gap8"><input id="addN" type="text" placeholder="Nombre"><input id="addW" type="number" placeholder="Peso (kg)" min="20" max="2000"><select id="addLote">${opts}</select><div class="grid"><select id="addProp"><option value="carne">🥩 CARNE</option><option value="leche">🥛 LECHE</option></select><select id="addOrig" onchange="toggleOrigenFields()"><option value="nacimiento">🐄 Nacimiento</option><option value="comprado">💰 Comprado</option></select></div><div id="nacimientoFields" class="flex-col gap6"><div class="row-label">Fecha Nacimiento</div><input id="addFechaNac" type="date"><div class="row-label">Madre</div><select id="addMama">${moms}</select></div><div id="compradoFields" class="hidden"><input id="addPrice" type="number" placeholder="Valor compra ($)"></div><button class="btn btn-gold mt8" onclick="guardarNuevoAnimal()"><i class="fa-solid fa-check"></i> REGISTRAR</button><button class="btn btn-gray" onclick="document.querySelector('.modal-overlay').remove()">CANCELAR</button></div>`); }
 function guardarNuevoAnimal() { const n=document.getElementById('addN').value.trim(),w=parseFloat(document.getElementById('addW').value),lote=document.getElementById('addLote').value,p=document.getElementById('addProp').value,orig=document.getElementById('addOrig').value,fn=document.getElementById('addFechaNac')?.value,mi=document.getElementById('addMama')?.value,pr=parseFloat(document.getElementById('addPrice')?.value)||0;if(!n||isNaN(w)||w<20||w>2000)return showToast('⚠️ Verifica datos');const fh=new Date().toLocaleDateString(),fr=(orig==='nacimiento'&&fn)?fn.split('-').reverse().join('/'):fh;const newAnimal={id:Date.now(),nombre:n,historial:[{fecha:fr,peso:w}],proposito:p,origen:orig,valorCompra:pr,fechaUltimoParto:null,estadoReproductivo:'novilla',loteId:lote,fechaNacimiento:fn||null,madreId:mi||null,tags:[],litrosLeche:0,transicionDias:0,transicionActiva:false,bloqueadoPorRetiro:false,diasGestacion:0,fechaUltimaInseminacion:null};DB.animales.push(newAnimal);guardarDatos();document.querySelector('.modal-overlay').remove();showToast(`✅ ${n} registrado`);goPage('animales'); }
-function showAddLoteModal() { showModal(`<div style="font-weight:700;margin-bottom:10px;color:var(--accent)"><i class="fa-solid fa-plus"></i> NUEVO LOTE</div><div class="flex-col gap8"><input id="nlNombre" type="text" placeholder="Nombre"><input id="nlColor" type="color" value="${randColor()}" style="width:100%;height:34px"><button class="btn btn-gold mt6" onclick="guardarLote()"><i class="fa-solid fa-check"></i> CREAR</button><button class="btn btn-gray" onclick="document.querySelector('.modal-overlay').remove()">CANCELAR</button></div>`); }
-function guardarLote() { const n=document.getElementById('nlNombre').value.trim(),c=document.getElementById('nlColor').value;if(!n)return showToast('⚠️ Ingresa nombre');const l={id:'lot_'+Date.now(),nombre:n,color:c};DB.lotes.push(l);guardarDatos();document.querySelector('.modal-overlay').remove();showToast(`✅ Lote creado`);renderLotes(); }
+function showAddLoteModal() { showModal(`<div style="font-weight:700;margin-bottom:10px;color:var(--accent)"><i class="fa-solid fa-plus"></i> NUEVO LOTE</div><div class="flex-col gap8"><input id="nlNombre" type="text" placeholder="Nombre"><input id="nlColor" type="color" value="${randColor()}" style="width:100%;height:34px"><button class="btn btn-gold mt6" onclick="guardarLote()"><i class="fa-solid fa-check"></i> CREAR</button><button class="btn btn-gray" onclick="document.querySelector('.modal-overlay').remove()">CANCELAR</button></div>`); }function guardarLote() { const n=document.getElementById('nlNombre').value.trim(),c=document.getElementById('nlColor').value;if(!n)return showToast('⚠️ Ingresa nombre');const l={id:'lot_'+Date.now(),nombre:n,color:c};DB.lotes.push(l);guardarDatos();document.querySelector('.modal-overlay').remove();showToast(`✅ Lote creado`);renderLotes(); }
 function showEditLoteColor(lid) { const l=DB.lotes.find(x=>x.id===lid);if(!l)return;showModal(`<div style="font-weight:700;margin-bottom:10px;color:var(--accent)"><i class="fa-solid fa-palette"></i> COLOR</div><div class="flex-col gap8"><input id="elColor" type="color" value="${l.color}" style="width:100%;height:40px"><button class="btn btn-green mt6" onclick="guardarColorLote('${lid}')"><i class="fa-solid fa-check"></i></button><button class="btn btn-gray" onclick="document.querySelector('.modal-overlay').remove()">CANCELAR</button></div>`); }
 function guardarColorLote(lid) { const l=DB.lotes.find(x=>x.id===lid);if(l){l.color=document.getElementById('elColor').value;guardarDatos();}document.querySelector('.modal-overlay').remove();renderLotes();showToast('✅ Color actualizado'); }
 function deleteLote(lid) { if(lid==='lot_general')return showToast('⚠️ No eliminar General');if(!confirm('¿Eliminar? Animales a General'))return;DB.animales.forEach(a=>{if(a.loteId===lid)a.loteId='lot_general';});DB.lotes=DB.lotes.filter(l=>l.id!==lid);guardarDatos();renderLotes();showToast('✅ Lote eliminado'); }
@@ -504,8 +488,7 @@ function iniciarApp() {
         if (nav) nav.classList.remove('hidden');
         
         // 3. Renderizar Inicio
-        goPage('inicio');
-        
+        goPage('inicio');        
         // 4. Tareas en segundo plano
         setTimeout(() => { try { if(typeof verificarNotificaciones === 'function') verificarNotificaciones(); } catch(e){} }, 800);
         setTimeout(() => { try { PHOTO_DB.init(); } catch(e){} }, 500);
@@ -546,4 +529,3 @@ if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navi
 </script>
 </body>
 </html>
-```
