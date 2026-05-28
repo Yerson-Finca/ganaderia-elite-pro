@@ -26,7 +26,7 @@
         .aurora { position:fixed; top:0; left:0; width:100%; height:100%; background:radial-gradient(circle at 25% 25%,#1a160a 0%,transparent 45%),radial-gradient(circle at 75% 75%,#0f1a1a 0%,transparent 45%); z-index:-1; filter:blur(80px); opacity:0.5; }
         .app { width:100%; max-width:480px; position:relative; display:flex; flex-direction:column; gap:14px; }
         
-        /* ✅ LOADER BLINDADO */
+        /* ✅ LOADER */
         .loading-screen { position:fixed; inset:0; background:var(--bg); z-index:9999; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:20px; transition: opacity 0.4s ease; }
         .loading-screen.hidden { opacity:0; pointer-events:none; }
         .loader-icon { width:64px; height:64px; border-radius:50%; background:linear-gradient(135deg, var(--accent), #e6a500); box-shadow:0 0 40px rgba(255,185,0,0.35); display:flex; align-items:center; justify-content:center; margin-bottom:12px; animation:breathe 3s infinite ease-in-out; }
@@ -44,12 +44,16 @@
         
         .toast { position:fixed; top:18px; left:50%; transform:translateX(-50%); background:var(--card-bg); border:1px solid var(--accent-border); padding:12px 18px; border-radius:24px; z-index:1000; font-weight:500; font-size:.8rem; color:var(--text); animation:fadeInApp .35s ease; box-shadow:0 8px 24px rgba(0,0,0,.5); text-align:center; max-width:90%; backdrop-filter:blur(12px); }
         .page { animation:fadeInApp .3s ease; }
-        header { display:flex; justify-content:space-between; align-items:center; padding:10px 0 8px; border-bottom:1px solid rgba(255,255,255,.06); margin-bottom:2px; }
-        header h1 { font-weight:700; font-size:1.15rem; letter-spacing:-.03em; background:linear-gradient(135deg,#ffb900,#e6a500); -webkit-background-clip:text; -webkit-text-fill-color:transparent; display:flex; align-items:center; gap:8px; }
-        header .config-btn { width:34px; height:34px; border-radius:50%; background:rgba(255,255,255,.06); border:1px solid var(--card-border); color:var(--text-muted); display:flex; align-items:center; justify-content:center; cursor:pointer; transition:.2s; }
-        header .config-btn:active { background:rgba(255,255,255,.12); color:#fff; }        .save-indicator { font-size:.65rem; color:var(--success); opacity:0; transition:opacity .3s; animation:breathe 2s infinite; }
+        
+        /* ✅ HEADER COMPACTO DE UNA SOLA LÍNEA */
+        header { display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid rgba(255,255,255,.06); margin-bottom:2px; height:44px; }
+        header h1 { font-weight:700; font-size:1.05rem; letter-spacing:-.02em; background:linear-gradient(135deg,#ffb900,#e6a500); -webkit-background-clip:text; -webkit-text-fill-color:transparent; display:flex; align-items:center; gap:6px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:55%; }        .header-actions { display:flex; align-items:center; gap:10px; flex-shrink:0; }
+        header .config-btn { width:32px; height:32px; border-radius:50%; background:rgba(255,255,255,.06); border:1px solid var(--card-border); color:var(--text-muted); display:flex; align-items:center; justify-content:center; cursor:pointer; transition:.2s; font-size:0.9rem; }
+        header .config-btn:active { background:rgba(255,255,255,.12); color:#fff; }
+        .save-indicator { font-size:.6rem; color:var(--success); opacity:0; transition:opacity .3s; animation:breathe 2s infinite; margin-right:2px; }
         .save-indicator.visible { opacity:1; }
-        .pro-tag { display:inline-flex; align-items:center; gap:4px; background:var(--accent-soft); border:1px solid var(--accent-border); color:var(--accent); padding:2px 8px; border-radius:8px; font-size:.55rem; font-weight:600; letter-spacing:.05em; margin-left:6px; }
+        .pro-tag { display:inline-flex; align-items:center; background:var(--accent-soft); color:var(--accent); padding:1px 5px; border-radius:6px; font-size:.5rem; font-weight:600; margin-left:4px; border:1px solid var(--accent-border); }
+        
         .bottom-nav { position:fixed; bottom:18px; left:50%; transform:translateX(-50%); width:94%; max-width:400px; height:60px; display:flex; justify-content:space-around; align-items:center; z-index:500; background:rgba(18,18,20,0.85); backdrop-filter:blur(16px); border:1px solid rgba(255,255,255,.1); border-radius:30px; box-shadow:0 4px 20px rgba(0,0,0,.5); }
         .nav-item { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; color:var(--text-muted); font-size:.55rem; cursor:pointer; transition:.2s; font-weight:600; text-transform:uppercase; letter-spacing:.03em; }
         .nav-item i { font-size:1.1rem; margin-bottom:1px; transition:.15s; }
@@ -92,11 +96,11 @@
         .animal-card .name { font-weight:600; text-transform:uppercase; font-size:.7rem; letter-spacing:.03em; }
         .etapa-tag { display:inline-block; padding:2px 8px; border-radius:10px; font-size:.55rem; font-weight:600; margin:3px 0; }
         .etapa-inicio { background:var(--accent-soft); color:var(--accent); border:1px solid var(--accent-border); } .etapa-desarrollo { background:rgba(59,130,246,.12); color:#60a5fa; border:1px solid rgba(59,130,246,.2); } .etapa-ceba { background:rgba(245,158,11,.12); color:#fb923c; border:1px solid rgba(245,158,11,.2); } .etapa-madurez { background:rgba(239,68,68,.12); color:#f87171; border:1px solid rgba(239,68,68,.2); }
-        .animal-card .weight { color:var(--accent); font-weight:700; font-size:1rem; margin:2px 0; }
-        .animal-card .cm { font-size:.65rem; font-weight:500; margin-top:2px; }
+        .animal-card .weight { color:var(--accent); font-weight:700; font-size:1rem; margin:2px 0; }        .animal-card .cm { font-size:.65rem; font-weight:500; margin-top:2px; }
         .animal-card .retiro-badge { display:inline-block; background:rgba(239,68,68,.18); color:#f87171; padding:2px 6px; border-radius:8px; font-size:.5rem; margin-top:3px; }
         .mini-led { position:absolute; top:10px; right:10px; width:10px; height:10px; border-radius:50%; }
-        .ml-g { background:#22c55e; } .ml-b { background:#3b82f6; } .ml-o { background:#f59e0b; } .ml-r { background:#ef4444; } .ml-x { background:#6b7280; }        .lock-icon { position:absolute; top:8px; left:10px; font-size:.7rem; color:var(--accent); }
+        .ml-g { background:#22c55e; } .ml-b { background:#3b82f6; } .ml-o { background:#f59e0b; } .ml-r { background:#ef4444; } .ml-x { background:#6b7280; }
+        .lock-icon { position:absolute; top:8px; left:10px; font-size:.7rem; color:var(--accent); }
         .section-title { display:flex; align-items:center; gap:7px; font-size:.68rem; font-weight:600; letter-spacing:.06em; text-transform:uppercase; color:var(--text-muted); margin:16px 0 8px; padding-bottom:6px; border-bottom:1px solid rgba(255,255,255,.05); }
         .modal-overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,.85); z-index:200; display:flex; align-items:center; justify-content:center; padding:18px; animation:fadeInApp .2s ease; }
         .modal { background:#151517; border:1px solid var(--card-border); border-radius:20px; padding:18px; width:100%; max-width:380px; max-height:85vh; overflow-y:auto; box-shadow:0 16px 40px rgba(0,0,0,.7); }
@@ -141,11 +145,11 @@
         .config-item { display:flex; align-items:center; justify-content:space-between; padding:12px 0; border-bottom:1px solid rgba(255,255,255,.05); cursor:pointer; }
         .config-item:last-child { border-bottom:none; } .config-item i { font-size:1rem; width:26px; text-align:center; color:var(--accent); }
         .config-item .cfg-text { flex:1; margin-left:10px; } .config-item .cfg-text span { display:block; font-size:.8rem; font-weight:500; } .config-item .cfg-text small { font-size:.62rem; color:var(--text-muted); }
-        .filter-chips { display:flex; gap:6px; overflow-x:auto; padding:4px 0 8px; -webkit-overflow-scrolling:touch; } .filter-chips::-webkit-scrollbar { display:none; }
-        .chip { padding:6px 12px; border-radius:18px; border:1px solid var(--card-border); background:rgba(255,255,255,.05); font-size:.68rem; font-weight:500; color:var(--text-muted); cursor:pointer; white-space:nowrap; transition:.2s; }
+        .filter-chips { display:flex; gap:6px; overflow-x:auto; padding:4px 0 8px; -webkit-overflow-scrolling:touch; } .filter-chips::-webkit-scrollbar { display:none; }        .chip { padding:6px 12px; border-radius:18px; border:1px solid var(--card-border); background:rgba(255,255,255,.05); font-size:.68rem; font-weight:500; color:var(--text-muted); cursor:pointer; white-space:nowrap; transition:.2s; }
         .chip.active { background:var(--accent); color:#000; border-color:var(--accent-border); }
         .crown-svg { width:18px; height:18px; fill:var(--accent); flex-shrink:0; }
-        .insumo-item { background:rgba(255,255,255,.03); border:1px solid var(--card-border); border-radius:16px; padding:14px; margin-bottom:10px; }        .insumo-item-header { display:flex; align-items:center; gap:10px; margin-bottom:10px; }
+        .insumo-item { background:rgba(255,255,255,.03); border:1px solid var(--card-border); border-radius:16px; padding:14px; margin-bottom:10px; }
+        .insumo-item-header { display:flex; align-items:center; gap:10px; margin-bottom:10px; }
         .insumo-item-header i { font-size:1.1rem; color:var(--accent); } .insumo-item-header .info { flex:1; } .insumo-item-header .info .name { font-weight:500; font-size:.8rem; } .insumo-item-header .info .consumo { font-size:.62rem; color:var(--text-muted); } .insumo-item-header .dias { font-size:.68rem; font-weight:600; margin-left:auto; }
         .tag-descarte { background:rgba(239,68,68,.15); color:#f87171; padding:2px 6px; border-radius:6px; font-size:.62rem; font-weight:500; margin-left:5px; }
         .animal-card.bloqueado { opacity:0.6; cursor:not-allowed!important; } .animal-card.bloqueado:active { transform:none!important; }
@@ -188,20 +192,19 @@
 <div class="app" style="display:none" id="appContainer">
     <header id="mainHeader">
         <h1><svg class="crown-svg" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M2.5 18.5l1.5-12 5.5 4 2.5-6 2.5 6 5.5-4 1.5 12h-19z"/></svg>GANADERO ÉLITE<span class="pro-tag">PRO</span></h1>
-        <div style="display:flex;align-items:center;gap:8px">
-            <span id="saveIndicator" class="save-indicator"><i class="fa-solid fa-check"></i> Guardado</span>
-            <!-- ✅ BOTÓN DE ALERTAS -->
-            <div class="config-btn" onclick="goPage('alertas')" aria-label="Notificaciones"><i class="fa-solid fa-bell"></i></div>
-            <div class="config-btn" onclick="goPage('config')" aria-label="Configuración"><i class="fa-solid fa-gear"></i></div>
+        <div class="header-actions">
+            <span id="saveIndicator" class="save-indicator"><i class="fa-solid fa-check"></i></span>
+            <div class="config-btn" onclick="goPage('alertas')" aria-label="Notificaciones"><i class="fa-solid fa-bell"></i></div>            <div class="config-btn" onclick="goPage('config')" aria-label="Configuración"><i class="fa-solid fa-gear"></i></div>
         </div>
-    </header>    <div id="v-inicio" class="page"></div><div id="v-lotes" class="hidden page"></div><div id="v-animales" class="hidden page"></div><div id="v-insumos" class="hidden page"></div><div id="v-alertas" class="hidden page"></div><div id="v-config" class="hidden page"></div><div id="v-perfil" class="hidden page"></div>
+    </header>
+    <div id="v-inicio" class="page"></div><div id="v-lotes" class="hidden page"></div><div id="v-animales" class="hidden page"></div><div id="v-insumos" class="hidden page"></div><div id="v-alertas" class="hidden page"></div><div id="v-config" class="hidden page"></div><div id="v-perfil" class="hidden page"></div>
 </div>
 
-<!-- ✅ LOADER MINIMALISTA -->
+<!-- ✅ LOADER -->
 <div id="loadingScreen" class="loading-screen">
     <div class="loader-icon"><i class="fa-solid fa-cow"></i></div>
     <div class="loader-title">GANADERO ÉLITE</div>
-    <div class="loader-version">v4.7.0 PRO</div>
+    <div class="loader-version">v4.7.1 PRO</div>
     <div class="loader-track"><div class="loader-fill"></div></div>
 </div>
 
@@ -215,12 +218,12 @@
 
 <script>
 // ==================== CONFIGURACIÓN GLOBAL ====================
-const APP_VERSION = '4.7.0';
+const APP_VERSION = '4.7.1';
 const STORAGE_KEY = 'ganadero_elite_v' + APP_VERSION.replace('.','_');
 let DB = { animales: [], lotes: [], config: {}, inventario: {}, sanidad: {}, aplicaciones: [], asignacionesAlimentos: {} };
 let lastSaveTime = null, autoSaveTimer = null, saveTimeout = null, insumoTab = 'alimentos', searchTimeout = null;
 
-// ✅ DATOS POR DEFECTO (garantizan que la app siempre tenga algo)
+// ✅ DATOS POR DEFECTO
 const DATOS_POR_DEFECTO = {
     animales: [],
     lotes: [{ id: 'lot_general', nombre: 'General', color: '#ffb900' }],
@@ -235,17 +238,15 @@ const DATOS_POR_DEFECTO = {
     inventario: {}, sanidad: {}, aplicaciones: [], asignacionesAlimentos: {}
 };
 
-// ✅ FUNCIÓN DE CARGA BLINDADA (NUNCA SE TRABA)
+// ✅ FUNCIÓN DE CARGA BLINDADA
 function iniciarApp() {
-    // 1. Timeout de seguridad: entra en 2 segundos sí o sí
     const timeoutSeguridad = setTimeout(entrarApp, 2000);
-    
     try {
-        // 2. Cargar datos desde localStorage
         const datosGuardados = localStorage.getItem(STORAGE_KEY);
         if (datosGuardados) {            DB = { ...DATOS_POR_DEFECTO, ...JSON.parse(datosGuardados) };
+            // ✅ Fusión profunda de config para evitar undefined
+            DB.config = { ...DATOS_POR_DEFECTO.config, ...DB.config };
         } else {
-            // 3. Intentar migrar desde versión anterior
             const oldData = localStorage.getItem('ganadero_elite_v4_5_0');
             if (oldData) {
                 const parsed = JSON.parse(oldData);
@@ -257,63 +258,45 @@ function iniciarApp() {
                 DB.aplicaciones = parsed.aplicaciones || [];
                 DB.asignacionesAlimentos = parsed.asignacionesAlimentos || {};
             } else {
-                // 4. Usar datos por defecto
                 DB = JSON.parse(JSON.stringify(DATOS_POR_DEFECTO));
             }
         }
-        
-        // 5. Guardar inmediatamente para persistir
         localStorage.setItem(STORAGE_KEY, JSON.stringify(DB));
-        
-        // 6. Cancelar timeout y entrar
         clearTimeout(timeoutSeguridad);
         entrarApp();
-        
     } catch (error) {
         console.error('Error cargando datos:', error);
         clearTimeout(timeoutSeguridad);
-        entrarApp(); // Entra aunque falle algo
+        entrarApp();
     }
 }
 
-// ✅ FUNCIÓN PARA ENTRAR A LA APP (SIEMPRE FUNCIONA)
 function entrarApp() {
     if (window.appYaIniciada) return;
     window.appYaIniciada = true;
-    
-    // Ocultar loader de forma agresiva
     const loader = document.getElementById('loadingScreen');
     if (loader) {
         loader.style.opacity = '0';
         loader.style.pointerEvents = 'none';
         setTimeout(() => { if(loader) loader.style.display = 'none'; }, 300);
     }
-    
-    // Mostrar app
     const app = document.getElementById('appContainer');
     if (app) app.style.display = 'flex';
-        // Renderizar página inicial (con protección)
     try {
         if (typeof goPage === 'function') goPage('inicio');
     } catch (e) {
         console.warn('Error renderizando:', e);
-        // Si falla renderizar, al menos muestra algo
         document.getElementById('v-inicio').innerHTML = '<div class="card"><p>⚠️ Error al cargar. Intenta recargar.</p></div>';
     }
-    
-    // Notificaciones en segundo plano
     setTimeout(() => { if (typeof verificarNotificaciones === 'function') verificarNotificaciones(); }, 500);
 }
 
-// Iniciar inmediatamente
 document.addEventListener('DOMContentLoaded', iniciarApp);
 if (document.readyState !== 'loading') iniciarApp();
-
-// ==================== FUNCIONES DE ACCESO A DATOS ====================
-function getCfg(k) { return DB.config[k]; }
-function setCfg(k, v) { DB.config[k] = v; guardarDatos(); }
-
 // ==================== UTILIDADES ====================
+function getCfg(k) { return DB.config?.[k]; }
+function setCfg(k, v) { if(!DB.config) DB.config={}; DB.config[k] = v; guardarDatos(); }
+
 const fm = (n) => { if (isNaN(n) || n === null || n === undefined) return '0'; n = Math.round(n); var s = String(n); var r = ''; var c = 0; for (var i = s.length - 1; i >= 0; i--) { if (c > 0 && c % 3 === 0) r = '.' + r; r = s.charAt(i) + r; c++; } return r; };
 const showToast = (m, d = 3000) => { const t = document.createElement('div'); t.className = 'toast'; t.innerHTML = m; document.getElementById('toastContainer').appendChild(t); setTimeout(() => t.remove(), d); };
 const showModal = (h) => { const o = document.createElement('div'); o.className = 'modal-overlay'; o.innerHTML = '<div class="modal">' + h + '</div>'; o.onclick = (e) => { if (e.target === o) o.remove(); }; document.getElementById('modalContainer').appendChild(o); };
@@ -341,29 +324,24 @@ const CATALOGO_SANIDAD = [
     { id: 'fosforo', nombre: 'Fósforo B12', dosis: 20, diasEfecto: 30, retiro: 0, icono: 'fa-bone', color: '#a78bfa' },
     { id: 'hierro', nombre: 'Hierro Dextrano', dosis: 100, diasEfecto: 30, retiro: 0, icono: 'fa-droplet', color: '#f87171' }
 ];
-// ==================== MOTOR NUTRICIONAL (PASTOREO 6%) ====================
+
+// ==================== MOTOR NUTRICIONAL ====================
 const getDiet = (pv, prop, estado, transicionDias = 0, diasGestacion = 0, incluirFD = false) => {
     if (pv < 20) return { pasto: 0, salvado: 0, melaza: 0, urea: 0, bicarb: 0, sal: 0, levadura: 0, _meta: { ureaBloqueada: false, motivo: null } };
-    // ✅ SUPLEMENTO 6% PARA PASTOREO: El animal come del campo, esto es solo lo extra
     const msTotalRequerida = pv * CONSUMO_MS_PV;
-    const baseSuplemento = msTotalRequerida * 0.06; // Solo 6% como suplemento
+    const baseSuplemento = msTotalRequerida * 0.06;
     const esTernera = pv < 150, p = prop || 'carne', st = estado || 'auto';
     const ureaPermitida = !(pv < TRIGGERS.ureaMinWeight || diasGestacion >= TRIGGERS.pregnancyUreaBlockDay);
     const calcMicro = (f, pv, ms) => f.type === 'pv' ? pv * f.factor : ms * f.factor;
-    
-    // Distribución del suplemento (6% total)
     let msPasto = baseSuplemento * 0.50, msSalvado = baseSuplemento * 0.30, msMelaza = baseSuplemento * 0.20;
-    
     const toFresco = (ms, fMS, u) => u === 'kg' ? ms / fMS : (ms / fMS) * 1000;
     let pastoFresco = toFresco(msPasto, FACTOR_MS.pasto, 'kg');
     if (pastoFresco > pv * TRIGGERS.maxRumenVolumePct) pastoFresco = pv * TRIGGERS.maxRumenVolumePct;
-    
     let dieta = {
         pasto: pastoFresco, 
         salvado: toFresco(msSalvado, FACTOR_MS.salvado, 'kg'), 
         melaza: toFresco(msMelaza, FACTOR_MS.melaza, 'kg'),
-        levadura: calcMicro(MICRO_FORMULAS.levadura, pv, msTotalRequerida), 
-        bicarb: calcMicro(MICRO_FORMULAS.bicarb, pv, msTotalRequerida),
+        levadura: calcMicro(MICRO_FORMULAS.levadura, pv, msTotalRequerida),         bicarb: calcMicro(MICRO_FORMULAS.bicarb, pv, msTotalRequerida),
         sal: calcMicro(MICRO_FORMULAS.sal, pv, msTotalRequerida),
         urea: ureaPermitida ? Math.min(calcMicro(MICRO_FORMULAS.urea, pv, msTotalRequerida), msTotalRequerida * 0.11 * 1000) : 0,
         _meta: { ureaBloqueada: !ureaPermitida, motivo: pv < TRIGGERS.ureaMinWeight ? 'Peso<150kg' : 'Gestación>210d' }
@@ -390,7 +368,8 @@ const getCostoDiarioConFD = (pv, prop, estado) => {
     return Object.keys(d).filter(k => k !== '_meta').reduce((s, k) => {
         const cant = d[k], precio = pr[k] || 0, uCompra = unidades[k] || 'kg'; const cantConFD = cant * (1 + (fd[k] || 0)); let factor = 1;
         if (UNIDAD[k] === 'g' && uCompra === 'kg') factor = 0.001;
-        return s + (cantConFD * precio * factor);    }, 0);
+        return s + (cantConFD * precio * factor);
+    }, 0);
 };
 
 const getGMD = (h) => {
@@ -411,8 +390,7 @@ const calcRepro = (a) => {
     const hoy = new Date(), parto = new Date(a.fechaUltimoParto.split('/').reverse().join('-')), diasPP = Math.max(0, Math.floor((hoy - parto) / 864e5));
     const fpp = new Date(parto); fpp.setDate(parto.getDate() + 285); const dpp = Math.floor((fpp - hoy) / 864e5);
     let dg = a.diasGestacion || 0; if (a.fechaUltimaInseminacion) { const ins = new Date(a.fechaUltimaInseminacion.split('/').reverse().join('-')); dg = Math.max(0, Math.floor((hoy - ins) / 864e5)); }
-    let sem, est = a.estadoReproductivo || 'parida';
-    if (dpp <= 60 && dpp > 0) { sem = { color: '#3b82f6', txt: '🔵 Secado (' + dpp + 'd)', tipo: 'secado' }; est = 'seca'; } else if (diasPP <= 60) sem = { color: '#22c55e', txt: '🟢 Recuperación', tipo: 'verde' }; else if (diasPP <= 150) sem = { color: '#f59e0b', txt: '🟡 Ventana Monta', tipo: 'amarillo' }; else sem = { color: '#ef4444', txt: '🔴 ALERTA Vacía', tipo: 'rojo' };
+    let sem, est = a.estadoReproductivo || 'parida';    if (dpp <= 60 && dpp > 0) { sem = { color: '#3b82f6', txt: '🔵 Secado (' + dpp + 'd)', tipo: 'secado' }; est = 'seca'; } else if (diasPP <= 60) sem = { color: '#22c55e', txt: '🟢 Recuperación', tipo: 'verde' }; else if (diasPP <= 150) sem = { color: '#f59e0b', txt: '🟡 Ventana Monta', tipo: 'amarillo' }; else sem = { color: '#ef4444', txt: '🔴 ALERTA Vacía', tipo: 'rojo' };
     return { diasPP, diasParaParto: dpp, fechaProxParto: fpp.toLocaleDateString('es-CO'), semaforo: sem, estadoLactancia: est, avisoSecado: dpp <= 60 && dpp > 0, diasGestacion: dg };
 };
 
@@ -439,7 +417,8 @@ const generarFlujoCajaMensual = (meses = 6) => {
         let p = a.historial[a.historial.length - 1].peso; const gmdReal = getGMD(a.historial);
         for (let m = 0; m < meses; m++) {
             const pMes = gmdReal > 0 ? p + (gmdReal * 30) : p; let venta = 0;
-            if (a.proposito === 'carne' && p >= 480 && gmdReal > 0 && (m > 0 || p >= 490)) { venta = p * (precioBase * estacionalidad[m % 6]) * 0.95; p = 0; } else if (p > 0 && gmdReal > 0) p = pMes;            const cd = getCostoDiarioConFD(p, a.proposito, calcRepro(a)?.estadoLactancia || 'auto'), ingDia = calcularIngresoDiario(a, gmdReal, precioBase);
+            if (a.proposito === 'carne' && p >= 480 && gmdReal > 0 && (m > 0 || p >= 490)) { venta = p * (precioBase * estacionalidad[m % 6]) * 0.95; p = 0; } else if (p > 0 && gmdReal > 0) p = pMes;
+            const cd = getCostoDiarioConFD(p, a.proposito, calcRepro(a)?.estadoLactancia || 'auto'), ingDia = calcularIngresoDiario(a, gmdReal, precioBase);
             const ingTotal = venta + (ingDia * 30), costoVar = cd * 30 + getCostoSanidadDiario(a.id) * 30, neto = ingTotal - costoVar - (a === DB.animales[0] ? cfM : 0);
             saldo += neto; if (!cf[m]) cf[m] = { mes: m + 1, ingresos: 0, costosVar: 0, fijos: 0, neto: 0, saldo: 0 };
             cf[m].ingresos += ingTotal; cf[m].costosVar += costoVar; cf[m].fijos += (a === DB.animales[0] ? cfM : 0); cf[m].neto += neto; cf[m].saldo = saldo;
@@ -449,7 +428,9 @@ const generarFlujoCajaMensual = (meses = 6) => {
     return { flujo: cf, saldoFinal: saldo, breakEven: breakEven || (saldo < 0 ? 'No alcanza' : 'N/A'), roi: saldo > 0 ? (saldo / Math.abs(maxNeg || 1) * 100).toFixed(1) : 'N/A' };
 };
 
+// ✅ ALERTAS CON VALIDACIÓN ROBUSTA (CORRECCIÓN DE UNDEFINED)
 const getAlertasAnimal = (a) => {
+    if(!a || !a.historial || !a.historial.length) return [];
     const pv = a.historial[a.historial.length - 1].peso, gmd = getGMD(a.historial), et = getEtapa(pv, calcRepro(a));
     const cd = getCostoDiario(pv, a.proposito, et.estadoLactancia), cdC = getCostoAlimentosCustom(a.id, pv);
     const roia = calcularROIA(gmd, getCfg('precioKG'), cd + cdC); let al = [];
@@ -458,19 +439,19 @@ const getAlertasAnimal = (a) => {
     if (gmd > 0 && gmd < 0.4) al.push({ t: 'purple', m: '⚠️ GMD bajo (<0.4)', icon: 'fa-arrow-trend-down' });
     if (a.proposito === 'leche' && !a.fechaUltimoParto && pv >= 320) al.push({ t: 'info', m: '🐂 Habilitar monta', icon: 'fa-venus-mars' });
     var tm = false, tiv = false; const apps = DB.aplicaciones ? DB.aplicaciones.filter(x => x.animalId === a.id) : [];
-    apps.forEach(ap => { const pr = getAllSanidad().find(x => x.id === ap.productoId); if (pr) { if (pr.id === 'modificador' && getDiasDesde(ap.fecha) < pr.diasEfecto) tm = true; if (pr.id.includes('ivermectina') && getDiasDesde(ap.fecha) < pr.diasEfecto) tiv = true; if (pr.retiro > 0 && getDiasDesde(ap.fecha) < pr.retiro) { al.push({ t: 'r', m: '🚫 VEDA: ' + pr.nombre, icon: 'fa-clock' }); a.bloqueadoPorRetiro = true; } else a.bloqueadoPorRetiro = false; } });
-    if (gmd > 0 && gmd < 0.4 && !tm) al.push({ t: 'purple', m: 'Aplicar Modificador', icon: 'fa-flask' }); if (!tiv) al.push({ t: 'r', m: 'Desparasitación vencida', icon: 'fa-shield-virus' }); return al;
+    apps.forEach(ap => { const pr = getAllSanidad().find(x => x.id === ap.productoId); if (pr) { if (pr.id === 'modificador' && getDiasDesde(ap.fecha) < pr.diasEfecto) tm = true; if (pr.id.includes('ivermectina') && getDiasDesde(ap.fecha) < pr.diasEfecto) tiv = true; if (pr.retiro > 0 && getDiasDesde(ap.fecha) < pr.retiro) { al.push({ t: 'r', m: '🚫 VEDA: ' + pr.nombre, icon: 'fa-clock' }); a.bloqueadoPorRetiro = true; } else a.bloqueadoPorRetiro = false; } });    if (gmd > 0 && gmd < 0.4 && !tm) al.push({ t: 'purple', m: 'Aplicar Modificador', icon: 'fa-flask' }); if (!tiv) al.push({ t: 'r', m: 'Desparasitación vencida', icon: 'fa-shield-virus' }); return al;
 };
 
 const actualizarTransiciones = () => { let c = false; DB.animales.forEach(a => { if (a.transicionActiva && a.transicionDias < 7) { a.transicionDias++; c = true; if (a.transicionDias >= 7) { a.transicionActiva = false; showToast(`✅ ${a.nombre}: Transición ok`); } } }); if (c) guardarDatos(); };
 const calcularAutonomiaBodega = () => { const ct = { pasto: 0, salvado: 0, melaza: 0, levadura: 0, bicarb: 0, sal: 0, urea: 0 }, fd = getCfg('factoresDesperdicio') || {}; DB.animales.forEach(a => { const p = a.historial[a.historial.length - 1].peso, d = getDiet(p, a.proposito, calcRepro(a)?.estadoLactancia || 'auto', a.transicionDias || 0, 0, true); Object.keys(ct).forEach(k => ct[k] += (d[k] || 0) * (1 + (fd[k] || 0))); }); const au = {}; const st = getCfg('stock') || {}; Object.keys(ct).forEach(k => { const s = st[k] || 0, c = ct[k] || 0.001; au[k] = c > 0 ? Math.floor(s / c) : 999; }); return { consumo: ct, autonomia: au }; };
 const descontarInventarioDiario = () => { const { consumo } = calcularAutonomiaBodega(); const st = getCfg('stock') || {}; Object.keys(consumo).forEach(k => { if (st[k] !== undefined) { st[k] = Math.max(0, st[k] - consumo[k]); if (st[k] < consumo[k] * 3) showToast(`⚠️ Stock bajo: ${NM[k]}`, 5000); } }); setCfg('stock', st); guardarDatos(); };
 
-// ✅ GENERADOR DE ALERTAS (PARA CENTRO DE NOTIFICACIONES)
+// ✅ GENERADOR DE ALERTAS CON VALIDACIÓN (CORRECCIÓN DE UNDEFINED)
 const generarAlertasCompletas = () => {
     const alertas = [];
+    if(!DB.animales) return alertas;
     DB.animales.forEach(a => {
-        if (!a.historial || !a.historial.length) return;
+        if (!a || !a.historial || !a.historial.length) return;
         const pv = a.historial[a.historial.length - 1].peso;
         const gmd = getGMD(a.historial);
         const repro = calcRepro(a);
@@ -479,18 +460,23 @@ const generarAlertasCompletas = () => {
         const ing = calcularIngresoDiario(a, gmd, getCfg('precioKG'));
         const roia = cd > 0 ? ing / cd : 0;
 
-        if (roia < 1.0 && gmd > 0) alertas.push({id: a.id, nombre: a.nombre, tipo: 'critical', mensaje: `📉 ROIA bajo (${roia.toFixed(1)}x). Evaluar descarte.`});
-        if (a.fechaNacimiento) { const edad = Math.floor((new Date() - new Date(a.fechaNacimiento)) / 864e5); if (edad >= 15 && edad <= 30) alertas.push({id: a.id, nombre: a.nombre, tipo: 'warning', mensaje: `✂️ Descornado/palpar`}); if (edad >= 210 && pv <= 150) alertas.push({id: a.id, nombre: a.nombre, tipo: 'info', mensaje: `🍼 Destete`}); }
-        if (gmd > 0 && gmd < 0.4) alertas.push({id: a.id, nombre: a.nombre, tipo: 'warning', mensaje: `⚠️ GMD bajo (${gmd.toFixed(2)})`});
-        if (a.proposito === 'leche' && !a.fechaUltimoParto && pv >= 320) alertas.push({id: a.id, nombre: a.nombre, tipo: 'info', mensaje: `🐂 Habilitar monta`});
-        if (a.bloqueadoPorRetiro) alertas.push({id: a.id, nombre: a.nombre, tipo: 'critical', mensaje: `🚫 En retiro sanitario`});
+        // ✅ Validación segura de nombre
+        const nombre = (a.nombre || 'Animal').toString();
+        
+        if (roia < 1.0 && gmd > 0) alertas.push({id: a.id, nombre: nombre, tipo: 'critical', mensaje: `📉 ROIA bajo (${roia.toFixed(1)}x). Evaluar descarte.`});
+        if (a.fechaNacimiento) { const edad = Math.floor((new Date() - new Date(a.fechaNacimiento)) / 864e5); if (edad >= 15 && edad <= 30) alertas.push({id: a.id, nombre: nombre, tipo: 'warning', mensaje: `✂️ Descornado/palpar`}); if (edad >= 210 && pv <= 150) alertas.push({id: a.id, nombre: nombre, tipo: 'info', mensaje: `🍼 Destete`}); }
+        if (gmd > 0 && gmd < 0.4) alertas.push({id: a.id, nombre: nombre, tipo: 'warning', mensaje: `⚠️ GMD bajo (${gmd.toFixed(2)})`});
+        if (a.proposito === 'leche' && !a.fechaUltimoParto && pv >= 320) alertas.push({id: a.id, nombre: nombre, tipo: 'info', mensaje: `🐂 Habilitar monta`});
+        if (a.bloqueadoPorRetiro) alertas.push({id: a.id, nombre: nombre, tipo: 'critical', mensaje: `🚫 En retiro sanitario`});
         
         const apps = DB.aplicaciones ? DB.aplicaciones.filter(x => x.animalId === a.id) : [];
         const mod = apps.find(x => x.productoId === 'modificador');
         const iver = apps.find(x => x.productoId.includes('ivermectina'));
-        if (!mod && gmd > 0 && gmd < 0.4) alertas.push({id: a.id, nombre: a.nombre, tipo: 'warning', mensaje: `💉 Faltan modificadores`});        if (!iver) alertas.push({id: a.id, nombre: a.nombre, tipo: 'critical', mensaje: `🛡️ Desparasitación vencida`});
+        if (!mod && gmd > 0 && gmd < 0.4) alertas.push({id: a.id, nombre: nombre, tipo: 'warning', mensaje: `💉 Faltan modificadores`});
+        if (!iver) alertas.push({id: a.id, nombre: nombre, tipo: 'critical', mensaje: `🛡️ Desparasitación vencida`});
     });
-    const stock = getCfg('stock') || {}; Object.keys(stock).forEach(k => { if (stock[k] < 10) alertas.push({id: 'inv', nombre: NM[k], tipo: 'critical', mensaje: `📦 Stock crítico: ${Math.round(stock[k])}`}); });
+    const stock = getCfg('stock') || {}; 
+    if(stock) Object.keys(stock).forEach(k => { if (stock[k] < 10) alertas.push({id: 'inv', nombre: NM[k] || k, tipo: 'critical', mensaje: `📦 Stock crítico: ${Math.round(stock[k])}`}); });
     return alertas;
 };
 
@@ -502,8 +488,7 @@ const verificarNotificaciones = () => {
 // ✅ GRÁFICO SVG
 const renderGraficoEvolucion = (historial) => {
     if (historial.length < 2) return '<div style="text-align:center;color:var(--text-muted);padding:12px;font-size:.75rem;background:rgba(255,255,255,.03);border-radius:10px;margin-top:8px">Se necesitan ≥2 pesajes</div>';
-    const datos = historial.map(h => { const p = h.fecha.split('/'); return { fecha: new Date(p[2], p[1] - 1, p[0]), peso: h.peso, fechaStr: h.fecha }; }).sort((a, b) => a.fecha - b.fecha);
-    const minP = Math.min(...datos.map(d => d.peso)) * 0.95, maxP = Math.max(...datos.map(d => d.peso)) * 1.05, w = 320, h = 130, pad = { t: 15, r: 15, b: 25, l: 38 }, cw = w - pad.l - pad.r, ch = h - pad.t - pad.b;
+    const datos = historial.map(h => { const p = h.fecha.split('/'); return { fecha: new Date(p[2], p[1] - 1, p[0]), peso: h.peso, fechaStr: h.fecha }; }).sort((a, b) => a.fecha - b.fecha);    const minP = Math.min(...datos.map(d => d.peso)) * 0.95, maxP = Math.max(...datos.map(d => d.peso)) * 1.05, w = 320, h = 130, pad = { t: 15, r: 15, b: 25, l: 38 }, cw = w - pad.l - pad.r, ch = h - pad.t - pad.b;
     const pts = datos.map((d, i) => ({ x: pad.l + (i / (datos.length - 1)) * cw, y: pad.t + ch - ((d.peso - minP) / (maxP - minP)) * ch, peso: d.peso, fecha: d.fechaStr }));
     const pathD = pts.map((p, i) => `${i === 0 ? 'M' : 'L'}${p.x},${p.y}`).join(' ');
     const circles = pts.map(p => `<circle cx="${p.x}" cy="${p.y}" r="4" fill="var(--accent)" stroke="#0a0a0c" stroke-width="2"/>`).join('');
@@ -537,56 +522,57 @@ async function handlePhotoUpload(file, animalId) {
 function shareAnimal(id) {
     const a = DB.animales.find(x => x.id === id); if (!a) return;
     const p = a.historial[a.historial.length - 1].peso, gmd = getGMD(a.historial);
-    const txt = `🐂 *${a.nombre}*\nPeso: ${p}kg | GMD: ${gmd > 0 ? gmd.toFixed(2) : '--'} kg/d\nValor: $${fm(p * getCfg('precioKG'))}\nLote: ${getLoteName(a.loteId)}\n📊 Ficha técnica GANADERO ÉLITE PRO`;    if (navigator.share) { navigator.share({ title: `Ficha ${a.nombre}`, text: txt }).catch(() => { }); }
+    const txt = `🐂 *${a.nombre || 'Animal'}*\nPeso: ${p}kg | GMD: ${gmd > 0 ? gmd.toFixed(2) : '--'} kg/d\nValor: $${fm(p * getCfg('precioKG'))}\nLote: ${getLoteName(a.loteId)}\n📊 Ficha técnica GANADERO ÉLITE PRO`;
+    if (navigator.share) { navigator.share({ title: `Ficha ${a.nombre}`, text: txt }).catch(() => { }); }
     else { navigator.clipboard.writeText(txt).then(() => showToast('✅ Copiado')); }
 }
 
-// ==================== NAVEGACIÓN (CORREGIDA PARA ALERTAS) ====================
+// ==================== NAVEGACIÓN ====================
 let animalFilterLote = sessionStorage.getItem('filterLote') || 'all';
 let animalSearch = sessionStorage.getItem('searchAnim') || '';
 
 function goPage(p) {
     document.querySelector('header').classList.remove('hidden');
-    // ✅ Se agregó 'v-alertas' a la lista de páginas a ocultar
     ['v-inicio', 'v-lotes', 'v-animales', 'v-insumos', 'v-alertas', 'v-config', 'v-perfil'].forEach(id => document.getElementById(id).classList.add('hidden'));
-    
     document.getElementById('v-' + p).classList.remove('hidden');
     document.querySelectorAll('.nav-item').forEach(n => { n.classList.remove('active'); n.style.display = 'flex'; });
-    // Highlight nav item (si existe)
     const activeNav = document.querySelector('.nav-item[data-p="' + p + '"]');
-    if (activeNav) activeNav.classList.add('active');
-    
-    // ✅ Se agregó la lógica para renderizar la página de alertas
-    if (p === 'inicio') renderInicio(); 
+    if (activeNav) activeNav.classList.add('active');    if (p === 'inicio') renderInicio(); 
     else if (p === 'lotes') renderLotes(); 
     else if (p === 'animales') renderAnimales(); 
     else if (p === 'insumos') renderInsumos(); 
     else if (p === 'alertas') renderAlertas(); 
     else if (p === 'config') renderConfig();
-    
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 document.querySelectorAll('.nav-item').forEach(n => n.addEventListener('click', () => goPage(n.dataset.p)));
 
 // ==================== RENDERS ====================
 function renderInicio() {
-    const ta = DB.animales.length; let tKg = 0, coT = 0, csT = 0, est = { verde: 0, azul: 0, naranja: 0, rojo: 0, gris: 0 }, als = [];
+    const ta = DB.animales?.length || 0; let tKg = 0, est = { verde: 0, azul: 0, naranja: 0, rojo: 0, gris: 0 };
     let totalDiet = { pasto: 0, salvado: 0, melaza: 0, urea: 0, bicarb: 0, sal: 0, levadura: 0 };
-    DB.animales.forEach(a => {
-        const p = a.historial[a.historial.length - 1].peso, rep = calcRepro(a), ea = rep?.estadoLactancia || 'auto', g = getGMD(a.historial);
-        tKg += p; coT += getCostoDiario(p, a.proposito, ea); csT += getCostoSanidadTotal(a.id);
-        est[getRendimiento(a.historial, g).nivel]++;
-        getAlertasAnimal(a).forEach(s => als.push({ nombre: a.nombre, t: s.t, m: s.m, icon: s.icon }));
-        const diet = getDiet(p, a.proposito, ea, a.transicionDias || 0, rep?.diasGestacion || 0);
-        Object.keys(totalDiet).forEach(k => totalDiet[k] += diet[k] || 0);
-    });
+    
+    // ✅ Validación de DB.animales
+    if(DB.animales) {
+        DB.animales.forEach(a => {
+            if(!a || !a.historial || !a.historial.length) return;
+            const p = a.historial[a.historial.length - 1].peso, rep = calcRepro(a), ea = rep?.estadoLactancia || 'auto', g = getGMD(a.historial);
+            tKg += p;
+            est[getRendimiento(a.historial, g).nivel]++;
+            const diet = getDiet(p, a.proposito, ea, a.transicionDias || 0, rep?.diasGestacion || 0);
+            Object.keys(totalDiet).forEach(k => totalDiet[k] += diet[k] || 0);
+        });
+    }
+    
     const prom = ta ? tKg / ta : 0, pctB = ta ? ((est.verde + est.azul) / ta) * 100 : 0, fc = generarFlujoCajaMensual(6), ab = calcularAutonomiaBodega().autonomia;
 
     let html = `<div class="card" style="background:linear-gradient(135deg,rgba(255,185,0,.08),rgba(255,185,0,.02));border-color:rgba(255,185,0,.2)">
         <div class="row-label mb6" style="font-weight:600;color:var(--accent)"><i class="fa-solid fa-coins"></i> PRECIO KG EN PIE</div>
         <div style="display:flex;align-items:center;gap:6px"><span style="font-size:1.1rem;font-weight:700;color:var(--accent)">$</span>
         <input id="inpPKG" type="number" value="${getCfg('precioKG') || 9800}" style="font-size:1.1rem;font-weight:600;text-align:center;background:transparent;border:none;color:var(--accent);padding:8px;width:100%"><span style="font-size:.7rem;color:var(--text-muted)">COP</span></div>
-        <button class="btn btn-green mt8" onclick="setCfg('precioKG',parseFloat(document.getElementById('inpPKG').value)||0);renderInicio();showToast('✅ Precio actualizado')"><i class="fa-solid fa-check"></i> ACTUALIZAR</button></div>    <div class="card"><div class="row-label mb6" style="font-weight:600"><i class="fa-solid fa-chart-pie"></i> RESUMEN</div><div class="stats-grid">
+        <button class="btn btn-green mt8" onclick="setCfg('precioKG',parseFloat(document.getElementById('inpPKG').value)||0);renderInicio();showToast('✅ Precio actualizado')"><i class="fa-solid fa-check"></i> ACTUALIZAR</button></div>`;
+
+    html += `<div class="card"><div class="row-label mb6" style="font-weight:600"><i class="fa-solid fa-chart-pie"></i> RESUMEN</div><div class="stats-grid">
         <div class="stat-item"><div class="row-label"><i class="fa-solid fa-users"></i> Cabezas</div><div class="row-val">${ta}</div></div>
         <div class="stat-item"><div class="row-label"><i class="fa-solid fa-weight-scale"></i> Peso Total</div><div class="row-val">${fm(tKg)} kg</div></div>
         <div class="stat-item"><div class="row-label"><i class="fa-solid fa-calculator"></i> Promedio</div><div class="row-val">${fm(prom)} kg</div></div>
@@ -600,8 +586,7 @@ function renderInicio() {
             const msNote = (k === 'pasto' || k === 'salvado' || k === 'melaza') ? `<span style="font-size:.6rem;color:var(--text-muted)">(${(val * FACTOR_MS[k]).toFixed(1)}kg MS)</span>` : '';
             html += `<div class="row"><span class="row-label"><i class="fa-solid ${IC[k]}"></i> ${NM[k]}</span><span class="row-val">${display}${unit} ${msNote}</span></div>`;
         });
-        html += '</div>';
-    }
+        html += '</div>';    }
     html += `<div class="card"><div style="font-weight:600;font-size:.7rem;margin-bottom:10px;color:var(--text-muted)"><i class="fa-solid fa-warehouse"></i> AUTONOMÍA BODEGA <span class="fd-badge">Con FD</span></div>
         <div class="grid">${['pasto', 'salvado', 'melaza'].map(k => `<div class="stat-item"><div class="row-label">${NM[k]}</div><div class="row-val" style="color:${ab[k] < 7 ? 'var(--danger)' : ab[k] < 14 ? 'var(--warning)' : 'var(--success)'}">${ab[k] === 999 ? '∞' : ab[k]}d</div></div>`).join('')}</div></div>`;
 
@@ -621,11 +606,27 @@ function renderInicio() {
         });
         html += `</tbody></table></div>`;
     }
-    // ✅ ALERTAS CRÍTICAS EN INICIO (ENLACE AL CENTRO)
+    
+    // ✅ ALERTAS CRÍTICAS CON VALIDACIÓN (CORRECCIÓN DE UNDEFINED)
     const criticas = generarAlertasCompletas().filter(a => a.tipo === 'critical');
-    if (criticas.length) { html += `<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><span style="font-weight:600;font-size:.7rem;color:var(--danger)"><i class="fa-solid fa-triangle-exclamation"></i> ALERTAS CRÍTICAS</span><span class="btn btn-sm btn-gray" style="width:auto;margin:0;padding:4px 8px;font-size:.6rem" onclick="goPage('alertas')">Ver todas</span></div>`; criticas.slice(0, 4).forEach(a => { html += `<div class="alert-item alert-danger" style="margin-bottom:4px"><i class="fa-solid fa-circle" style="font-size:6px;color:var(--danger)"></i><div><b>${a.nombre || ''}</b>: ${a.m}</div></div>`; }); html += '</div>'; }
+    if (criticas.length) { 
+        html += `<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><span style="font-weight:600;font-size:.7rem;color:var(--danger)"><i class="fa-solid fa-triangle-exclamation"></i> ALERTAS CRÍTICAS</span><span class="btn btn-sm btn-gray" style="width:auto;margin:0;padding:4px 8px;font-size:.6rem" onclick="goPage('alertas')">Ver todas</span></div>`; 
+        criticas.slice(0, 4).forEach(a => { 
+            // ✅ Validación de nombre y mensaje
+            const nombre = (a.nombre || 'Sistema').toString();
+            const mensaje = (a.mensaje || 'Alerta sin descripción').toString();
+            html += `<div class="alert-item alert-danger" style="margin-bottom:4px"><i class="fa-solid fa-circle" style="font-size:6px;color:var(--danger)"></i><div><b>${nombre}</b>: ${mensaje}</div></div>`; 
+        }); 
+        html += '</div>'; 
+    }
+    
     html += `<div class="section-title"><i class="fa-solid fa-layer-group"></i> MIS LOTES</div><div class="grid">`;
-    DB.lotes.forEach(l => { const na = getAnimalesByLote(l.id).length, pt = getAnimalesByLote(l.id).reduce((s, a) => s + a.historial[a.historial.length - 1].peso, 0); html += `<div class="lote-card" style="border-color:${l.color}30" onclick="animalFilterLote='${l.id}';goPage('animales')"><div style="display:flex;align-items:center;gap:10px"><div class="lote-color" style="background:${l.color}"></div><div><div class="lote-name">${l.nombre}</div><div class="lote-stats">${na} · ${fm(pt)}kg</div></div></div></div>`; });
+    if(DB.lotes) {
+        DB.lotes.forEach(l => { 
+            const na = getAnimalesByLote(l.id).length, pt = getAnimalesByLote(l.id).reduce((s, a) => s + (a.historial?.[a.historial.length - 1]?.peso || 0), 0); 
+            html += `<div class="lote-card" style="border-color:${l.color}30" onclick="animalFilterLote='${l.id}';goPage('animales')"><div style="display:flex;align-items:center;gap:10px"><div class="lote-color" style="background:${l.color}"></div><div><div class="lote-name">${l.nombre || 'Sin nombre'}</div><div class="lote-stats">${na} · ${fm(pt)}kg</div></div></div></div>`; 
+        });
+    }
     html += '</div>';
     if (ta === 0) { html += `<div class="card" style="text-align:center;padding:28px 18px"><div style="font-size:2.5rem;margin-bottom:12px">🐄</div><h3 style="margin-bottom:8px;font-size:1rem">Sin animales</h3><p style="color:var(--text-muted);margin-bottom:18px;font-size:.85rem">Registra tu primer animal</p><button class="btn btn-gold" onclick="showAddAnimalModal()"><i class="fa-solid fa-plus"></i> AGREGAR</button></div>`; }
     document.getElementById('v-inicio').innerHTML = html;
@@ -633,27 +634,27 @@ function renderInicio() {
 
 function renderLotes() {
     let h = `<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><span style="font-weight:600;color:var(--accent)"><i class="fa-solid fa-layer-group"></i> LOTES</span><button class="btn btn-sm btn-gold" style="width:auto;padding:7px 12px" onclick="showAddLoteModal()"><i class="fa-solid fa-plus"></i> Crear</button></div>`;
-    if (!DB.lotes.length) h += '<div style="text-align:center;padding:20px;color:var(--text-muted)">Sin lotes</div>';
-    DB.lotes.forEach(l => {
-        const na = getAnimalesByLote(l.id).length, pt = getAnimalesByLote(l.id).reduce((s, a) => s + a.historial[a.historial.length - 1].peso, 0);        h += `<div class="lote-card" style="border-color:${l.color}30" onclick="animalFilterLote='${l.id}';goPage('animales')"><div style="position:absolute;top:0;left:0;width:4px;height:100%;background:${l.color};border-radius:4px 0 0 4px"></div><div class="lote-header"><div><div class="lote-name">${l.nombre}</div><div class="lote-stats"><b>${na}</b> · <b>${fm(pt)}kg</b></div></div><div style="display:flex;gap:6px" onclick="event.stopPropagation()"><div class="lote-color" style="background:${l.color}" onclick="showEditLoteColor('${l.id}')"></div><button class="btn btn-sm btn-danger" style="width:28px;padding:0;height:28px" onclick="event.stopPropagation();deleteLote('${l.id}')"><i class="fa-solid fa-trash"></i></button></div></div></div>`;
+    if (!DB.lotes?.length) h += '<div style="text-align:center;padding:20px;color:var(--text-muted)">Sin lotes</div>';
+    if(DB.lotes) DB.lotes.forEach(l => {        const na = getAnimalesByLote(l.id).length, pt = getAnimalesByLote(l.id).reduce((s, a) => s + (a.historial?.[a.historial.length - 1]?.peso || 0), 0);
+        h += `<div class="lote-card" style="border-color:${l.color}30" onclick="animalFilterLote='${l.id}';goPage('animales')"><div style="position:absolute;top:0;left:0;width:4px;height:100%;background:${l.color};border-radius:4px 0 0 4px"></div><div class="lote-header"><div><div class="lote-name">${l.nombre || 'Sin nombre'}</div><div class="lote-stats"><b>${na}</b> · <b>${fm(pt)}kg</b></div></div><div style="display:flex;gap:6px" onclick="event.stopPropagation()"><div class="lote-color" style="background:${l.color}" onclick="showEditLoteColor('${l.id}')"></div><button class="btn btn-sm btn-danger" style="width:28px;padding:0;height:28px" onclick="event.stopPropagation();deleteLote('${l.id}')"><i class="fa-solid fa-trash"></i></button></div></div></div>`;
     });
     h += '</div>';
     document.getElementById('v-lotes').innerHTML = h;
 }
 
 function renderAnimales() {
-    if (DB.animales.length === 0) {
+    if (!DB.animales || DB.animales.length === 0) {
         document.getElementById('v-animales').innerHTML = `<div style="text-align:center;padding:40px 20px;color:var(--text-muted)"><i class="fa-solid fa-cow" style="font-size:2rem;margin-bottom:12px"></i><div style="font-size:0.9rem;font-weight:600">No hay animales registrados</div><button class="btn btn-gold mt8" style="width:auto;padding:8px 16px;margin:0 auto" onclick="showAddAnimalModal()">+ Agregar</button></div>`;
         return;
     }
 
     let f = DB.animales;
     if (animalFilterLote !== 'all') f = f.filter(a => a.loteId === animalFilterLote);
-    if (animalSearch) f = f.filter(a => a.nombre.toLowerCase().includes(animalSearch.toLowerCase()));
+    if (animalSearch) f = f.filter(a => (a.nombre || '').toLowerCase().includes(animalSearch.toLowerCase()));
 
     let h = `<div class="card" style="padding:12px 16px"><input id="animSearch" type="text" placeholder="🔍 Buscar por nombre..." value="${animalSearch}" style="padding:10px 14px"></div>`;
     h += `<div class="filter-chips"><div class="chip ${animalFilterLote === 'all' ? 'active' : ''}" onclick="animalFilterLote='all';renderAnimales()">Todos</div>`;
-    DB.lotes.forEach(l => h += `<div class="chip ${animalFilterLote === l.id ? 'active' : ''}" onclick="animalFilterLote='${l.id}';renderAnimales()">${l.nombre}</div>`);
+    if(DB.lotes) DB.lotes.forEach(l => h += `<div class="chip ${animalFilterLote === l.id ? 'active' : ''}" onclick="animalFilterLote='${l.id}';renderAnimales()">${l.nombre || 'Sin nombre'}</div>`);
     h += '</div><div class="grid">';
 
     if (f.length === 0) {
@@ -661,7 +662,7 @@ function renderAnimales() {
     }
 
     f.forEach(a => {
-        if (!a.historial || !a.historial.length) return;
+        if (!a || !a.historial || !a.historial.length) return;
         const p = a.historial[a.historial.length - 1].peso;
         const rep = calcRepro(a), ea = rep?.estadoLactancia || 'auto';
         const et = getEtapa(p, rep), r = getRendimiento(a.historial, getGMD(a.historial));
@@ -675,7 +676,7 @@ function renderAnimales() {
             <div class="mini-led ${lm[r.nivel]}"></div>
             ${et.ureaBloqueada ? '<div class="lock-icon"><i class="fa-solid fa-lock"></i></div>' : ''}
             <span style="font-size:1.4rem">${et.icono}</span>
-            <div class="name">${a.nombre} ${th} ${ub}</div>
+            <div class="name">${a.nombre || 'Sin nombre'} ${th} ${ub}</div>
             <span class="etapa-tag ${et.clase}">${et.nombre}</span>
             <div style="font-size:.6rem;color:var(--text-muted);margin-top:2px">${getLoteName(a.loteId)}</div>
             <div class="weight">${fm(p)} kg</div>
@@ -683,8 +684,7 @@ function renderAnimales() {
             <div class="cm" style="color:${r.cm >= 0 ? 'var(--success)' : 'var(--danger)'}">${r.cm >= 0 ? '+' : ''}${r.cm.toFixed(1)}%</div>
         </div>`;
     });
-    h += '</div>';
-    document.getElementById('v-animales').innerHTML = h;
+    h += '</div>';    document.getElementById('v-animales').innerHTML = h;
     const si = document.getElementById('animSearch');
     if (si) {
         si.addEventListener('input', e => {
@@ -699,7 +699,7 @@ function renderAnimales() {
 }
 
 function renderInsumos() { const h = `<div class="insumos-tabs"><button class="insumo-tab ${insumoTab === 'alimentos' ? 'active' : ''}" onclick="insumoTab='alimentos';renderInsumos()"><i class="fa-solid fa-wheat-awn"></i> Alimentos</button><button class="insumo-tab ${insumoTab === 'sanidad' ? 'active' : ''}" onclick="insumoTab='sanidad';renderInsumos()"><i class="fa-solid fa-syringe"></i> Sanidad</button></div><div id="insumoContent"></div>`; document.getElementById('v-insumos').innerHTML = h; if (insumoTab === 'alimentos') renderInsumoAlimentos(); else renderInsumoSanidad(); }
-function renderInsumoAlimentos() { const { autonomia } = calcularAutonomiaBodega(); let h = `<div class="card" style="padding:14px 16px"><div style="display:flex;justify-content:space-between;align-items:center"><span style="font-weight:600;color:var(--accent)"><i class="fa-solid fa-warehouse"></i> INVENTARIO</span><button class="btn btn-sm btn-purple" style="width:auto;padding:7px 12px" onclick="showModalGestionAlimentos()"><i class="fa-solid fa-plus"></i> Crear</button></div></div>`; AL.forEach(k => { const st = getCfg('stock') || {}; const s = st[k] || 0, pr = (getCfg('precios') || {})[k] || 0, au = autonomia[k] || 999, dc = au < 3 ? 'var(--danger)' : au < 7 ? 'var(--warning)' : 'var(--success)', uA = ((getCfg('unidadesPrecio') || {})[k] === 'g') ? 'g' : 'kg'; h += `<div class="insumo-item"><div class="insumo-item-header"><i class="fa-solid ${IC[k]}"></i><div class="info"><div class="name">${NM[k]} <span class="fd-badge">FD:${Math.round((getCfg('factoresDesperdicio')[k] || 0) * 100)}%</span></div></div><span class="dias" style="color:${dc}">${au === 999 ? '∞' : au + 'd'}</span></div><div class="price-grid"><div><div style="font-size:.6rem;color:var(--text-muted);margin-bottom:4px">PRECIO</div><div style="display:flex;gap:5px"><input id="pr-${k}" type="number" value="${pr}" style="padding:9px;flex:1"><div class="unit-toggle"><div class="unit-btn ${uA === 'kg' ? 'active' : ''}" onclick="togglePrecioUnit('${k}','kg')">$/kg</div><div class="unit-btn ${uA === 'g' ? 'active' : ''}" onclick="togglePrecioUnit('${k}','g')">$/gr</div></div></div></div><div><div style="font-size:.6rem;color:var(--text-muted);margin-bottom:4px">STOCK</div><input id="st-${k}" type="number" value="${Math.round(s)}" style="padding:9px"></div></div></div>`; }); h += '<button class="btn btn-gold mt8" onclick="saveInventario()"><i class="fa-solid fa-check"></i> GUARDAR</button>'; document.getElementById('insumoContent').innerHTML = h; }
+function renderInsumoAlimentos() { const { autonomia } = calcularAutonomiaBodega(); let h = `<div class="card" style="padding:14px 16px"><div style="display:flex;justify-content:space-between;align-items:center"><span style="font-weight:600;color:var(--accent)"><i class="fa-solid fa-warehouse"></i> INVENTARIO</span><button class="btn btn-sm btn-purple" style="width:auto;padding:7px 12px" onclick="showModalGestionAlimentos()"><i class="fa-solid fa-plus"></i> Crear</button></div></div>`; AL.forEach(k => { const st = getCfg('stock') || {}; const s = st[k] || 0, pr = (getCfg('precios') || {})[k] || 0, au = autonomia[k] || 999, dc = au < 3 ? 'var(--danger)' : au < 7 ? 'var(--warning)' : 'var(--success)', uA = ((getCfg('unidadesPrecio') || {})[k] === 'g') ? 'g' : 'kg'; h += `<div class="insumo-item"><div class="insumo-item-header"><i class="fa-solid ${IC[k]}"></i><div class="info"><div class="name">${NM[k]} <span class="fd-badge">FD:${Math.round((getCfg('factoresDesperdicio')?.[k] || 0) * 100)}%</span></div></div><span class="dias" style="color:${dc}">${au === 999 ? '∞' : au + 'd'}</span></div><div class="price-grid"><div><div style="font-size:.6rem;color:var(--text-muted);margin-bottom:4px">PRECIO</div><div style="display:flex;gap:5px"><input id="pr-${k}" type="number" value="${pr}" style="padding:9px;flex:1"><div class="unit-toggle"><div class="unit-btn ${uA === 'kg' ? 'active' : ''}" onclick="togglePrecioUnit('${k}','kg')">$/kg</div><div class="unit-btn ${uA === 'g' ? 'active' : ''}" onclick="togglePrecioUnit('${k}','g')">$/gr</div></div></div></div><div><div style="font-size:.6rem;color:var(--text-muted);margin-bottom:4px">STOCK</div><input id="st-${k}" type="number" value="${Math.round(s)}" style="padding:9px"></div></div></div>`; }); h += '<button class="btn btn-gold mt8" onclick="saveInventario()"><i class="fa-solid fa-check"></i> GUARDAR</button>'; document.getElementById('insumoContent').innerHTML = h; }
 window.togglePrecioUnit = (k, unit) => { let u = getCfg('unidadesPrecio') || {}; u[k] = unit; setCfg('unidadesPrecio', u); renderInsumos(); };
 function renderInsumoSanidad() { let h = `<div class="card" style="padding:14px 16px"><div style="display:flex;justify-content:space-between;align-items:center"><span style="font-weight:600;color:var(--accent)"><i class="fa-solid fa-kit-medical"></i> SANIDAD</span><button class="btn btn-sm btn-purple" style="width:auto;padding:7px 12px" onclick="showModalGestionSanidad()"><i class="fa-solid fa-plus"></i> Crear</button></div></div>`; getAllSanidad().forEach(p => { const st = p.esBase ? (getCfg('stockSanidad') || {})[p.id] || 0 : (p.stockML || 0), pr = p.esBase ? ((getCfg('preciosSanidad') || {})[p.id] || 0) : (p.precioML || 0); h += `<div class="insumo-item"><div class="insumo-item-header"><i class="fa-solid ${p.icono}" style="color:${p.color}"></i><div class="info"><div class="name">${p.nombre}${p.esBase ? '' : ' <span class="custom-badge">CUST</span>'}</div><div class="consumo">${p.diasEfecto}d · ${p.retiro}d retiro</div></div></div><div class="grid"><div><div style="font-size:.6rem;color:var(--text-muted)">PRECIO ($/ml)</div><input id="pr-${p.id}" type="number" value="${pr}" style="padding:9px"></div><div><div style="font-size:.6rem;color:var(--text-muted)">STOCK (ml)</div><input id="st-${p.id}" type="number" value="${Math.round(st)}" style="padding:9px"></div></div>${p.esBase ? '' : '<button class="btn btn-sm btn-danger mt8" onclick="deleteSanidadCustom(\'' + p.id + '\');renderInsumos()"><i class="fa-solid fa-trash"></i> Eliminar</button>'}</div>`; }); h += '<button class="btn btn-gold mt8" onclick="saveInventarioSanidad()"><i class="fa-solid fa-check"></i> GUARDAR</button>'; document.getElementById('insumoContent').innerHTML = h; }
 function saveInventario() { let st = getCfg('stock') || {}; let pr = getCfg('precios') || {}; let u = getCfg('unidadesPrecio') || {}; AL.forEach(id => { const prEl = document.getElementById(`pr-${id}`), stEl = document.getElementById(`st-${id}`); if (prEl) pr[id] = parseFloat(prEl.value) || 0; if (stEl) st[id] = parseFloat(stEl.value) || 0; if (!u[id]) u[id] = 'kg'; }); setCfg('stock', st); setCfg('precios', pr); setCfg('unidadesPrecio', u); guardarDatos(); showToast('✅ Inventario actualizado'); }
@@ -714,15 +714,15 @@ async function clearAllData() { localStorage.clear(); location.reload(); }
 function generarReporteHatoPDF() {
     const printDiv = document.getElementById('printView');
     const fecha = new Date().toLocaleDateString();
-    const totalAnimales = DB.animales.length;
-    const pesoTotal = DB.animales.reduce((s, a) => s + a.historial[a.historial.length - 1].peso, 0);
+    const totalAnimales = DB.animales?.length || 0;
+    const pesoTotal = DB.animales?.reduce((s, a) => s + (a.historial?.[a.historial.length - 1]?.peso || 0), 0) || 0;
     const valorTotal = pesoTotal * (getCfg('precioKG') || 9800);
     let animalesHTML = '';
-    DB.animales.forEach(a => {
+    if(DB.animales) DB.animales.forEach(a => {
         if (!a.historial?.length) return;
         const p = a.historial[a.historial.length - 1].peso;
         const gmd = getGMD(a.historial);
-        animalesHTML += `<tr><td style="padding:6px">${a.nombre}</td><td style="padding:6px">${p} kg</td><td style="padding:6px">${gmd > 0 ? gmd.toFixed(2) : '--'}</td><td style="padding:6px">${getLoteName(a.loteId)}</td><td style="padding:6px">$${fm(p * (getCfg('precioKG') || 9800))}</td></tr>`;
+        animalesHTML += `<tr><td style="padding:6px">${a.nombre || 'Sin nombre'}</td><td style="padding:6px">${p} kg</td><td style="padding:6px">${gmd > 0 ? gmd.toFixed(2) : '--'}</td><td style="padding:6px">${getLoteName(a.loteId)}</td><td style="padding:6px">$${fm(p * (getCfg('precioKG') || 9800))}</td></tr>`;
     });
     printDiv.innerHTML = `
         <div class="print-header">
@@ -730,7 +730,7 @@ function generarReporteHatoPDF() {
             <div class="print-sub">Reporte General del Hato - Generado: ${fecha}</div>
         </div>
         <div class="print-grid">
-            <div class="print-card"><h4>📊 Resumen General</h4><p>Total animales: <b>${totalAnimales}</b></p><p>Peso total: <b>${fm(pesoTotal)} kg</b></p><p>Valor total: <b>$${fm(valorTotal)}</b></p><p>Peso promedio: <b>${totalAnimales > 0 ? fm(pesoTotal / totalAnimales) : 0} kg</b></p><p>Lotes: <b>${DB.lotes.length}</b></p></div>
+            <div class="print-card"><h4>📊 Resumen General</h4><p>Total animales: <b>${totalAnimales}</b></p><p>Peso total: <b>${fm(pesoTotal)} kg</b></p><p>Valor total: <b>$${fm(valorTotal)}</b></p><p>Peso promedio: <b>${totalAnimales > 0 ? fm(pesoTotal / totalAnimales) : 0} kg</b></p><p>Lotes: <b>${DB.lotes?.length || 0}</b></p></div>
             <div class="print-card"><h4>💰 Parámetros Económicos</h4><p>Precio kg en pie: <b>$${fm(getCfg('precioKG') || 9800)}</b></p><p>Costo fijo mensual: <b>$${fm(getCfg('costosFijosMensuales') || 300000)}</b></p></div>
         </div>
         <div class="print-card"><h4>🐄 Listado de Animales</h4><table class="print-table"><thead><tr><th>Nombre</th><th>Peso</th><th>GMD</th><th>Lote</th><th>Valor</th></tr></thead><tbody>${animalesHTML}</tbody></table></div>        <div class="print-footer">Generado automáticamente por GANADERO ÉLITE PRO v${APP_VERSION} · 100% Offline</div>
@@ -738,7 +738,7 @@ function generarReporteHatoPDF() {
     window.print();
 }
 
-// ✅ CENTRO DE NOTIFICACIONES (NUEVA FUNCIÓN)
+// ✅ CENTRO DE NOTIFICACIONES CON VALIDACIÓN
 function renderAlertas() {
     const todas = generarAlertasCompletas();
     let html = `<div class="card"><div style="font-weight:700;font-size:1rem;margin-bottom:4px">🔔 CENTRO DE NOTIFICACIONES</div><div style="font-size:0.7rem;color:var(--text-muted);margin-bottom:12px">Monitoreo automático del hato</div>`;
@@ -754,9 +754,12 @@ function renderAlertas() {
                 
                 filtradas.forEach(a => {
                     const cls = tipo === 'critical' ? 'alert-danger' : tipo === 'warning' ? 'alert-warning' : 'alert-info';
+                    // ✅ Validación segura de datos
+                    const nombre = (a.nombre || 'Sistema').toString();
+                    const mensaje = (a.mensaje || 'Alerta sin descripción').toString();
                     html += `<div class="alert-item ${cls}" style="margin-bottom:6px">
                         <i class="fa-solid fa-circle" style="font-size:8px;opacity:0.5;margin-top:4px"></i>
-                        <div style="margin-left:6px"><b>${a.nombre}</b>: ${a.mensaje}</div>
+                        <div style="margin-left:6px"><b>${nombre}</b>: ${mensaje}</div>
                     </div>`;
                 });
             }
@@ -779,10 +782,10 @@ function showProfile(id) {
     const r = getRendimiento(a.historial, getGMD(a.historial)), gmd = getGMD(a.historial);
     const valA = p * (getCfg('precioKG') || 9800), faltaKg = et.max - p, progPct = getProgresoEtapa(p, et);
     let etxt = '--'; if (a.fechaNacimiento) { const n = new Date(a.fechaNacimiento), h = new Date(), d = Math.ceil(Math.abs(h - n) / 864e5); etxt = d > 60 ? `${Math.floor(d / 30)}m` : `${d}d`; }
-    const mama = a.madreId ? (DB.animales.find(x => x.id == a.madreId)?.nombre || '--') : '--';
-    const fotoStyle = a.foto ? `background-image:url('${a.foto}')` : '';
+    const mama = a.madreId ? (DB.animales.find(x => x.id == a.madreId)?.nombre || '--') : '--';    const fotoStyle = a.foto ? `background-image:url('${a.foto}')` : '';
 
-    const gv = gmd > 0 ? gmd : 0;    const cd = getCostoDiario(p, a.proposito, rep?.estadoLactancia || 'auto');
+    const gv = gmd > 0 ? gmd : 0;
+    const cd = getCostoDiario(p, a.proposito, rep?.estadoLactancia || 'auto');
     const csd = getCostoSanidadDiario(id);
     const cdC = getCostoAlimentosCustom(id, p);
     const costoDiarioTotal = cd + cdC + csd;
@@ -802,7 +805,7 @@ function showProfile(id) {
     let html = `<div class="sp-container">
         <div class="sp-header">
             <button class="sp-back" onclick="closeProfile()" aria-label="Volver"><i class="fa-solid fa-arrow-left"></i></button>
-            <div class="sp-header-title">${a.nombre}</div>
+            <div class="sp-header-title">${a.nombre || 'Animal'}</div>
             <div class="sp-header-actions">
                 <button class="sp-back" onclick="shareAnimal(${id})" style="font-size:0.9rem;width:30px;height:30px" aria-label="Compartir"><i class="fa-solid fa-share-nodes"></i></button>
                 <button class="sp-back" onclick="confirmDeleteAnimal(${id})" style="font-size:0.9rem;width:30px;height:30px;color:var(--danger)" aria-label="Eliminar"><i class="fa-solid fa-trash-can"></i></button>
@@ -811,7 +814,7 @@ function showProfile(id) {
         <div class="sp-hero">
             <input type="file" id="photoInput" accept="image/*" style="display:none" onchange="handlePhotoUpload(this.files[0], ${id})">
             <div class="sp-avatar-large" style="${fotoStyle}; cursor:pointer" onclick="document.getElementById('photoInput').click()" aria-label="Cambiar foto">${!a.foto ? '<span style="font-size:2rem">🐄</span>' : ''}</div>
-            <div class="sp-hero-name">${a.nombre}</div>
+            <div class="sp-hero-name">${a.nombre || 'Sin nombre'}</div>
             <div class="sp-hero-badges">
                 <span class="sp-badge" style="border-color:${et.color};color:${et.color}">${et.nombre}</span>
                 <span class="sp-badge">${getLoteName(a.loteId)}</span>
@@ -828,10 +831,10 @@ function showProfile(id) {
             ${getAlertasAnimal(a).map(s => `<div class="alert-item alert-${s.t === 'r' ? 'danger' : s.t === 'purple' ? 'purple' : 'warning'}" style="margin-bottom:12px"><i class="fa-solid ${s.icon}"></i> ${s.m}</div>`).join('')}
             <div class="sp-card"><div class="sp-card-header"><div class="sp-card-title"><i class="fa-solid fa-chart-line"></i> Evolución de Peso</div></div>${renderGraficoEvolucion(a.historial)}</div>
             <div class="sp-card">
-                <div class="sp-card-header"><div class="sp-card-title"><i class="fa-solid fa-chart-line"></i> RENTABILIDAD</div></div>
-                <div class="sp-metrics" style="grid-template-columns: repeat(3, 1fr);">
+                <div class="sp-card-header"><div class="sp-card-title"><i class="fa-solid fa-chart-line"></i> RENTABILIDAD</div></div>                <div class="sp-metrics" style="grid-template-columns: repeat(3, 1fr);">
                     <div class="sp-metric"><span class="val" style="color: ${mgColor}">${mgSign}$${fm(Math.abs(mgDiario))}</span><span class="lbl">Margen Diario</span></div>
-                    <div class="sp-metric"><span class="val">${roia.toFixed(2)}x</span><span class="lbl">ROIA</span></div>                    <div class="sp-metric"><span class="val">${ckp !== null ? '$' + fm(ckp) : '--'}</span><span class="lbl">Costo/kg</span></div>
+                    <div class="sp-metric"><span class="val">${roia.toFixed(2)}x</span><span class="lbl">ROIA</span></div>
+                    <div class="sp-metric"><span class="val">${ckp !== null ? '$' + fm(ckp) : '--'}</span><span class="lbl">Costo/kg</span></div>
                 </div>
                 <div style="font-size: 0.65rem; text-align: center; color: var(--text-muted); margin-top: 8px;">Ingreso: $${fm(ingresoDiario)} · Costo: $${fm(costoDiarioTotal)} · Agua: ${agua.toFixed(1)} L/d</div>
             </div>
@@ -877,20 +880,19 @@ function showProfile(id) {
     </div>`;
     document.querySelectorAll('.page').forEach(el => el.classList.add('hidden'));
     document.getElementById('v-perfil').classList.remove('hidden');
-    document.getElementById('v-perfil').innerHTML = html;
-    document.querySelector('header').classList.add('hidden');
+    document.getElementById('v-perfil').innerHTML = html;    document.querySelector('header').classList.add('hidden');
     requestWakeLock();
 }
-function confirmDeleteAnimal(id) { const a = DB.animales.find(x => x.id === id); showModal(`<div style="text-align:center;padding:10px 0"><i class="fa-solid fa-triangle-exclamation" style="font-size:2.5rem;color:var(--warning);margin-bottom:14px"></i><h3 style="margin-bottom:8px;font-size:1rem">¿Eliminar ${a.nombre}?</h3><p style="color:var(--text-muted);margin-bottom:18px;font-size:.8rem">Se borrará todo el historial.</p><button class="btn btn-danger" onclick="deleteAnimal(${id})"><i class="fa-solid fa-trash-can"></i> SÍ</button><button class="btn btn-gray mt8" onclick="document.querySelector('.modal-overlay').remove()">CANCELAR</button></div>`); }
+function confirmDeleteAnimal(id) { const a = DB.animales.find(x => x.id === id); showModal(`<div style="text-align:center;padding:10px 0"><i class="fa-solid fa-triangle-exclamation" style="font-size:2.5rem;color:var(--warning);margin-bottom:14px"></i><h3 style="margin-bottom:8px;font-size:1rem">¿Eliminar ${a?.nombre || 'este animal'}?</h3><p style="color:var(--text-muted);margin-bottom:18px;font-size:.8rem">Se borrará todo el historial.</p><button class="btn btn-danger" onclick="deleteAnimal(${id})"><i class="fa-solid fa-trash-can"></i> SÍ</button><button class="btn btn-gray mt8" onclick="document.querySelector('.modal-overlay').remove()">CANCELAR</button></div>`); }
 function closeProfile() { releaseWakeLock(); document.getElementById('v-perfil').classList.add('hidden'); document.querySelector('header').classList.remove('hidden'); goPage('animales'); }
 function toggleOrigenFields() { const o = document.getElementById('addOrig')?.value, n = document.getElementById('nacimientoFields'), c = document.getElementById('compradoFields'); if (n) n.classList.toggle('hidden', o !== 'nacimiento'); if (c) c.classList.toggle('hidden', o !== 'comprado'); }
-function showAddAnimalModal() { let opts = DB.lotes.map(l => `<option value="${l.id}">${l.nombre}</option>`).join(''), moms = '<option value="">-- Sin Madre --</option>'; DB.animales.forEach(a => { if (a.proposito === 'leche') moms += `<option value="${a.id}">${a.nombre}</option>`; }); showModal(`<div style="font-weight:700;margin-bottom:14px;color:var(--accent);font-size:1rem"><i class="fa-solid fa-cow"></i> NUEVO ANIMAL</div><div class="flex-col gap10"><input id="addN" type="text" placeholder="Nombre"><input id="addW" type="number" placeholder="Peso (kg)" min="20" max="2000"><select id="addLote">${opts}</select><div class="grid"><select id="addProp"><option value="carne">🥩 CARNE</option><option value="leche">🥛 LECHE</option></select><select id="addOrig" onchange="toggleOrigenFields()"><option value="nacimiento">🐄 Nacimiento</option><option value="comprado">💰 Comprado</option></select></div><div id="nacimientoFields" class="flex-col gap8"><div class="row-label">Fecha Nacimiento</div><input id="addFechaNac" type="date"><div class="row-label">Madre</div><select id="addMama">${moms}</select></div><div id="compradoFields" class="hidden"><input id="addPrice" type="number" placeholder="Valor compra ($)"></div><button class="btn btn-gold mt12" onclick="guardarNuevoAnimal()"><i class="fa-solid fa-check"></i> REGISTRAR</button><button class="btn btn-gray" onclick="document.querySelector('.modal-overlay').remove()">CANCELAR</button></div>`); }
+function showAddAnimalModal() { let opts = DB.lotes.map(l => `<option value="${l.id}">${l.nombre || 'Sin nombre'}</option>`).join(''), moms = '<option value="">-- Sin Madre --</option>'; if(DB.animales) DB.animales.forEach(a => { if (a.proposito === 'leche') moms += `<option value="${a.id}">${a.nombre || 'Sin nombre'}</option>`; }); showModal(`<div style="font-weight:700;margin-bottom:14px;color:var(--accent);font-size:1rem"><i class="fa-solid fa-cow"></i> NUEVO ANIMAL</div><div class="flex-col gap10"><input id="addN" type="text" placeholder="Nombre"><input id="addW" type="number" placeholder="Peso (kg)" min="20" max="2000"><select id="addLote">${opts}</select><div class="grid"><select id="addProp"><option value="carne">🥩 CARNE</option><option value="leche">🥛 LECHE</option></select><select id="addOrig" onchange="toggleOrigenFields()"><option value="nacimiento">🐄 Nacimiento</option><option value="comprado">💰 Comprado</option></select></div><div id="nacimientoFields" class="flex-col gap8"><div class="row-label">Fecha Nacimiento</div><input id="addFechaNac" type="date"><div class="row-label">Madre</div><select id="addMama">${moms}</select></div><div id="compradoFields" class="hidden"><input id="addPrice" type="number" placeholder="Valor compra ($)"></div><button class="btn btn-gold mt12" onclick="guardarNuevoAnimal()"><i class="fa-solid fa-check"></i> REGISTRAR</button><button class="btn btn-gray" onclick="document.querySelector('.modal-overlay').remove()">CANCELAR</button></div>`); }
 function guardarNuevoAnimal() { const n = document.getElementById('addN').value.trim(), w = parseFloat(document.getElementById('addW').value), lote = document.getElementById('addLote').value, p = document.getElementById('addProp').value, orig = document.getElementById('addOrig').value, fn = document.getElementById('addFechaNac')?.value, mi = document.getElementById('addMama')?.value, pr = parseFloat(document.getElementById('addPrice')?.value) || 0; if (!n || isNaN(w) || w < 20 || w > 2000) return showToast('⚠️ Verifica datos'); const fh = new Date().toLocaleDateString(), fr = (orig === 'nacimiento' && fn) ? fn.split('-').reverse().join('/') : fh; const newAnimal = { id: Date.now(), nombre: n, historial: [{ fecha: fr, peso: w }], proposito: p, origen: orig, valorCompra: pr, fechaUltimoParto: null, estadoReproductivo: 'novilla', loteId: lote, fechaNacimiento: fn || null, madreId: mi || null, tags: [], litrosLeche: 0, transicionDias: 0, transicionActiva: false, bloqueadoPorRetiro: false, diasGestacion: 0, fechaUltimaInseminacion: null }; DB.animales.push(newAnimal); guardarDatos(); document.querySelector('.modal-overlay').remove(); showToast(`✅ ${n} registrado`); goPage('animales'); }
 function showAddLoteModal() { showModal(`<div style="font-weight:700;margin-bottom:12px;color:var(--accent)"><i class="fa-solid fa-plus"></i> NUEVO LOTE</div><div class="flex-col gap10"><input id="nlNombre" type="text" placeholder="Nombre"><input id="nlColor" type="color" value="${randColor()}" style="width:100%;height:38px"><button class="btn btn-gold mt8" onclick="guardarLote()"><i class="fa-solid fa-check"></i> CREAR</button><button class="btn btn-gray" onclick="document.querySelector('.modal-overlay').remove()">CANCELAR</button></div>`); }
 function guardarLote() { const n = document.getElementById('nlNombre').value.trim(), c = document.getElementById('nlColor').value; if (!n) return showToast('⚠️ Ingresa nombre'); const l = { id: 'lot_' + Date.now(), nombre: n, color: c }; DB.lotes.push(l); guardarDatos(); document.querySelector('.modal-overlay').remove(); showToast(`✅ Lote "${n}" creado`); renderLotes(); }
 function showEditLoteColor(lid) { const l = DB.lotes.find(x => x.id === lid); if (!l) return; showModal(`<div style="font-weight:700;margin-bottom:12px;color:var(--accent)"><i class="fa-solid fa-palette"></i> COLOR</div><div class="flex-col gap10"><input id="elColor" type="color" value="${l.color}" style="width:100%;height:44px"><button class="btn btn-green mt8" onclick="guardarColorLote('${lid}')"><i class="fa-solid fa-check"></i> GUARDAR</button><button class="btn btn-gray" onclick="document.querySelector('.modal-overlay').remove()">CANCELAR</button></div>`); }
 function guardarColorLote(lid) { const l = DB.lotes.find(x => x.id === lid); if (l) { l.color = document.getElementById('elColor').value; guardarDatos(); } document.querySelector('.modal-overlay').remove(); renderLotes(); showToast('✅ Color actualizado'); }
-function deleteLote(lid) { if (lid === 'lot_general') return showToast('⚠️ No eliminar General'); if (!confirm('¿Eliminar? Animales a General')) return; DB.animales.forEach(a => { if (a.loteId === lid) a.loteId = 'lot_general'; }); DB.lotes = DB.lotes.filter(l => l.id !== lid); guardarDatos(); renderLotes(); showToast('✅ Lote eliminado'); }
+function deleteLote(lid) { if (lid === 'lot_general') return showToast('⚠️ No eliminar General'); if (!confirm('¿Eliminar? Animales a General')) return; if(DB.animales) DB.animales.forEach(a => { if (a.loteId === lid) a.loteId = 'lot_general'; }); DB.lotes = DB.lotes.filter(l => l.id !== lid); guardarDatos(); renderLotes(); showToast('✅ Lote eliminado'); }
 function updateWeight(id) { const a = DB.animales.find(x => x.id === id); if (!a) return; const ow = a.historial[a.historial.length - 1].peso; const p = prompt(`⚖️ Nuevo peso (kg):\nActual: ${ow}kg`, ''); if (!p) return; const peso = parseFloat(p); if (isNaN(peso) || peso < 20 || peso > 2000) return showToast('⚠️ Peso inválido'); if (peso < ow && !confirm('⚠️ Peso menor. ¿Continuar?')) return; const fechaInput = prompt(`📅 Fecha:\nFormato: DD/MM/AAAA`, new Date().toLocaleDateString()); const fechaFinal = fechaInput ? fechaInput : new Date().toLocaleDateString(); const partes = fechaFinal.split('/'); if (partes.length !== 3) { showToast('⚠️ Formato inválido. DD/MM/AAAA'); return; } a.historial.push({ fecha: fechaFinal, peso: peso }); guardarDatos(); recalcularTodo(id); }
 function recalcularTodo(id) { const a = DB.animales.find(x => x.id === id); if (!a) return; const p = a.historial[a.historial.length - 1].peso, et = getEtapa(p, calcRepro(a)); if (a.fechaNacimiento && p <= 150) { const ed = Math.floor((new Date() - new Date(a.fechaNacimiento)) / 864e5); if (ed >= 210 && et.nombre === 'Cría') { a.estadoReproductivo = 'destetado'; a.transicionActiva = true; a.transicionDias = 1; showToast('🍼 Destete auto: Levante'); } } guardarDatos(); showProfile(id); }
 function deleteAnimal(id) { DB.animales = DB.animales.filter(x => x.id !== id); delete DB.asignacionesAlimentos[id]; guardarDatos(); document.querySelector('.modal-overlay').remove(); closeProfile(); showToast('✅ Eliminado'); }
