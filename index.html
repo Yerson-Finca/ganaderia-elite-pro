@@ -1474,13 +1474,19 @@ async function handlePhotoUpload(file, animalId) {
 document.addEventListener('DOMContentLoaded', iniciarApp);
 if (document.readyState !== 'loading') iniciarApp();
 
+// Registrar Service Worker
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
         navigator.serviceWorker.register('./sw.js')
-            .then(r => console.log('[PWA] ✅ Registrado:', r.scope))
-            .catch(e => console.warn('[PWA] ❌ Error:', e));
+            .then(registration => {
+                console.log('✅ SW registrado:', registration.scope);
+            })
+            .catch(error => {
+                console.log('❌ Error SW:', error);
+            });
     });
 }
+
 </script>
 </body>
 </html>
