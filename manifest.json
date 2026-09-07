@@ -1,7 +1,7 @@
 {
   "name": "Ganadero Élite PRO",
   "short_name": "Ganadero",
-  "description": "Gestión ganadera profesional 100% offline",
+  "description": "App de gestión ganadera profesional 100% offline",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
@@ -9,16 +9,16 @@
   "background_color": "#0a0a0c",
   "theme_color": "#ffb900",
   "lang": "es-CO",
-  "categories": ["business", "productivity"],
+  "categories": ["business", "productivity", "utilities"],
   "icons": [
     {
-      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect fill='%230a0a0c' width='192' height='192'/%3E%3Cpath fill='%23ffb900' d='M48 144l24-72 24 48 24-48 24 72z'/%3E%3C/svg%3E",
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect fill='%230a0a0c' width='192' height='192' rx='40'/%3E%3Cpath fill='%23ffb900' d='M96 40 L120 80 L160 80 L130 110 L140 150 L96 125 L52 150 L62 110 L32 80 L72 80 Z'/%3E%3C/svg%3E",
       "sizes": "192x192",
       "type": "image/svg+xml",
       "purpose": "any maskable"
     },
     {
-      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect fill='%230a0a0c' width='512' height='512'/%3E%3Cpath fill='%23ffb900' d='M128 384l64-192 64 128 64-128 64 192z'/%3E%3C/svg%3E",
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect fill='%230a0a0c' width='512' height='512' rx='100'/%3E%3Cpath fill='%23ffb900' d='M256 100 L310 200 L410 200 L330 280 L350 390 L256 330 L162 390 L182 280 L102 200 L202 200 Z'/%3E%3C/svg%3E",
       "sizes": "512x512",
       "type": "image/svg+xml",
       "purpose": "any maskable"
