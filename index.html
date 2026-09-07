@@ -9,6 +9,7 @@
     <meta name="description" content="Gestión ganadera profesional 100% offline">
     <title>GANADERO ÉLITE PRO</title>
     <link rel="manifest" href="./manifest.json">
+    <link rel="apple-touch-icon" href="./icons/icon-192x192.png">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -452,9 +453,9 @@ function calcRepro(a) {
         dg = Math.max(0, Math.floor((hoy - ins) / 864e5));
     }
     let sem, est = a.estadoReproductivo || 'parida';
-    if (dpp <= 60 && dpp > 0) { sem = {color:'#3b82f6', txt:'🔵 Secado (' + dpp + 'd)'}; est = 'seca'; } 
-    else if (diasPP <= 60) { sem = {color:'#22c55e', txt:'🟢 Recuperación'}; } 
-    else if (diasPP <= 150) { sem = {color:'#f59e0b', txt:'🟡 Ventana Monta'}; } 
+    if (dpp <= 60 && dpp > 0) { sem = {color:'#3b82f6', txt:' Secado (' + dpp + 'd)'}; est = 'seca'; } 
+    else if (diasPP <= 60) { sem = {color:'#22c55e', txt:' Recuperación'}; } 
+    else if (diasPP <= 150) { sem = {color:'#f59e0b', txt:' Ventana Monta'}; } 
     else { sem = {color:'#ef4444', txt:'🔴 ALERTA Vacía'}; }
     return {diasPP, diasParaParto:dpp, fechaProxParto:fpp.toLocaleDateString('es-CO'), semaforo:sem, estadoLactancia:est, avisoSecado:dpp<=60&&dpp>0, diasGestacion:dg};
 }
@@ -532,7 +533,7 @@ function generarAlertasCompletas() {
             const prod = getAllSanidad().find(x => x.id === ap.productoId);
             return prod && prod.nombre.toLowerCase().includes('ivermectina') && getDiasDesde(ap.fecha) < (prod.diasEfecto || 30);
         });
-        if (!tiv) alertas.push({id:a.id, nombre, tipo:'critical', mensaje:`🛡️ Desparasitación vencida`});
+        if (!tiv) alertas.push({id:a.id, nombre, tipo:'critical', mensaje:`️ Desparasitación vencida`});
     });
     const stock = getCfg('stock') || {};
     getInsumosActivos().forEach(k => {
@@ -544,7 +545,7 @@ function generarAlertasCompletas() {
 
 function verificarNotificaciones() {
     const alertas = generarAlertasCompletas().filter(a => a.tipo === 'critical');
-    if (alertas.length) showToast(`⚠️ ${alertas.length} alertas críticas`, 8000);
+    if (alertas.length) showToast(`️ ${alertas.length} alertas críticas`, 8000);
 }
 
 function renderGraficoEvolucion(historial) {
@@ -678,7 +679,7 @@ function renderInicio() {
     
     if (ta === 0) {
         html += `<div class="card" style="text-align:center;padding:32px 20px">
-            <div style="font-size:3rem;margin-bottom:12px">🐄</div>
+            <div style="font-size:3rem;margin-bottom:12px"></div>
             <h3 style="margin-bottom:8px">Sin animales</h3>
             <p style="color:var(--text-muted);margin-bottom:16px">Registra tu primer animal</p>
             <button class="btn btn-gold" onclick="showAddAnimalModal()"><i class="fa-solid fa-plus"></i> AGREGAR</button>
@@ -737,7 +738,7 @@ function renderAnimales() {
     
     if (f.length === 0) {
         h += `<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--text-muted)">
-            <div style="font-size:2rem;margin-bottom:12px">🔍</div>
+            <div style="font-size:2rem;margin-bottom:12px"></div>
             <div style="font-size:.95rem;font-weight:600">Ningún animal coincide</div>
         </div>`;
     }
@@ -1177,7 +1178,7 @@ function showProfile(id) {
             <div class="sp-hero-badges">
                 <span class="sp-badge" style="border-color:${et.color};color:${et.color}">${et.nombre}</span>
                 <span class="sp-badge">${getLoteName(a.loteId)}</span>
-                <span class="sp-badge">${a.proposito === 'carne' ? '🥩 Carne' : '🥛 Leche'}</span>
+                <span class="sp-badge">${a.proposito === 'carne' ? '🥩 Carne' : ' Leche'}</span>
             </div>
             <div class="sp-metrics">
                 <div class="sp-metric"><span class="val">${fm(p)} kg</span><span class="lbl">Peso</span></div>
@@ -1334,14 +1335,14 @@ function verificarRetiro(id) {
             if (r > mx) mx = r;
         }
     });
-    if (mx > 0) { a.bloqueadoPorRetiro = true; guardarDatos(); showToast(`⚠️ Retiro: ${mx}d`); } 
+    if (mx > 0) { a.bloqueadoPorRetiro = true; guardarDatos(); showToast(`️ Retiro: ${mx}d`); } 
     else { a.bloqueadoPorRetiro = false; }
 }
 
 function showReproModal(id) {
     showModal(`<div style="font-weight:700;margin-bottom:12px"><i class="fa-solid fa-calendar-check"></i> REGISTRO</div>
     <div class="flex-col gap10">
-        <select id="reTipo"><option value="parto">🐣 Parto</option><option value="insem">🐄 Inseminación</option><option value="secado">🛑 Secado</option></select>
+        <select id="reTipo"><option value="parto">🐣 Parto</option><option value="insem"> Inseminación</option><option value="secado">🛑 Secado</option></select>
         <input id="reFecha" type="date">
         <button class="btn btn-green" onclick="guardarRepro(${id})"><i class="fa-solid fa-check"></i> GUARDAR</button>
         <button class="btn btn-gray" onclick="document.querySelector('.modal-overlay').remove()">CANCELAR</button>
@@ -1467,12 +1468,9 @@ async function handlePhotoUpload(file, animalId) {
             showToast('✅ Foto guardada');
         }
     };
-    img.onerror = () => showToast('⚠️ Error al cargar');
+    img.onerror = () => showToast('️ Error al cargar');
     img.src = URL.createObjectURL(file);
 }
-
-document.addEventListener('DOMContentLoaded', iniciarApp);
-if (document.readyState !== 'loading') iniciarApp();
 
 // Registrar Service Worker
 if ('serviceWorker' in navigator) {
@@ -1487,6 +1485,8 @@ if ('serviceWorker' in navigator) {
     });
 }
 
+document.addEventListener('DOMContentLoaded', iniciarApp);
+if (document.readyState !== 'loading') iniciarApp();
 </script>
 </body>
 </html>
