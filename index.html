@@ -43,7 +43,6 @@
         body { font-family:'Inter',system-ui,sans-serif; background:var(--bg); color:var(--text); min-height:100vh; padding:16px 16px 100px; font-size:14px; display:flex; justify-content:center; font-weight:400; line-height:1.5; letter-spacing:-0.01em; }
         
         .aurora { position:fixed; top:0; left:0; width:100%; height:100%; background:radial-gradient(circle at 25% 25%,#1a160a 0%,transparent 45%),radial-gradient(circle at 75% 75%,#0f1a1a 0%,transparent 45%); z-index:-1; filter:blur(80px); opacity:0.5; }
-        
         .app { width:100%; max-width:480px; position:relative; display:flex; flex-direction:column; gap:14px; }
         
         @keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
@@ -196,20 +195,12 @@
         .insumo-item-header .info .consumo { font-size:.62rem; color:var(--text-muted); }
         
         .price-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:8px; }
-        
-        @media print {
-            body * { visibility:hidden; }
-            .print-view, .print-view * { visibility:visible; }
-            .print-view { position:absolute; left:0; top:0; width:100%; display:block; background:#fff; color:#000; padding:20px; }
-        }
-        .print-view { display:none; }
     </style>
 </head>
 <body>
 <div class="aurora"></div>
 <div id="toastContainer"></div>
 <div id="modalContainer"></div>
-<div class="print-view" id="printView"></div>
 
 <div class="app" id="appContainer">
     <header>
@@ -295,13 +286,11 @@ function iniciarApp() {
             DB = {...DB, ...parsed};
             DB.config = {...DB.config, ...(parsed.config || {})};
         }
-        
         Object.keys(DEFAULT_INSUMOS_DATA).forEach(k => {
             if (!DB.inventario[k]) {
                 DB.inventario[k] = {...DEFAULT_INSUMOS_DATA[k], stock:0, precioUnitario: DB.config.precios[k] || 0};
             }
         });
-        
         guardarDatos();
         goPage('inicio');
     } catch(e) {
@@ -397,7 +386,6 @@ function getDiet(pv, prop, estado, td = 0, dg = 0) {
     const msTotal = pv * CONSUMO_MS_PV;
     const baseSup = msTotal * 0.06;
     const ureaOk = !(pv < TRIGGERS.ureaMinWeight || dg >= TRIGGERS.pregnancyUreaBlockDay);
-    
     const parts = { pasto: 0.50, salvado: 0.30, melaza: 0.20 };
     const dieta = {};
     
@@ -406,20 +394,12 @@ function getDiet(pv, prop, estado, td = 0, dg = 0) {
         const ms = baseSup * part;
         const factor = getFactorMS(k);
         let val = ms / factor;
-        
-        if (k === 'pasto' && val > pv * TRIGGERS.maxRumenVolumePct) {
-            val = pv * TRIGGERS.maxRumenVolumePct;
-        }
+        if (k === 'pasto' && val > pv * TRIGGERS.maxRumenVolumePct) val = pv * TRIGGERS.maxRumenVolumePct;
         if (k === 'urea' && !ureaOk) val = 0;
-        
         const data = getInsumoData(k);
-        if (data.dosisPorKg && !FACTOR_MS_DEFAULT[k]) {
-            val = pv * data.dosisPorKg;
-        }
-        
+        if (data.dosisPorKg && !FACTOR_MS_DEFAULT[k]) val = pv * data.dosisPorKg;
         dieta[k] = val;
     });
-    
     return dieta;
 }
 
@@ -459,34 +439,23 @@ function getRendimiento(h, gmdF = null) {
 
 function calcRepro(a) {
     if (a.proposito !== 'leche' && !a.fechaUltimoParto) return null;
-    if (!a.fechaUltimoParto) {
-        return {diasPP:0, diasParaParto:999, fechaProxParto:null, semaforo:{color:'#6b7280', txt:'📅 Sin registro'}, estadoLactancia:'novilla', avisoSecado:false, diasGestacion:0};
-    }
+    if (!a.fechaUltimoParto) return {diasPP:0, diasParaParto:999, fechaProxParto:null, semaforo:{color:'#6b7280', txt:'📅 Sin registro'}, estadoLactancia:'novilla', avisoSecado:false, diasGestacion:0};
     const hoy = new Date();
     const parto = new Date(a.fechaUltimoParto.split('/').reverse().join('-'));
     const diasPP = Math.max(0, Math.floor((hoy - parto) / 864e5));
     const fpp = new Date(parto);
     fpp.setDate(parto.getDate() + 285);
     const dpp = Math.floor((fpp - hoy) / 864e5);
-    
     let dg = a.diasGestacion || 0;
     if (a.fechaUltimaInseminacion) {
         const ins = new Date(a.fechaUltimaInseminacion.split('/').reverse().join('-'));
         dg = Math.max(0, Math.floor((hoy - ins) / 864e5));
     }
-    
     let sem, est = a.estadoReproductivo || 'parida';
-    if (dpp <= 60 && dpp > 0) {
-        sem = {color:'#3b82f6', txt:'🔵 Secado (' + dpp + 'd)'};
-        est = 'seca';
-    } else if (diasPP <= 60) {
-        sem = {color:'#22c55e', txt:'🟢 Recuperación'};
-    } else if (diasPP <= 150) {
-        sem = {color:'#f59e0b', txt:'🟡 Ventana Monta'};
-    } else {
-        sem = {color:'#ef4444', txt:'🔴 ALERTA Vacía'};
-    }
-    
+    if (dpp <= 60 && dpp > 0) { sem = {color:'#3b82f6', txt:'🔵 Secado (' + dpp + 'd)'}; est = 'seca'; } 
+    else if (diasPP <= 60) { sem = {color:'#22c55e', txt:'🟢 Recuperación'}; } 
+    else if (diasPP <= 150) { sem = {color:'#f59e0b', txt:'🟡 Ventana Monta'}; } 
+    else { sem = {color:'#ef4444', txt:'🔴 ALERTA Vacía'}; }
     return {diasPP, diasParaParto:dpp, fechaProxParto:fpp.toLocaleDateString('es-CO'), semaforo:sem, estadoLactancia:est, avisoSecado:dpp<=60&&dpp>0, diasGestacion:dg};
 }
 
@@ -514,38 +483,23 @@ function calcularIngresoDiario(a, gmd, precioKG) {
     let ing = 0;
     if (gmd > 0) ing += gmd * precioKG;
     if (a.proposito === 'leche' && a.litrosLeche > 0) ing += a.litrosLeche * (getCfg('precioLeche') || 1200);
-    if (a.proposito === 'leche' && (a.estadoReproductivo === 'parida' || a.estadoReproductivo === 'seca')) {
-        ing += (getCfg('valorCria') || 450000) / (getCfg('intervaloPartos') || 400);
-    }
+    if (a.proposito === 'leche' && (a.estadoReproductivo === 'parida' || a.estadoReproductivo === 'seca')) ing += (getCfg('valorCria') || 450000) / (getCfg('intervaloPartos') || 400);
     return ing;
 }
 
-function getAguaDiaria(pv, prop, ll = 0) {
-    return prop === 'leche' ? pv * 0.1 + ll * 3 : pv * 0.1;
-}
-
-function getLoteName(id) {
-    return DB.lotes.find(x => x.id === id)?.nombre || 'General';
-}
-
-function getAnimalesByLote(lid) {
-    return DB.animales.filter(a => a.loteId === lid);
-}
+function getLoteName(id) { return DB.lotes.find(x => x.id === id)?.nombre || 'General'; }
+function getAnimalesByLote(lid) { return DB.animales.filter(a => a.loteId === lid); }
 
 function calcularAutonomiaBodega() {
     const ct = {};
     const fd = getCfg('factoresDesperdicio') || {};
     const insumos = getInsumosActivos();
     insumos.forEach(k => ct[k] = 0);
-    
     DB.animales.forEach(a => {
         const p = a.historial[a.historial.length-1].peso;
         const d = getDiet(p, a.proposito, calcRepro(a)?.estadoLactancia || 'auto');
-        insumos.forEach(k => {
-            if (d[k]) ct[k] += d[k] * (1 + (fd[k] || 0));
-        });
+        insumos.forEach(k => { if (d[k]) ct[k] += d[k] * (1 + (fd[k] || 0)); });
     });
-    
     const au = {};
     const st = getCfg('stock') || {};
     Object.keys(ct).forEach(k => {
@@ -553,14 +507,12 @@ function calcularAutonomiaBodega() {
         const c = ct[k] || 0.001;
         au[k] = c > 0 ? Math.floor(s / c) : 999;
     });
-    
     return {consumo: ct, autonomia: au};
 }
 
 function generarAlertasCompletas() {
     const alertas = [];
     if (!DB.animales) return alertas;
-    
     DB.animales.forEach(a => {
         if (!a.historial || !a.historial.length) return;
         const p = a.historial[a.historial.length-1].peso;
@@ -571,34 +523,22 @@ function generarAlertasCompletas() {
         const roia = cd > 0 ? ing / cd : 0;
         const nombre = a.nombre || 'Animal';
         
-        if (roia < 1.0 && gmd > 0) {
-            alertas.push({id:a.id, nombre, tipo:'critical', mensaje:`📉 ROIA bajo (${roia.toFixed(1)}x). Evaluar descarte.`});
-        }
-        if (gmd > 0 && gmd < 0.4) {
-            alertas.push({id:a.id, nombre, tipo:'warning', mensaje:`⚠️ GMD bajo (${gmd.toFixed(2)})`});
-        }
-        if (a.bloqueadoPorRetiro) {
-            alertas.push({id:a.id, nombre, tipo:'critical', mensaje:`🚫 En retiro sanitario`});
-        }
+        if (roia < 1.0 && gmd > 0) alertas.push({id:a.id, nombre, tipo:'critical', mensaje:`📉 ROIA bajo (${roia.toFixed(1)}x). Evaluar descarte.`});
+        if (gmd > 0 && gmd < 0.4) alertas.push({id:a.id, nombre, tipo:'warning', mensaje:`⚠️ GMD bajo (${gmd.toFixed(2)})`});
+        if (a.bloqueadoPorRetiro) alertas.push({id:a.id, nombre, tipo:'critical', mensaje:`🚫 En retiro sanitario`});
         
         const apps = (DB.aplicaciones || []).filter(x => x.animalId === a.id);
         const tiv = apps.some(ap => {
             const prod = getAllSanidad().find(x => x.id === ap.productoId);
             return prod && prod.nombre.toLowerCase().includes('ivermectina') && getDiasDesde(ap.fecha) < (prod.diasEfecto || 30);
         });
-        if (!tiv) {
-            alertas.push({id:a.id, nombre, tipo:'critical', mensaje:`🛡️ Desparasitación vencida`});
-        }
+        if (!tiv) alertas.push({id:a.id, nombre, tipo:'critical', mensaje:`🛡️ Desparasitación vencida`});
     });
-    
     const stock = getCfg('stock') || {};
     getInsumosActivos().forEach(k => {
         const s = stock[k] || DB.inventario[k]?.stock || 0;
-        if (s < 10) {
-            alertas.push({id:'inv', nombre: DB.inventario[k]?.nombre || k, tipo:'critical', mensaje:`📦 Stock crítico: ${Math.round(s)}`});
-        }
+        if (s < 10) alertas.push({id:'inv', nombre: DB.inventario[k]?.nombre || k, tipo:'critical', mensaje:`📦 Stock crítico: ${Math.round(s)}`});
     });
-    
     return alertas;
 }
 
@@ -609,30 +549,25 @@ function verificarNotificaciones() {
 
 function renderGraficoEvolucion(historial) {
     if (historial.length < 2) return '<div style="text-align:center;color:var(--text-muted);padding:16px;font-size:.8rem">Se necesitan ≥2 pesajes</div>';
-    
     const datos = historial.map(h => {
         const p = h.fecha.split('/');
         return {fecha: new Date(p[2], p[1]-1, p[0]), peso: h.peso, fechaStr: h.fecha};
     }).sort((a, b) => a.fecha - b.fecha);
-    
     const minP = Math.min(...datos.map(d => d.peso)) * 0.95;
     const maxP = Math.max(...datos.map(d => d.peso)) * 1.05;
     const w = 320, h = 130;
     const pad = {t:15, r:15, b:25, l:38};
     const cw = w - pad.l - pad.r;
     const ch = h - pad.t - pad.b;
-    
     const pts = datos.map((d, i) => ({
         x: pad.l + (i / (datos.length-1)) * cw,
         y: pad.t + ch - ((d.peso - minP) / (maxP - minP)) * ch,
         peso: d.peso,
         fecha: d.fechaStr
     }));
-    
     const pathD = pts.map((p, i) => `${i===0?'M':'L'}${p.x},${p.y}`).join(' ');
     const circles = pts.map(p => `<circle cx="${p.x}" cy="${p.y}" r="4" fill="var(--accent)" stroke="#0a0a0c" stroke-width="2"/>`).join('');
     const dates = pts.map((p, i) => i % Math.ceil(pts.length/3) === 0 ? `<text x="${p.x}" y="${h-4}" fill="var(--text-muted)" font-size="9" text-anchor="middle">${p.fecha}</text>` : '').join('');
-    
     return `<div class="chart-box"><svg viewBox="0 0 ${w} ${h}" style="display:block"><path d="${pathD}" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>${circles}${dates}</svg></div>`;
 }
 
@@ -642,20 +577,16 @@ function goPage(p) {
     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
     const act = document.querySelector('.nav-item[data-p="' + p + '"]');
     if (act) act.classList.add('active');
-    
     if (p === 'inicio') renderInicio();
     else if (p === 'lotes') renderLotes();
     else if (p === 'animales') renderAnimales();
     else if (p === 'insumos') renderInsumos();
     else if (p === 'alertas') renderAlertas();
     else if (p === 'config') renderConfig();
-    
     window.scrollTo({top: 0, behavior: 'smooth'});
 }
 
-document.querySelectorAll('.nav-item').forEach(n => {
-    n.addEventListener('click', () => goPage(n.dataset.p));
-});
+document.querySelectorAll('.nav-item').forEach(n => n.addEventListener('click', () => goPage(n.dataset.p)));
 
 function renderInicio() {
     const ta = DB.animales?.length || 0;
@@ -753,7 +684,6 @@ function renderInicio() {
             <button class="btn btn-gold" onclick="showAddAnimalModal()"><i class="fa-solid fa-plus"></i> AGREGAR</button>
         </div>`;
     }
-    
     document.getElementById('v-inicio').innerHTML = html;
 }
 
@@ -763,11 +693,7 @@ function renderLotes() {
             <span style="font-weight:700;font-size:1rem"><i class="fa-solid fa-layer-group"></i> LOTES</span>
             <button class="btn btn-sm btn-gold" style="width:auto" onclick="showAddLoteModal()"><i class="fa-solid fa-plus"></i> Crear</button>
         </div>`;
-    
-    if (!DB.lotes?.length) {
-        h += '<div style="text-align:center;padding:20px;color:var(--text-muted)">Sin lotes</div>';
-    }
-    
+    if (!DB.lotes?.length) h += '<div style="text-align:center;padding:20px;color:var(--text-muted)">Sin lotes</div>';
     DB.lotes.forEach(l => {
         const na = getAnimalesByLote(l.id).length;
         const pt = getAnimalesByLote(l.id).reduce((s, a) => s + (a.historial?.[a.historial.length-1]?.peso || 0), 0);
@@ -797,7 +723,6 @@ function renderAnimales() {
         </div>`;
         return;
     }
-    
     let f = DB.animales;
     if (animalFilterLote !== 'all') f = f.filter(a => a.loteId === animalFilterLote);
     if (animalSearch) f = f.filter(a => (a.nombre || '').toLowerCase().includes(animalSearch.toLowerCase()));
@@ -805,12 +730,9 @@ function renderAnimales() {
     let h = `<div class="card" style="padding:12px">
         <input id="animSearch" type="text" placeholder="🔍 Buscar..." value="${animalSearch}" style="padding:10px 14px">
     </div>`;
-    
     h += `<div class="filter-chips">
         <div class="chip ${animalFilterLote === 'all' ? 'active' : ''}" onclick="animalFilterLote='all'; renderAnimales()">Todos</div>`;
-    DB.lotes.forEach(l => {
-        h += `<div class="chip ${animalFilterLote === l.id ? 'active' : ''}" onclick="animalFilterLote='${l.id}'; renderAnimales()">${l.nombre}</div>`;
-    });
+    DB.lotes.forEach(l => h += `<div class="chip ${animalFilterLote === l.id ? 'active' : ''}" onclick="animalFilterLote='${l.id}'; renderAnimales()">${l.nombre}</div>`);
     h += `</div><div class="grid">`;
     
     if (f.length === 0) {
@@ -827,7 +749,6 @@ function renderAnimales() {
         const et = getEtapa(p, rep);
         const r = getRendimiento(a.historial, getGMD(a.historial));
         const lm = {verde:'ml-g', azul:'ml-b', naranja:'ml-o', rojo:'ml-r'};
-        
         h += `<div class="animal-card" onclick="showProfile(${a.id})">
             <div class="mini-led ${lm[r.nivel]}"></div>
             <div style="font-size:2rem;margin-bottom:6px">${et.icono}</div>
@@ -840,7 +761,6 @@ function renderAnimales() {
     });
     h += `</div>`;
     document.getElementById('v-animales').innerHTML = h;
-    
     const si = document.getElementById('animSearch');
     if (si) {
         si.addEventListener('input', e => {
@@ -859,7 +779,6 @@ function renderInsumos() {
         <button class="insumo-tab ${insumoTab === 'sanidad' ? 'active' : ''}" onclick="insumoTab='sanidad'; renderInsumos()"><i class="fa-solid fa-syringe"></i> Sanidad</button>
     </div><div id="insumoContent"></div>`;
     document.getElementById('v-insumos').innerHTML = h;
-    
     if (insumoTab === 'alimentos') renderInsumoAlimentos();
     else renderInsumoSanidad();
 }
@@ -867,13 +786,11 @@ function renderInsumos() {
 function renderInsumoAlimentos() {
     const {autonomia} = calcularAutonomiaBodega();
     const insumos = getInsumosActivos();
-    
     let h = `<div class="card">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
             <span style="font-weight:700;font-size:1rem"><i class="fa-solid fa-warehouse"></i> INVENTARIO</span>
             <button class="btn btn-sm btn-green" style="width:auto" onclick="showModalGestionAlimentos()"><i class="fa-solid fa-plus"></i> Nuevo</button>
         </div>`;
-    
     insumos.forEach(k => {
         const data = DB.inventario[k] || {nombre: k, icono: 'fa-seedling', unidad: 'kg'};
         const st = getCfg('stock')?.[k] || data.stock || 0;
@@ -881,7 +798,6 @@ function renderInsumoAlimentos() {
         const au = autonomia[k] || 999;
         const dc = au < 7 ? 'var(--danger)' : au < 14 ? 'var(--warning)' : 'var(--success)';
         const esNativo = data.esNativo || ['pasto','salvado','melaza','levadura','bicarb','sal','urea'].includes(k);
-        
         h += `<div class="insumo-item">
             <div class="insumo-item-header">
                 <i class="fa-solid ${data.icono || 'fa-seedling'}"></i>
@@ -906,7 +822,6 @@ function renderInsumoAlimentos() {
             </div>
         </div>`;
     });
-    
     h += `<button class="btn btn-gold mt8" onclick="saveInventario()"><i class="fa-solid fa-check"></i> GUARDAR</button></div>`;
     document.getElementById('insumoContent').innerHTML = h;
 }
@@ -917,12 +832,10 @@ function renderInsumoSanidad() {
             <span style="font-weight:700;font-size:1rem"><i class="fa-solid fa-kit-medical"></i> SANIDAD</span>
             <button class="btn btn-sm btn-green" style="width:auto" onclick="showModalGestionSanidad()"><i class="fa-solid fa-plus"></i> Nuevo</button>
         </div>`;
-    
     getAllSanidad().forEach(p => {
         const esNativo = !p.esCustom;
         const st = p.esBase ? (getCfg('stockSanidad') || {})[p.id] || 0 : (p.stockML || 0);
         const pr = p.esBase ? (getCfg('preciosSanidad') || {})[p.id] || 0 : (p.precioML || 0);
-        
         h += `<div class="insumo-item">
             <div class="insumo-item-header">
                 <i class="fa-solid ${p.icono}" style="color:${p.color}"></i>
@@ -947,7 +860,6 @@ function renderInsumoSanidad() {
             </div>
         </div>`;
     });
-    
     h += `<button class="btn btn-gold mt8" onclick="saveInventarioSanidad()"><i class="fa-solid fa-check"></i> GUARDAR</button></div>`;
     document.getElementById('insumoContent').innerHTML = h;
 }
@@ -983,7 +895,6 @@ function saveInventario() {
     const st = getCfg('stock') || {};
     const pr = getCfg('precios') || {};
     const insumos = getInsumosActivos();
-    
     insumos.forEach(id => {
         const prEl = document.getElementById(`pr-${id}`);
         const stEl = document.getElementById(`st-${id}`);
@@ -994,7 +905,6 @@ function saveInventario() {
             DB.inventario[id].stock = st[id];
         }
     });
-    
     setCfg('stock', st);
     setCfg('precios', pr);
     guardarDatos();
@@ -1004,7 +914,6 @@ function saveInventario() {
 function saveInventarioSanidad() {
     const stS = getCfg('stockSanidad') || {};
     const prS = getCfg('preciosSanidad') || {};
-    
     getAllSanidad().forEach(p => {
         const prEl = document.getElementById(`pr-${p.id}`);
         const stEl = document.getElementById(`st-${p.id}`);
@@ -1015,9 +924,8 @@ function saveInventarioSanidad() {
                 if (c) c.precioML = prS[p.id];
             }
         }
-        if (stEl) sS[p.id] = parseFloat(stEl.value) || 0;
+        if (stEl) stS[p.id] = parseFloat(stEl.value) || 0;
     });
-    
     setCfg('stockSanidad', stS);
     setCfg('preciosSanidad', prS);
     guardarDatos();
@@ -1029,7 +937,6 @@ function renderAlertas() {
     let html = `<div class="card">
         <div style="font-weight:700;font-size:1rem;margin-bottom:8px"><i class="fa-solid fa-bell"></i> NOTIFICACIONES</div>
         <div style="font-size:.75rem;color:var(--text-secondary);margin-bottom:12px">Monitoreo automático</div>`;
-    
     if (!todas.length) {
         html += `<div style="text-align:center;padding:30px;color:var(--success)">✅ Todo en orden</div>`;
     } else {
@@ -1091,9 +998,7 @@ function exportData() {
     showToast('✅ Respaldo descargado');
 }
 
-function importData() {
-    document.getElementById('importFile').click();
-}
+function importData() { document.getElementById('importFile').click(); }
 
 function handleImport(e) {
     const f = e.target.files[0];
@@ -1125,34 +1030,21 @@ function clearAllData() {
 function showAddAnimalModal() {
     let opts = DB.lotes.map(l => `<option value="${l.id}">${l.nombre}</option>`).join('');
     let moms = '<option value="">-- Sin Madre --</option>';
-    DB.animales.forEach(a => {
-        if (a.proposito === 'leche') moms += `<option value="${a.id}">${a.nombre}</option>`;
-    });
-    
+    DB.animales.forEach(a => { if (a.proposito === 'leche') moms += `<option value="${a.id}">${a.nombre}</option>`; });
     showModal(`<div style="font-weight:700;margin-bottom:14px"><i class="fa-solid fa-cow"></i> NUEVO ANIMAL</div>
     <div class="flex-col gap10">
         <input id="addN" type="text" placeholder="Nombre">
         <input id="addW" type="number" placeholder="Peso (kg)" min="20" max="2000">
         <select id="addLote">${opts}</select>
         <div class="grid">
-            <select id="addProp">
-                <option value="carne">🥩 CARNE</option>
-                <option value="leche">🥛 LECHE</option>
-            </select>
-            <select id="addOrig" onchange="toggleOrigenFields()">
-                <option value="nacimiento">🐄 Nacimiento</option>
-                <option value="comprado">💰 Comprado</option>
-            </select>
+            <select id="addProp"><option value="carne">🥩 CARNE</option><option value="leche">🥛 LECHE</option></select>
+            <select id="addOrig" onchange="toggleOrigenFields()"><option value="nacimiento">🐄 Nacimiento</option><option value="comprado">💰 Comprado</option></select>
         </div>
         <div id="nacimientoFields" class="flex-col gap8">
-            <div class="row-label">Fecha Nacimiento</div>
-            <input id="addFechaNac" type="date">
-            <div class="row-label">Madre</div>
-            <select id="addMama">${moms}</select>
+            <div class="row-label">Fecha Nacimiento</div><input id="addFechaNac" type="date">
+            <div class="row-label">Madre</div><select id="addMama">${moms}</select>
         </div>
-        <div id="compradoFields" class="hidden">
-            <input id="addPrice" type="number" placeholder="Valor compra ($)">
-        </div>
+        <div id="compradoFields" class="hidden"><input id="addPrice" type="number" placeholder="Valor compra ($)"></div>
         <button class="btn btn-gold mt12" onclick="guardarNuevoAnimal()"><i class="fa-solid fa-check"></i> REGISTRAR</button>
         <button class="btn btn-gray" onclick="document.querySelector('.modal-overlay').remove()">CANCELAR</button>
     </div>`);
@@ -1175,36 +1067,15 @@ function guardarNuevoAnimal() {
     const fn = document.getElementById('addFechaNac')?.value;
     const mi = document.getElementById('addMama')?.value;
     const pr = parseFloat(document.getElementById('addPrice')?.value) || 0;
-    
-    if (!n || isNaN(w) || w < 20 || w > 2000) {
-        showToast('⚠️ Verifica datos');
-        return;
-    }
-    
+    if (!n || isNaN(w) || w < 20 || w > 2000) { showToast('⚠️ Verifica datos'); return; }
     const fh = new Date().toLocaleDateString();
     const fr = (orig === 'nacimiento' && fn) ? fn.split('-').reverse().join('/') : fh;
-    
     const newAnimal = {
-        id: Date.now(),
-        nombre: n,
-        historial: [{fecha: fr, peso: w}],
-        proposito: p,
-        origen: orig,
-        valorCompra: pr,
-        fechaUltimoParto: null,
-        estadoReproductivo: 'novilla',
-        loteId: lote,
-        fechaNacimiento: fn || null,
-        madreId: mi || null,
-        tags: [],
-        litrosLeche: 0,
-        transicionDias: 0,
-        transicionActiva: false,
-        bloqueadoPorRetiro: false,
-        diasGestacion: 0,
-        fechaUltimaInseminacion: null
+        id: Date.now(), nombre: n, historial: [{fecha: fr, peso: w}], proposito: p, origen: orig, valorCompra: pr,
+        fechaUltimoParto: null, estadoReproductivo: 'novilla', loteId: lote, fechaNacimiento: fn || null,
+        madreId: mi || null, tags: [], litrosLeche: 0, transicionDias: 0, transicionActiva: false,
+        bloqueadoPorRetiro: false, diasGestacion: 0, fechaUltimaInseminacion: null
     };
-    
     DB.animales.push(newAnimal);
     guardarDatos();
     document.querySelector('.modal-overlay').remove();
@@ -1225,10 +1096,7 @@ function showAddLoteModal() {
 function guardarLote() {
     const n = document.getElementById('nlNombre').value.trim();
     const c = document.getElementById('nlColor').value;
-    if (!n) {
-        showToast('⚠️ Ingresa nombre');
-        return;
-    }
+    if (!n) { showToast('⚠️ Ingresa nombre'); return; }
     const l = {id: 'lot_' + Date.now(), nombre: n, color: c};
     DB.lotes.push(l);
     guardarDatos();
@@ -1250,24 +1118,16 @@ function showEditLoteColor(lid) {
 
 function guardarColorLote(lid) {
     const l = DB.lotes.find(x => x.id === lid);
-    if (l) {
-        l.color = document.getElementById('elColor').value;
-        guardarDatos();
-    }
+    if (l) { l.color = document.getElementById('elColor').value; guardarDatos(); }
     document.querySelector('.modal-overlay').remove();
     renderLotes();
     showToast('✅ Color actualizado');
 }
 
 function deleteLote(lid) {
-    if (lid === 'lot_general') {
-        showToast('⚠️ No eliminar General');
-        return;
-    }
+    if (lid === 'lot_general') { showToast('⚠️ No eliminar General'); return; }
     if (!confirm('¿Eliminar? Animales a General')) return;
-    DB.animales.forEach(a => {
-        if (a.loteId === lid) a.loteId = 'lot_general';
-    });
+    DB.animales.forEach(a => { if (a.loteId === lid) a.loteId = 'lot_general'; });
     DB.lotes = DB.lotes.filter(l => l.id !== lid);
     guardarDatos();
     renderLotes();
@@ -1277,25 +1137,19 @@ function deleteLote(lid) {
 function showProfile(id) {
     const a = DB.animales.find(x => x.id === id);
     if (!a) return;
-    
     const p = a.historial[a.historial.length-1].peso;
     const rep = calcRepro(a);
     const et = getEtapa(p, rep);
     const r = getRendimiento(a.historial, getGMD(a.historial));
     const gmd = getGMD(a.historial);
     const valA = p * (getCfg('precioKG') || 9800);
-    
     let etxt = '--';
     if (a.fechaNacimiento) {
-        const n = new Date(a.fechaNacimiento);
-        const h = new Date();
-        const d = Math.ceil(Math.abs(h - n) / 864e5);
+        const n = new Date(a.fechaNacimiento), h = new Date(), d = Math.ceil(Math.abs(h - n) / 864e5);
         etxt = d > 60 ? `${Math.floor(d/30)}m` : `${d}d`;
     }
-    
     const mama = a.madreId ? (DB.animales.find(x => x.id == a.madreId)?.nombre || '--') : '--';
     const fotoStyle = a.foto ? `background-image:url('${a.foto}')` : '';
-    
     const gv = gmd > 0 ? gmd : 0;
     const cd = getCostoDiario(p, a.proposito, rep?.estadoLactancia || 'auto');
     const csd = getCostoSanidadDiario(id);
@@ -1304,7 +1158,6 @@ function showProfile(id) {
     const mgDiario = ingresoDiario - costoDiarioTotal;
     const roia = calcularROIA(gv, getCfg('precioKG') || 9800, costoDiarioTotal);
     const ckp = gv > 0 ? costoDiarioTotal / gv : null;
-    
     const gmdColor = gmd > 0.3 ? 'var(--success)' : gmd > 0 ? 'var(--warning)' : 'var(--danger)';
     const mgColor = mgDiario >= 0 ? 'var(--success)' : 'var(--danger)';
     const mgSign = mgDiario >= 0 ? '+' : '-';
@@ -1335,12 +1188,10 @@ function showProfile(id) {
         </div>
         <div class="sp-content">
             ${getAlertasAnimal(a).map(s => `<div class="alert-item alert-${s.t === 'r' ? 'danger' : s.t === 'purple' ? 'purple' : 'warning'}"><div style="flex:1"><b>${a.nombre}</b>: ${s.m}</div></div>`).join('')}
-            
             <div class="sp-card">
                 <div class="sp-card-header"><div class="sp-card-title"><i class="fa-solid fa-chart-line"></i> Evolución de Peso</div></div>
                 ${renderGraficoEvolucion(a.historial)}
             </div>
-            
             <div class="sp-card">
                 <div class="sp-card-header"><div class="sp-card-title"><i class="fa-solid fa-chart-line"></i> RENTABILIDAD</div></div>
                 <div class="sp-metrics">
@@ -1349,40 +1200,26 @@ function showProfile(id) {
                     <div class="sp-metric"><span class="val">${ckp !== null ? '$' + fm(ckp) : '--'}</span><span class="lbl">Costo/kg</span></div>
                 </div>
             </div>
-            
             <div class="sp-card">
                 <div class="sp-card-header"><div class="sp-card-title"><i class="fa-solid fa-wheat-awn"></i> DIETA & COSTOS</div></div>
-                <div class="row">
-                    <span class="row-label"><i class="fa-solid fa-receipt"></i> Costo Diario</span>
-                    <span class="row-val" style="color:var(--warning)">$ ${fm(costoDiarioTotal)}</span>
-                </div>
+                <div class="row"><span class="row-label"><i class="fa-solid fa-receipt"></i> Costo Diario</span><span class="row-val" style="color:var(--warning)">$ ${fm(costoDiarioTotal)}</span></div>
                 ${getInsumosActivos().map(k => {
                     const d = getDiet(p, a.proposito, rep?.estadoLactancia || 'auto');
                     const data = getInsumoData(k);
                     const v = d[k];
                     const u = data.unidad || 'kg';
                     const dp = u === 'kg' ? v.toFixed(1) : Math.round(v);
-                    return `<div class="row">
-                        <span class="row-label"><i class="fa-solid ${data.icono || 'fa-seedling'}"></i> ${data.nombre || k}</span>
-                        <span class="row-val">${dp}${u}</span>
-                    </div>`;
+                    return `<div class="row"><span class="row-label"><i class="fa-solid ${data.icono || 'fa-seedling'}"></i> ${data.nombre || k}</span><span class="row-val">${dp}${u}</span></div>`;
                 }).join('')}
             </div>
-            
             ${a.proposito === 'leche' && rep ? `
             <div class="sp-card" style="border-left:3px solid ${rep.semaforo.color}">
                 <div class="sp-card-header"><div class="sp-card-title" style="color:${rep.semaforo.color}"><i class="fa-solid fa-heart"></i> REPRODUCTIVO</div></div>
                 <div style="text-align:center;padding:10px;background:rgba(255,255,255,0.03);border-radius:12px;margin-bottom:10px">
                     <div style="font-size:1.1rem;font-weight:700;color:${rep.semaforo.color}">${rep.semaforo.txt}</div>
                 </div>
-                <div class="row">
-                    <span class="row-label"><i class="fa-solid fa-clock"></i> Días Post-Parto</span>
-                    <span class="row-val">${rep.diasPP}d</span>
-                </div>
-                <div class="row">
-                    <span class="row-label"><i class="fa-solid fa-baby"></i> Próximo parto</span>
-                    <span class="row-val">${rep.fechaProxParto || '--'}</span>
-                </div>
+                <div class="row"><span class="row-label"><i class="fa-solid fa-clock"></i> Días Post-Parto</span><span class="row-val">${rep.diasPP}d</span></div>
+                <div class="row"><span class="row-label"><i class="fa-solid fa-baby"></i> Próximo parto</span><span class="row-val">${rep.fechaProxParto || '--'}</span></div>
                 <button class="btn btn-sm btn-purple mt8" onclick="showReproModal(${id})"><i class="fa-solid fa-pen"></i> Registrar</button>
             </div>` : ''}
         </div>
@@ -1391,7 +1228,6 @@ function showProfile(id) {
             <button class="btn btn-purple" onclick="openAplicarProducto(${id})"><i class="fa-solid fa-syringe"></i> Sanidad</button>
         </div>
     </div>`;
-    
     document.querySelectorAll('.page').forEach(el => el.classList.add('hidden'));
     document.getElementById('v-perfil').classList.remove('hidden');
     document.getElementById('v-perfil').innerHTML = html;
@@ -1429,20 +1265,12 @@ function updateWeight(id) {
     const p = prompt(`⚖️ Nuevo peso (kg):\nActual: ${ow}kg`, '');
     if (!p) return;
     const peso = parseFloat(p);
-    if (isNaN(peso) || peso < 20 || peso > 2000) {
-        showToast('⚠️ Peso inválido');
-        return;
-    }
+    if (isNaN(peso) || peso < 20 || peso > 2000) { showToast('⚠️ Peso inválido'); return; }
     if (peso < ow && !confirm('⚠️ Peso menor. ¿Continuar?')) return;
-    
     const fechaInput = prompt(`📅 Fecha:\nFormato: DD/MM/AAAA`, new Date().toLocaleDateString());
     const fechaFinal = fechaInput ? fechaInput : new Date().toLocaleDateString();
     const partes = fechaFinal.split('/');
-    if (partes.length !== 3) {
-        showToast('⚠️ Formato inválido');
-        return;
-    }
-    
+    if (partes.length !== 3) { showToast('⚠️ Formato inválido'); return; }
     a.historial.push({fecha: fechaFinal, peso: peso});
     guardarDatos();
     showProfile(id);
@@ -1453,7 +1281,6 @@ function openAplicarProducto(id) {
     if (!a) return;
     const p = a.historial[a.historial.length-1].peso;
     let opts = getAllSanidad().map(pr => `<option value="${pr.id}">${pr.nombre} (${pr.diasEfecto}d)</option>`).join('');
-    
     showModal(`<div style="font-weight:700;margin-bottom:12px"><i class="fa-solid fa-syringe"></i> APLICAR</div>
     <div class="flex-col gap10">
         <select id="aplProducto" onchange="calcDosisModal(${p})">${opts}</select>
@@ -1462,7 +1289,6 @@ function openAplicarProducto(id) {
         <button class="btn btn-green mt8" onclick="aplicarProducto(${id})"><i class="fa-solid fa-check"></i> CONFIRMAR</button>
         <button class="btn btn-gray" onclick="document.querySelector('.modal-overlay').remove()">CANCELAR</button>
     </div>`);
-    
     setTimeout(() => calcDosisModal(p), 100);
 }
 
@@ -1477,32 +1303,15 @@ function calcDosisModal(p) {
 function aplicarProducto(id) {
     const pid = document.getElementById('aplProducto').value;
     const ml = parseFloat(document.getElementById('aplML').value);
-    if (isNaN(ml) || ml <= 0) {
-        showToast('⚠️ ml inválidos');
-        return;
-    }
+    if (isNaN(ml) || ml <= 0) { showToast('⚠️ ml inválidos'); return; }
     const pr = getAllSanidad().find(x => x.id === pid);
     if (!pr) return;
-    
     const stS = getCfg('stockSanidad') || {};
-    if (ml > (stS[pid] || 0)) {
-        showToast('⚠️ Stock insuficiente');
-        return;
-    }
-    
+    if (ml > (stS[pid] || 0)) { showToast('⚠️ Stock insuficiente'); return; }
     const cu = pr.precioML || (getCfg('preciosSanidad') || {})[pid] || 0;
     const ct = ml * cu;
-    
     if (!DB.aplicaciones) DB.aplicaciones = [];
-    DB.aplicaciones.push({
-        animalId: id,
-        productoId: pid,
-        producto: pr.nombre,
-        ml: ml,
-        costo: ct,
-        fecha: new Date().toLocaleDateString()
-    });
-    
+    DB.aplicaciones.push({animalId: id, productoId: pid, producto: pr.nombre, ml: ml, costo: ct, fecha: new Date().toLocaleDateString()});
     stS[pid] = Math.max(0, (stS[pid] || 0) - ml);
     setCfg('stockSanidad', stS);
     guardarDatos();
@@ -1515,7 +1324,6 @@ function aplicarProducto(id) {
 function verificarRetiro(id) {
     const a = DB.animales.find(x => x.id === id);
     if (!a) return;
-    
     let mx = 0;
     const apps = DB.aplicaciones ? DB.aplicaciones.filter(x => x.animalId === id) : [];
     apps.forEach(ap => {
@@ -1526,24 +1334,14 @@ function verificarRetiro(id) {
             if (r > mx) mx = r;
         }
     });
-    
-    if (mx > 0) {
-        a.bloqueadoPorRetiro = true;
-        guardarDatos();
-        showToast(`⚠️ Retiro: ${mx}d`);
-    } else {
-        a.bloqueadoPorRetiro = false;
-    }
+    if (mx > 0) { a.bloqueadoPorRetiro = true; guardarDatos(); showToast(`⚠️ Retiro: ${mx}d`); } 
+    else { a.bloqueadoPorRetiro = false; }
 }
 
 function showReproModal(id) {
     showModal(`<div style="font-weight:700;margin-bottom:12px"><i class="fa-solid fa-calendar-check"></i> REGISTRO</div>
     <div class="flex-col gap10">
-        <select id="reTipo">
-            <option value="parto">🐣 Parto</option>
-            <option value="insem">🐄 Inseminación</option>
-            <option value="secado">🛑 Secado</option>
-        </select>
+        <select id="reTipo"><option value="parto">🐣 Parto</option><option value="insem">🐄 Inseminación</option><option value="secado">🛑 Secado</option></select>
         <input id="reFecha" type="date">
         <button class="btn btn-green" onclick="guardarRepro(${id})"><i class="fa-solid fa-check"></i> GUARDAR</button>
         <button class="btn btn-gray" onclick="document.querySelector('.modal-overlay').remove()">CANCELAR</button>
@@ -1553,26 +1351,12 @@ function showReproModal(id) {
 function guardarRepro(id) {
     const t = document.getElementById('reTipo').value;
     const f = document.getElementById('reFecha').value;
-    if (!f) {
-        showToast('⚠️ Selecciona fecha');
-        return;
-    }
+    if (!f) { showToast('⚠️ Selecciona fecha'); return; }
     const fd = f.split('-').reverse().join('/');
     const a = DB.animales.find(x => x.id === id);
-    
-    if (t === 'parto') {
-        a.fechaUltimoParto = fd;
-        a.estadoReproductivo = 'parida';
-        a.diasGestacion = 0;
-    }
-    if (t === 'insem') {
-        a.fechaUltimaInseminacion = fd;
-        a.estadoReproductivo = 'gestando';
-    }
-    if (t === 'secado') {
-        a.estadoReproductivo = 'seca';
-    }
-    
+    if (t === 'parto') { a.fechaUltimoParto = fd; a.estadoReproductivo = 'parida'; a.diasGestacion = 0; }
+    if (t === 'insem') { a.fechaUltimaInseminacion = fd; a.estadoReproductivo = 'gestando'; }
+    if (t === 'secado') { a.estadoReproductivo = 'seca'; }
     guardarDatos();
     document.querySelector('.modal-overlay').remove();
     showToast('✅ Registrado');
@@ -1583,22 +1367,14 @@ function showModalGestionAlimentos() {
     <div class="flex-col gap8">
         <input id="acNombre" type="text" placeholder="Nombre">
         <div class="grid">
-            <select id="acIcono">
-                <option value="fa-wheat-awn">🌾 Grano</option>
-                <option value="fa-seedling">🌱 Forraje</option>
-            </select>
-            <select id="acUnidad">
-                <option value="kg">Kilogramos</option>
-                <option value="g">Gramos</option>
-            </select>
+            <select id="acIcono"><option value="fa-wheat-awn">🌾 Grano</option><option value="fa-seedling">🌱 Forraje</option></select>
+            <select id="acUnidad"><option value="kg">Kilogramos</option><option value="g">Gramos</option></select>
         </div>
         <div class="grid">
             <input id="acDosis" type="number" step="0.001" placeholder="Dosis/kg">
             <input id="acPrecioTotal" type="number" placeholder="Precio $">
         </div>
-        <div class="grid">
-            <input id="acCantidadTotal" type="number" step="0.1" placeholder="Cantidad">
-        </div>
+        <div class="grid"><input id="acCantidadTotal" type="number" step="0.1" placeholder="Cantidad"></div>
         <button class="btn btn-green" onclick="guardarAlimentoCustom()"><i class="fa-solid fa-check"></i> GUARDAR</button>
     </div>`);
 }
@@ -1608,28 +1384,11 @@ function guardarAlimentoCustom() {
     const d = parseFloat(document.getElementById('acDosis').value);
     const pt = parseFloat(document.getElementById('acPrecioTotal').value);
     const ct = parseFloat(document.getElementById('acCantidadTotal').value);
-    
-    if (!n || isNaN(d) || isNaN(pt) || isNaN(ct)) {
-        showToast('⚠️ Completa todos los campos');
-        return;
-    }
-    
+    if (!n || isNaN(d) || isNaN(pt) || isNaN(ct)) { showToast('⚠️ Completa todos los campos'); return; }
     const id = 'ac_' + Date.now();
-    const item = {
-        id: id,
-        nombre: n,
-        icono: document.getElementById('acIcono').value,
-        unidad: document.getElementById('acUnidad').value,
-        dosisPorKg: d,
-        precioUnitario: pt / ct,
-        stock: ct,
-        esNativo: false
-    };
-    
+    const item = {id: id, nombre: n, icono: document.getElementById('acIcono').value, unidad: document.getElementById('acUnidad').value, dosisPorKg: d, precioUnitario: pt / ct, stock: ct, esNativo: false};
     DB.inventario[id] = item;
-    if (!DB.config.insumosActivos.includes(id)) {
-        DB.config.insumosActivos.push(id);
-    }
+    if (!DB.config.insumosActivos.includes(id)) DB.config.insumosActivos.push(id);
     guardarDatos();
     document.querySelector('.modal-overlay').remove();
     showToast('✅ Agregado');
@@ -1649,10 +1408,7 @@ function showModalGestionSanidad() {
     <div class="flex-col gap8">
         <input id="scNombre" type="text" placeholder="Nombre">
         <div class="grid">
-            <select id="scIcono">
-                <option value="fa-syringe">💉</option>
-                <option value="fa-pills">💊</option>
-            </select>
+            <select id="scIcono"><option value="fa-syringe">💉</option><option value="fa-pills">💊</option></select>
             <input id="scColor" type="color" value="#a78bfa" style="width:100%;height:38px">
         </div>
         <input id="scDosis" type="number" step="0.01" placeholder="ml/kg">
@@ -1675,26 +1431,9 @@ function guardarSanidadCustom() {
     const ret = parseInt(document.getElementById('scRetiro').value) || 0;
     const pt = parseFloat(document.getElementById('scPrecioTotal').value);
     const ml = parseFloat(document.getElementById('scMlTotal').value);
-    
-    if (!n || isNaN(d) || isNaN(pt) || isNaN(ml)) {
-        showToast('⚠️ Completa todos los campos');
-        return;
-    }
-    
+    if (!n || isNaN(d) || isNaN(pt) || isNaN(ml)) { showToast('⚠️ Completa todos los campos'); return; }
     const id = 'sc_' + Date.now();
-    const item = {
-        id: id,
-        nombre: n,
-        icono: document.getElementById('scIcono').value,
-        color: document.getElementById('scColor').value,
-        dosis: d,
-        diasEfecto: ef,
-        retiro: ret,
-        precioML: pt / ml,
-        stockML: ml,
-        esCustom: true
-    };
-    
+    const item = {id: id, nombre: n, icono: document.getElementById('scIcono').value, color: document.getElementById('scColor').value, dosis: d, diasEfecto: ef, retiro: ret, precioML: pt / ml, stockML: ml, esCustom: true};
     DB.sanidad[id] = item;
     guardarDatos();
     document.querySelector('.modal-overlay').remove();
@@ -1710,31 +1449,16 @@ function deleteSanidadCustom(id) {
 }
 
 async function handlePhotoUpload(file, animalId) {
-    if (!file || !file.type.startsWith('image/')) {
-        showToast('⚠️ Solo imágenes');
-        return;
-    }
-    if (file.size > 5 * 1024 * 1024) {
-        showToast('⚠️ Máximo 5MB');
-        return;
-    }
-    
+    if (!file || !file.type.startsWith('image/')) { showToast('⚠️ Solo imágenes'); return; }
+    if (file.size > 5 * 1024 * 1024) { showToast('⚠️ Máximo 5MB'); return; }
     const img = new Image();
     img.onload = () => {
         const canvas = document.createElement('canvas');
         const MAX = 800;
         let w = img.width, h = img.height;
-        
-        if (w > h) {
-            if (w > MAX) { h *= MAX / w; w = MAX; }
-        } else {
-            if (h > MAX) { w *= MAX / h; h = MAX; }
-        }
-        
-        canvas.width = w;
-        canvas.height = h;
+        if (w > h) { if (w > MAX) { h *= MAX / w; w = MAX; } } else { if (h > MAX) { w *= MAX / h; h = MAX; } }
+        canvas.width = w; canvas.height = h;
         canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-        
         const a = DB.animales.find(x => x.id === animalId);
         if (a) {
             a.foto = canvas.toDataURL('image/jpeg', 0.7);
