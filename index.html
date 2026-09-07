@@ -9,7 +9,6 @@
     <meta name="description" content="Gestión ganadera profesional 100% offline">
     <title>GANADERO ÉLITE PRO</title>
     <link rel="manifest" href="./manifest.json">
-    <link rel="apple-touch-icon" href="./icons/icon-192x192.png">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -244,7 +243,6 @@
 </nav>
 
 <script>
-// ==================== CONFIGURACIÓN ====================
 const APP_VERSION = '5.0.4';
 const STORAGE_KEY = 'ganadero_elite_v' + APP_VERSION.replace('.','_');
 
@@ -279,7 +277,6 @@ let searchTimeout = null;
 let animalFilterLote = 'all';
 let animalSearch = '';
 
-// Datos por defecto de insumos
 const DEFAULT_INSUMOS_DATA = {
     pasto: {nombre:'Pasto Picado', icono:'fa-seedling', unidad:'kg', esNativo:true},
     salvado: {nombre:'Salvado Trigo', icono:'fa-wheat-awn', unidad:'kg', esNativo:true},
@@ -290,7 +287,6 @@ const DEFAULT_INSUMOS_DATA = {
     urea: {nombre:'UREA', icono:'fa-flask-vial', unidad:'g', esNativo:true}
 };
 
-// ==================== CARGA INICIAL ====================
 function iniciarApp() {
     try {
         const datos = localStorage.getItem(STORAGE_KEY);
@@ -300,7 +296,6 @@ function iniciarApp() {
             DB.config = {...DB.config, ...(parsed.config || {})};
         }
         
-        // Asegurar que existan los insumos nativos
         Object.keys(DEFAULT_INSUMOS_DATA).forEach(k => {
             if (!DB.inventario[k]) {
                 DB.inventario[k] = {...DEFAULT_INSUMOS_DATA[k], stock:0, precioUnitario: DB.config.precios[k] || 0};
@@ -315,7 +310,6 @@ function iniciarApp() {
     }
 }
 
-// ==================== UTILIDADES ====================
 function getCfg(k) { return DB.config?.[k]; }
 function setCfg(k, v) { DB.config[k] = v; guardarDatos(); }
 
@@ -376,7 +370,6 @@ function guardarDatos() {
     }
 }
 
-// ==================== MOTOR DE NEGOCIO ====================
 const TRIGGERS = { ureaMinWeight: 150, pregnancyUreaBlockDay: 210, maxRumenVolumePct: 0.12 };
 const CONSUMO_MS_PV = 0.03;
 const FACTOR_MS_DEFAULT = { pasto: 0.20, salvado: 0.88, melaza: 0.75 };
@@ -643,7 +636,6 @@ function renderGraficoEvolucion(historial) {
     return `<div class="chart-box"><svg viewBox="0 0 ${w} ${h}" style="display:block"><path d="${pathD}" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>${circles}${dates}</svg></div>`;
 }
 
-// ==================== NAVEGACIÓN ====================
 function goPage(p) {
     document.querySelectorAll('.page').forEach(el => el.classList.add('hidden'));
     document.getElementById('v-' + p).classList.remove('hidden');
@@ -665,7 +657,6 @@ document.querySelectorAll('.nav-item').forEach(n => {
     n.addEventListener('click', () => goPage(n.dataset.p));
 });
 
-// ==================== RENDERS ====================
 function renderInicio() {
     const ta = DB.animales?.length || 0;
     let tKg = 0;
@@ -1024,7 +1015,7 @@ function saveInventarioSanidad() {
                 if (c) c.precioML = prS[p.id];
             }
         }
-        if (stEl) stS[p.id] = parseFloat(stEl.value) || 0;
+        if (stEl) sS[p.id] = parseFloat(stEl.value) || 0;
     });
     
     setCfg('stockSanidad', stS);
@@ -1131,7 +1122,6 @@ function clearAllData() {
     location.reload();
 }
 
-// ==================== ACCIONES ====================
 function showAddAnimalModal() {
     let opts = DB.lotes.map(l => `<option value="${l.id}">${l.nombre}</option>`).join('');
     let moms = '<option value="">-- Sin Madre --</option>';
@@ -1757,11 +1747,9 @@ async function handlePhotoUpload(file, animalId) {
     img.src = URL.createObjectURL(file);
 }
 
-// ==================== INICIO ====================
 document.addEventListener('DOMContentLoaded', iniciarApp);
 if (document.readyState !== 'loading') iniciarApp();
 
-// ==================== PWA ====================
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
         navigator.serviceWorker.register('./sw.js')
