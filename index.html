@@ -1390,7 +1390,7 @@ function calcRepro(a) {
         dg = Math.max(0, Math.floor((hoy - ins) / 864e5));
     }
     let sem, est = a.estadoReproductivo || 'parida';
-    if (dpp <= 60 && dpp > 0) { sem = {color:'#3b82f6', txt:'🔵 Secado (' + dpp + 'd)'}; est = 'seca'; } 
+    if (dpp <= 60 && dpp > 0) { sem = {color:'#3b82f6', txt:' Secado (' + dpp + 'd)'}; est = 'seca'; } 
     else if (diasPP <= 60) { sem = {color:'#10b981', txt:'🟢 Recuperación'}; } 
     else if (diasPP <= 150) { sem = {color:'#f59e0b', txt:'🟡 Ventana Monta'}; } 
     else { sem = {color:'#ef4444', txt:'🔴 ALERTA Vacía'}; }
@@ -1399,9 +1399,9 @@ function calcRepro(a) {
 
 function getEtapa(pv, rep) {
     const e = rep ? rep.estadoLactancia : 'auto';
-    if (e === 'seca') return {nombre:'Vaca Seca', clase:'etapa-madurez', icono:'🥛', color:'#3b82f6'};
+    if (e === 'seca') return {nombre:'Vaca Seca', clase:'etapa-madurez', icono:'', color:'#3b82f6'};
     if (e === 'parida') return {nombre:'Producción', clase:'etapa-ceba', icono:'', color:'#10b981'};
-    if (pv < 150) return {nombre:'Cría', clase:'etapa-inicio', icono:'🐮', color:'#fbbf24'};
+    if (pv < 150) return {nombre:'Cría', clase:'etapa-inicio', icono:'', color:'#fbbf24'};
     if (pv < 350) return {nombre:'Levante', clase:'etapa-desarrollo', icono:'🐂', color:'#3b82f6'};
     return {nombre:'Ceba', clase:'etapa-madurez', icono:'🐃', color:'#fb923c'};
 }
@@ -1655,7 +1655,7 @@ function renderLotes() {
 function renderAnimales() {
     if (!DB.animales || !DB.animales.length) {
         document.getElementById('v-animales').innerHTML = `<div style="text-align:center;padding:48px 24px;color:var(--text-muted)">
-            <div style="font-size:3.5rem;margin-bottom:16px">🐄</div>
+            <div style="font-size:3.5rem;margin-bottom:16px"></div>
             <div style="font-size:1.05rem;font-weight:700">No hay animales</div>
             <button class="btn btn-gold mt12" style="width:auto" onclick="showAddAnimalModal()">+ Agregar</button>
         </div>`;
@@ -1675,7 +1675,7 @@ function renderAnimales() {
     
     if (f.length === 0) {
         h += `<div style="grid-column:1/-1;text-align:center;padding:48px;color:var(--text-muted)">
-            <div style="font-size:2.5rem;margin-bottom:12px"></div>
+            <div style="font-size:2.5rem;margin-bottom:12px">🔍</div>
             <div style="font-size:1rem;font-weight:700">Ningún animal coincide</div>
         </div>`;
     }
@@ -1806,7 +1806,7 @@ function toggleInsumoNativo(id) {
     const isActive = getInsumosActivos().includes(id);
     if (isActive) {
         DB.config.insumosActivos = DB.config.insumosActivos.filter(x => x !== id);
-        showToast('👁️ Insumo ocultado');
+        showToast('️ Insumo ocultado');
     } else {
         DB.config.insumosActivos.push(id);
         showToast('✅ Insumo agregado');
@@ -1951,10 +1951,10 @@ function handleImport(e) {
                 showToast('✅ Importado');
                 renderInicio();
             } else {
-                showToast('️ Archivo inválido');
+                showToast('⚠️ Archivo inválido');
             }
         } catch {
-            showToast('⚠️ Error al leer');
+            showToast('️ Error al leer');
         }
     };
     r.readAsText(f);
@@ -2005,7 +2005,7 @@ function guardarNuevoAnimal() {
     const fn = document.getElementById('addFechaNac')?.value;
     const mi = document.getElementById('addMama')?.value;
     const pr = parseFloat(document.getElementById('addPrice')?.value) || 0;
-    if (!n || isNaN(w) || w < 20 || w > 2000) { showToast('⚠️ Verifica datos'); return; }
+    if (!n || isNaN(w) || w < 20 || w > 2000) { showToast('️ Verifica datos'); return; }
     const fh = new Date().toLocaleDateString();
     const fr = (orig === 'nacimiento' && fn) ? fn.split('-').reverse().join('/') : fh;
     const newAnimal = {
@@ -2034,7 +2034,7 @@ function showAddLoteModal() {
 function guardarLote() {
     const n = document.getElementById('nlNombre').value.trim();
     const c = document.getElementById('nlColor').value;
-    if (!n) { showToast('⚠️ Ingresa nombre'); return; }
+    if (!n) { showToast('️ Ingresa nombre'); return; }
     const l = {id: 'lot_' + Date.now(), nombre: n, color: c};
     DB.lotes.push(l);
     guardarDatos();
@@ -2075,6 +2075,7 @@ function deleteLote(lid) {
 function showProfile(id) {
     const a = DB.animales.find(x => x.id === id);
     if (!a) return;
+    
     const p = a.historial[a.historial.length-1].peso;
     const rep = calcRepro(a);
     const et = getEtapa(p, rep);
@@ -2166,6 +2167,8 @@ function showProfile(id) {
             <button class="btn btn-purple" onclick="openAplicarProducto(${id})"><i class="fa-solid fa-syringe"></i> Sanidad</button>
         </div>
     </div>`;
+    
+    // CORRECCIÓN: Ocultar todas las páginas y mostrar solo el perfil
     document.querySelectorAll('.page').forEach(el => el.classList.add('hidden'));
     document.getElementById('v-perfil').classList.remove('hidden');
     document.getElementById('v-perfil').innerHTML = html;
@@ -2204,11 +2207,11 @@ function updateWeight(id) {
     if (!p) return;
     const peso = parseFloat(p);
     if (isNaN(peso) || peso < 20 || peso > 2000) { showToast('⚠️ Peso inválido'); return; }
-    if (peso < ow && !confirm('⚠️ Peso menor. ¿Continuar?')) return;
+    if (peso < ow && !confirm('️ Peso menor. ¿Continuar?')) return;
     const fechaInput = prompt(`📅 Fecha:\nFormato: DD/MM/AAAA`, new Date().toLocaleDateString());
     const fechaFinal = fechaInput ? fechaInput : new Date().toLocaleDateString();
     const partes = fechaFinal.split('/');
-    if (partes.length !== 3) { showToast('⚠️ Formato inválido'); return; }
+    if (partes.length !== 3) { showToast('️ Formato inválido'); return; }
     a.historial.push({fecha: fechaFinal, peso: peso});
     guardarDatos();
     showProfile(id);
@@ -2241,11 +2244,11 @@ function calcDosisModal(p) {
 function aplicarProducto(id) {
     const pid = document.getElementById('aplProducto').value;
     const ml = parseFloat(document.getElementById('aplML').value);
-    if (isNaN(ml) || ml <= 0) { showToast('⚠️ ml inválidos'); return; }
+    if (isNaN(ml) || ml <= 0) { showToast('️ ml inválidos'); return; }
     const pr = getAllSanidad().find(x => x.id === pid);
     if (!pr) return;
     const stS = getCfg('stockSanidad') || {};
-    if (ml > (stS[pid] || 0)) { showToast('⚠️ Stock insuficiente'); return; }
+    if (ml > (stS[pid] || 0)) { showToast('️ Stock insuficiente'); return; }
     const cu = pr.precioML || (getCfg('preciosSanidad') || {})[pid] || 0;
     const ct = ml * cu;
     if (!DB.aplicaciones) DB.aplicaciones = [];
@@ -2272,7 +2275,7 @@ function verificarRetiro(id) {
             if (r > mx) mx = r;
         }
     });
-    if (mx > 0) { a.bloqueadoPorRetiro = true; guardarDatos(); showToast(`⚠️ Retiro: ${mx}d`); } 
+    if (mx > 0) { a.bloqueadoPorRetiro = true; guardarDatos(); showToast(`️ Retiro: ${mx}d`); } 
     else { a.bloqueadoPorRetiro = false; }
 }
 
@@ -2305,7 +2308,7 @@ function showModalGestionAlimentos() {
     <div class="flex-col gap8">
         <input id="acNombre" type="text" placeholder="Nombre">
         <div class="grid">
-            <select id="acIcono"><option value="fa-wheat-awn">🌾 Grano</option><option value="fa-seedling">🌱 Forraje</option></select>
+            <select id="acIcono"><option value="fa-wheat-awn"> Grano</option><option value="fa-seedling">🌱 Forraje</option></select>
             <select id="acUnidad"><option value="kg">Kilogramos</option><option value="g">Gramos</option></select>
         </div>
         <div class="grid">
@@ -2369,7 +2372,7 @@ function guardarSanidadCustom() {
     const ret = parseInt(document.getElementById('scRetiro').value) || 0;
     const pt = parseFloat(document.getElementById('scPrecioTotal').value);
     const ml = parseFloat(document.getElementById('scMlTotal').value);
-    if (!n || isNaN(d) || isNaN(pt) || isNaN(ml)) { showToast('⚠️ Completa todos los campos'); return; }
+    if (!n || isNaN(d) || isNaN(pt) || isNaN(ml)) { showToast('️ Completa todos los campos'); return; }
     const id = 'sc_' + Date.now();
     const item = {id: id, nombre: n, icono: document.getElementById('scIcono').value, color: document.getElementById('scColor').value, dosis: d, diasEfecto: ef, retiro: ret, precioML: pt / ml, stockML: ml, esCustom: true};
     DB.sanidad[id] = item;
@@ -2387,7 +2390,7 @@ function deleteSanidadCustom(id) {
 }
 
 async function handlePhotoUpload(file, animalId) {
-    if (!file || !file.type.startsWith('image/')) { showToast('⚠️ Solo imágenes'); return; }
+    if (!file || !file.type.startsWith('image/')) { showToast('️ Solo imágenes'); return; }
     if (file.size > 5 * 1024 * 1024) { showToast('️ Máximo 5MB'); return; }
     const img = new Image();
     img.onload = () => {
@@ -2405,7 +2408,7 @@ async function handlePhotoUpload(file, animalId) {
             showToast('✅ Foto guardada');
         }
     };
-    img.onerror = () => showToast('⚠️ Error al cargar');
+    img.onerror = () => showToast('️ Error al cargar');
     img.src = URL.createObjectURL(file);
 }
 
