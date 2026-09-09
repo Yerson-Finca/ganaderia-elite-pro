@@ -2,1148 +2,670 @@
 <html lang="es-CO">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta name="theme-color" content="#0f172a">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="description" content="Gestión ganadera profesional 100% offline">
-    <title>GANADERO ÉLITE PRO</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#6366f1">
+    <title>Ganadero Élite Pro</title>
     <link rel="manifest" href="./manifest.json">
     <link rel="apple-touch-icon" href="./icons/icon-192x192.png">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --bg-primary: #0f172a;
-            --bg-secondary: #1e293b;
-            --bg-tertiary: #334155;
-            --card-bg: rgba(30, 41, 59, 0.7);
-            --card-border: rgba(148, 163, 184, 0.1);
-            --accent: #fbbf24;
-            --accent-hover: #f59e0b;
-            --accent-soft: rgba(251, 191, 36, 0.15);
-            --accent-border: rgba(251, 191, 36, 0.3);
-            --accent-glow: rgba(251, 191, 36, 0.4);
-            --text-primary: #f8fafc;
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --primary-light: #818cf8;
+            --primary-glow: rgba(99, 102, 241, 0.15);
+            --accent: #10b981;
+            --accent-soft: rgba(16, 185, 129, 0.12);
+            --bg: #0a0a12;
+            --bg-secondary: #12121f;
+            --surface: #1a1a2e;
+            --surface-hover: #22223a;
+            --border: rgba(255, 255, 255, 0.06);
+            --border-strong: rgba(255, 255, 255, 0.12);
+            --text: #f8fafc;
             --text-secondary: #cbd5e1;
-            --text-muted: #94a3b8;
-            --success: #10b981;
-            --success-bg: rgba(16, 185, 129, 0.15);
+            --text-muted: #64748b;
             --danger: #ef4444;
-            --danger-bg: rgba(239, 68, 68, 0.15);
-            --info: #3b82f6;
-            --info-bg: rgba(59, 130, 246, 0.15);
+            --danger-soft: rgba(239, 68, 68, 0.12);
             --warning: #f59e0b;
-            --warning-bg: rgba(245, 158, 11, 0.15);
+            --warning-soft: rgba(245, 158, 11, 0.12);
+            --info: #3b82f6;
+            --info-soft: rgba(59, 130, 246, 0.12);
             --purple: #a855f7;
-            --purple-bg: rgba(168, 85, 247, 0.15);
-            --radius: 24px;
-            --radius-sm: 16px;
-            --radius-xs: 12px;
-            --shadow-sm: 0 2px 8px rgba(0,0,0,0.15);
-            --shadow-md: 0 8px 24px rgba(0,0,0,0.25);
-            --shadow-lg: 0 16px 48px rgba(0,0,0,0.35);
-            --shadow-glow: 0 0 30px rgba(251, 191, 36, 0.3);
+            --purple-soft: rgba(168, 85, 247, 0.12);
+            --radius: 20px;
+            --radius-sm: 14px;
+            --radius-xs: 10px;
+            --shadow: 0 4px 20px rgba(0,0,0,0.4);
+            --shadow-lg: 0 10px 40px rgba(0,0,0,0.5);
         }
-        
         * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
         html, body { overflow-x:hidden; max-width:100vw; }
-        
-        body { 
-            font-family:'Plus Jakarta Sans',system-ui,sans-serif; 
-            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
-            color:var(--text-primary); 
-            min-height:100vh; 
-            padding:20px 20px 110px; 
-            font-size:15px; 
-            display:flex; 
-            justify-content:center; 
-            font-weight:400; 
-            line-height:1.6; 
-            letter-spacing:-0.01em;
+        body {
+            font-family:'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height:100vh;
+            padding:16px 16px 110px;
+            font-size:14px;
+            display:flex;
+            justify-content:center;
+            font-weight:400;
+            line-height:1.5;
+            -webkit-font-smoothing: antialiased;
         }
-        
-        .aurora { 
-            position:fixed; 
-            top:0; 
-            left:0; 
-            width:100%; 
-            height:100%; 
+        body::before {
+            content:'';
+            position:fixed;
+            top:0; left:0; right:0; bottom:0;
             background:
-                radial-gradient(circle at 20% 30%, rgba(251, 191, 36, 0.08) 0%, transparent 50%),
-                radial-gradient(circle at 80% 70%, rgba(168, 85, 247, 0.06) 0%, transparent 50%); 
-            z-index:-1; 
+                radial-gradient(circle at 15% 20%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 85% 80%, rgba(16, 185, 129, 0.1) 0%, transparent 50%);
+            z-index:-1;
             pointer-events:none;
         }
-        
-        .app { 
-            width:100%; 
-            max-width:480px; 
-            position:relative; 
-            display:flex; 
-            flex-direction:column; 
-            gap:16px; 
-        }
-        
-        @keyframes fadeIn { 
-            from { opacity:0; transform:translateY(12px); } 
-            to { opacity:1; transform:translateY(0); } 
-        }
-        
-        @keyframes slideUp {
-            from { opacity:0; transform:translateY(20px); }
-            to { opacity:1; transform:translateY(0); }
-        }
-        
-        @keyframes pulse-glow {
-            0%, 100% { box-shadow: 0 0 20px rgba(251, 191, 36, 0.3); }
-            50% { box-shadow: 0 0 40px rgba(251, 191, 36, 0.5); }
-        }
-        
-        .toast { 
-            position:fixed; 
-            top:20px; 
-            left:50%; 
-            transform:translateX(-50%); 
-            background: rgba(30, 41, 59, 0.95);
-            backdrop-filter: blur(20px);
-            border:1px solid var(--accent-border); 
-            padding:14px 20px; 
-            border-radius:var(--radius-sm); 
-            z-index:1000; 
-            font-weight:600; 
-            font-size:.85rem; 
-            color:var(--text-primary); 
-            animation:fadeIn .4s cubic-bezier(0.16, 1, 0.3, 1); 
-            box-shadow:var(--shadow-lg); 
-            text-align:center; 
+        .app { width:100%; max-width:480px; position:relative; display:flex; flex-direction:column; gap:14px; }
+        @keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+        @keyframes slideUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+        @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.05)} }
+
+        .toast {
+            position:fixed; top:20px; left:50%; transform:translateX(-50%);
+            background: var(--surface);
+            border:1px solid var(--border-strong);
+            padding:12px 20px;
+            border-radius:var(--radius-sm);
+            z-index:1000;
+            font-weight:600; font-size:.85rem;
+            color:var(--text);
+            animation:fadeIn .3s ease;
+            box-shadow:var(--shadow-lg);
+            text-align:center;
             max-width:90%;
-        }
-        
-        .page { 
-            animation:fadeIn .4s cubic-bezier(0.16, 1, 0.3, 1); 
-        }
-        
-        header { 
-            display:flex; 
-            justify-content:space-between; 
-            align-items:center; 
-            padding:16px 0; 
-            margin-bottom:8px; 
-        }
-        
-        header h1 { 
-            font-weight:800; 
-            font-size:1.3rem; 
-            letter-spacing:-0.02em; 
-            background:linear-gradient(135deg,#fbbf24,#f59e0b); 
-            -webkit-background-clip:text; 
-            -webkit-text-fill-color:transparent; 
-            display:flex; 
-            align-items:center; 
-            gap:10px; 
-        }
-        
-        .header-actions { 
-            display:flex; 
-            align-items:center; 
-            gap:10px; 
-        }
-        
-        .header-btn { 
-            width:40px; 
-            height:40px; 
-            border-radius:var(--radius-xs); 
-            background:var(--card-bg);
-            backdrop-filter: blur(10px);
-            border:1px solid var(--card-border); 
-            color:var(--text-secondary); 
-            display:flex; 
-            align-items:center; 
-            justify-content:center; 
-            cursor:pointer; 
-            transition:all .3s cubic-bezier(0.16, 1, 0.3, 1); 
-        }
-        
-        .header-btn:hover, .header-btn:active { 
-            background:var(--accent-soft);
-            color:var(--accent);
-            border-color:var(--accent-border);
-            transform:translateY(-2px);
-        }
-        
-        .save-indicator { 
-            font-size:.7rem; 
-            color:var(--success); 
-            opacity:0; 
-            transition:opacity .3s; 
-        }
-        
-        .save-indicator.visible { 
-            opacity:1; 
-        }
-        
-        .pro-tag { 
-            display:inline-flex; 
-            align-items:center; 
-            background:var(--accent-soft); 
-            color:var(--accent); 
-            padding:3px 10px; 
-            border-radius:var(--radius-xs); 
-            font-size:.6rem; 
-            font-weight:700; 
-            margin-left:8px; 
-            border:1px solid var(--accent-border);
-        }
-        
-        .bottom-nav { 
-            position:fixed; 
-            bottom:20px; 
-            left:50%; 
-            transform:translateX(-50%); 
-            width:92%; 
-            max-width:420px; 
-            height:68px; 
-            display:flex; 
-            justify-content:space-around; 
-            align-items:center; 
-            z-index:500; 
-            background: rgba(30, 41, 59, 0.85);
             backdrop-filter:blur(20px);
-            border:1px solid var(--card-border); 
-            border-radius:var(--radius); 
+        }
+        .page { animation:fadeIn .3s ease; }
+
+        header {
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            padding:14px 0;
+            margin-bottom:6px;
+        }
+        header h1 {
+            font-weight:800;
+            font-size:1.25rem;
+            letter-spacing:-0.02em;
+            background:linear-gradient(135deg, var(--primary-light), var(--primary));
+            -webkit-background-clip:text;
+            -webkit-text-fill-color:transparent;
+            display:flex;
+            align-items:center;
+            gap:10px;
+        }
+        .header-actions { display:flex; align-items:center; gap:8px; }
+        .header-btn {
+            width:38px; height:38px;
+            border-radius:var(--radius-xs);
+            background:var(--surface);
+            border:1px solid var(--border);
+            color:var(--text-secondary);
+            display:flex; align-items:center; justify-content:center;
+            cursor:pointer;
+            transition:all .2s ease;
+            font-size:.95rem;
+        }
+        .header-btn:hover, .header-btn:active {
+            background:var(--primary-glow);
+            color:var(--primary-light);
+            border-color:var(--primary);
+        }
+        .save-indicator { font-size:.65rem; color:var(--accent); opacity:0; transition:opacity .3s; }
+        .save-indicator.visible { opacity:1; }
+        .pro-tag {
+            display:inline-flex; align-items:center;
+            background:var(--primary-glow);
+            color:var(--primary-light);
+            padding:2px 8px;
+            border-radius:var(--radius-xs);
+            font-size:.55rem;
+            font-weight:700;
+            margin-left:6px;
+            border:1px solid rgba(99, 102, 241, 0.3);
+            letter-spacing:.03em;
+        }
+
+        .bottom-nav {
+            position:fixed; bottom:18px; left:50%; transform:translateX(-50%);
+            width:94%; max-width:420px; height:66px;
+            display:flex; justify-content:space-around; align-items:center;
+            z-index:500;
+            background: rgba(18, 18, 31, 0.9);
+            backdrop-filter:blur(20px);
+            border:1px solid var(--border-strong);
+            border-radius:var(--radius);
             box-shadow:var(--shadow-lg);
             padding:0 8px;
         }
-        
-        .nav-item { 
-            flex:1; 
-            display:flex; 
-            flex-direction:column; 
-            align-items:center; 
-            justify-content:center; 
-            gap:3px; 
-            color:var(--text-muted); 
-            font-size:.6rem; 
-            cursor:pointer; 
-            transition:all .3s cubic-bezier(0.16, 1, 0.3, 1); 
-            font-weight:600; 
-            text-transform:uppercase; 
-            letter-spacing:.03em; 
+        .nav-item {
+            flex:1;
+            display:flex; flex-direction:column;
+            align-items:center; justify-content:center;
+            gap:3px;
+            color:var(--text-muted);
+            font-size:.58rem;
+            cursor:pointer;
+            transition:all .2s ease;
+            font-weight:600;
+            text-transform:uppercase;
+            letter-spacing:.03em;
         }
-        
-        .nav-item i { 
-            font-size:1.2rem; 
-            margin-bottom:2px; 
-            transition:all .3s cubic-bezier(0.16, 1, 0.3, 1); 
+        .nav-item i { font-size:1.15rem; transition:all .2s ease; }
+        .nav-item.active { color:var(--primary-light); }
+        .nav-item.active i { transform:translateY(-2px); }
+        .nav-center {
+            width:54px; height:54px;
+            border-radius:50%;
+            background:linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color:#fff;
+            font-size:1.3rem;
+            display:flex; align-items:center; justify-content:center;
+            border:3px solid var(--bg);
+            box-shadow:0 8px 24px rgba(99, 102, 241, 0.4);
+            cursor:pointer;
+            border:none;
+            transition:all .2s ease;
+            margin-top:-26px;
         }
-        
-        .nav-item.active { 
-            color:var(--accent); 
+        .nav-center:hover, .nav-center:active { transform:scale(1.1) rotate(90deg); }
+
+        .card {
+            background:var(--surface);
+            border:1px solid var(--border);
+            border-radius:var(--radius);
+            padding:18px;
+            box-shadow:var(--shadow);
+            margin-bottom:12px;
+            transition:all .2s ease;
         }
-        
-        .nav-item.active i { 
-            transform:translateY(-3px) scale(1.1); 
+        .card:hover { border-color:var(--border-strong); }
+
+        input[type=number],input[type=text],input[type=date],select {
+            width:100%;
+            padding:12px 14px;
+            border-radius:var(--radius-sm);
+            border:1px solid var(--border);
+            background:var(--bg-secondary);
+            color:var(--text);
+            font-family:inherit;
+            font-size:14px;
+            font-weight:500;
+            outline:none;
+            transition:all .2s ease;
         }
-        
-        .nav-center { 
-            width:56px; 
-            height:56px; 
-            border-radius:50%; 
-            background:linear-gradient(135deg,#fbbf24,#f59e0b); 
-            color:#0f172a; 
-            font-size:1.4rem; 
-            display:flex; 
-            align-items:center; 
-            justify-content:center; 
-            border:3px solid var(--bg-primary);
-            box-shadow:var(--shadow-glow);
-            cursor:pointer; 
-            border:none; 
-            transition:all .3s cubic-bezier(0.16, 1, 0.3, 1); 
-            margin-top:-28px; 
+        select {
+            appearance:none;
+            background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2364748b' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+            background-repeat:no-repeat;
+            background-position:right 14px center;
+            padding-right:38px;
         }
-        
-        .nav-center:hover, .nav-center:active { 
-            transform:scale(1.1) rotate(90deg);
-            box-shadow: 0 0 50px rgba(251, 191, 36, 0.5);
+        select option { background:var(--surface); color:var(--text); }
+        input:focus,select:focus {
+            border-color:var(--primary);
+            box-shadow:0 0 0 3px var(--primary-glow);
+            background:var(--bg);
         }
-        
-        .card { 
-            background:var(--card-bg);
-            backdrop-filter: blur(10px);
-            border:1px solid var(--card-border); 
-            border-radius:var(--radius); 
-            padding:20px; 
-            box-shadow:var(--shadow-md);
-            transition:all .3s cubic-bezier(0.16, 1, 0.3, 1);
-            margin-bottom:14px; 
+
+        .btn {
+            width:100%;
+            padding:12px 16px;
+            border-radius:var(--radius-sm);
+            border:1px solid var(--border);
+            font-size:.8rem;
+            font-weight:700;
+            display:flex; align-items:center; justify-content:center; gap:8px;
+            transition:all .2s ease;
+            margin-bottom:8px;
+            cursor:pointer;
+            background:var(--primary-glow);
+            color:var(--primary-light);
         }
-        
-        .card:hover {
+        .btn:active { transform:scale(.98); }
+        .btn-primary { background:linear-gradient(135deg, var(--primary), var(--primary-dark)); color:#fff; border:none; }
+        .btn-accent { background:var(--accent-soft); color:var(--accent); border:1px solid rgba(16, 185, 129, 0.3); }
+        .btn-ghost { background:transparent; color:var(--text-secondary); border:1px solid var(--border); }
+        .btn-danger { background:var(--danger-soft); color:var(--danger); border:1px solid rgba(239, 68, 68, 0.3); }
+        .btn-sm { width:auto; padding:8px 12px; font-size:.72rem; min-height:34px; }
+
+        .row { display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid var(--border); }
+        .row:last-child { border-bottom:none; }
+        .row-label { color:var(--text-secondary); font-size:.78rem; font-weight:500; display:flex; align-items:center; gap:10px; }
+        .row-label i { font-size:.95rem; width:18px; text-align:center; color:var(--primary-light); }
+        .row-val { font-weight:700; font-size:.9rem; }
+
+        .stats-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px; }
+        .stat-item {
+            background:var(--bg-secondary);
+            padding:12px 14px;
+            border-radius:var(--radius-sm);
+            border:1px solid var(--border);
+        }
+
+        .alert-item {
+            display:flex; align-items:flex-start; gap:10px;
+            padding:12px 14px;
+            border-radius:var(--radius-sm);
+            margin-bottom:8px;
+            font-size:.78rem;
+            font-weight:500;
+        }
+        .alert-danger { background:var(--danger-soft); border-left:3px solid var(--danger); }
+        .alert-warning { background:var(--warning-soft); border-left:3px solid var(--warning); }
+        .alert-info { background:var(--info-soft); border-left:3px solid var(--info); }
+        .alert-purple { background:var(--purple-soft); border-left:3px solid var(--purple); }
+
+        /* TARJETAS DE ANIMALES COMPACTAS - 3 por fila */
+        .animal-grid { display:grid; grid-template-columns:repeat(3, 1fr); gap:10px; }
+        .animal-card {
+            background:var(--surface);
+            border:1px solid var(--border);
+            border-radius:var(--radius-sm);
+            padding:12px 8px 10px;
+            text-align:center;
+            cursor:pointer;
+            position:relative;
+            transition:all .2s ease;
+        }
+        .animal-card:hover, .animal-card:active {
+            background:var(--primary-glow);
+            border-color:var(--primary);
             transform:translateY(-2px);
-            box-shadow:var(--shadow-lg);
+            box-shadow:0 8px 20px rgba(99, 102, 241, 0.2);
         }
-        
-        input[type=number],input[type=text],input[type=date],select { 
-            width:100%; 
-            padding:13px 16px; 
-            border-radius:var(--radius-sm); 
-            border:1px solid var(--card-border); 
-            background:rgba(15, 23, 42, 0.6);
-            backdrop-filter: blur(10px);
-            color:var(--text-primary); 
-            font-family:inherit; 
-            font-size:14px; 
-            font-weight:500; 
-            outline:none; 
-            transition:all .3s cubic-bezier(0.16, 1, 0.3, 1); 
+        .animal-card .icon-wrap {
+            width:36px; height:36px;
+            border-radius:10px;
+            background:var(--primary-glow);
+            display:flex; align-items:center; justify-content:center;
+            margin:0 auto 6px;
+            font-size:1.1rem;
+            color:var(--primary-light);
         }
-        
-        select { 
-            appearance:none; 
-            background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2394a3b8' d='M6 8L1 3h10z'/%3E%3C/svg%3E"); 
-            background-repeat:no-repeat; 
-            background-position:right 14px center; 
-            padding-right:38px; 
+        .animal-card .name {
+            font-weight:700;
+            text-transform:uppercase;
+            font-size:.65rem;
+            letter-spacing:.02em;
+            color:var(--text);
+            white-space:nowrap;
+            overflow:hidden;
+            text-overflow:ellipsis;
         }
-        
-        select option { 
-            background:#1e293b; 
-            color:var(--text-primary); 
+        .animal-card .etapa-tag {
+            display:inline-block;
+            padding:2px 6px;
+            border-radius:6px;
+            font-size:.5rem;
+            font-weight:700;
+            margin:4px 0;
+            background:var(--primary-glow);
+            color:var(--primary-light);
+            border:1px solid rgba(99, 102, 241, 0.3);
         }
-        
-        input:focus,select:focus { 
-            border-color:var(--accent-border); 
-            box-shadow:0 0 0 4px var(--accent-soft);
-            background:rgba(15, 23, 42, 0.8);
-        }
-        
-        .btn { 
-            width:100%; 
-            padding:14px 18px; 
-            border-radius:var(--radius-sm); 
-            border:1px solid var(--card-border); 
-            font-size:.8rem; 
-            font-weight:700; 
-            display:flex; 
-            align-items:center; 
-            justify-content:center; 
-            gap:10px; 
-            transition:all .3s cubic-bezier(0.16, 1, 0.3, 1); 
-            margin-bottom:10px; 
-            cursor:pointer; 
-            background:var(--accent-soft); 
-            color:var(--accent); 
-        }
-        
-        .btn:hover, .btn:active { 
-            transform:translateY(-2px);
-            box-shadow:var(--shadow-md);
-        }
-        
-        .btn-gold { 
-            background:linear-gradient(135deg, rgba(251, 191, 36, 0.2), rgba(245, 158, 11, 0.1));
-            color:var(--accent); 
-            border:1px solid var(--accent-border); 
-        }
-        
-        .btn-gray { 
-            background:rgba(148, 163, 184, 0.1); 
-            color:var(--text-secondary); 
-            border:1px solid var(--card-border); 
-        }
-        
-        .btn-green { 
-            background:var(--success-bg); 
-            color:var(--success); 
-            border:1px solid rgba(16, 185, 129, 0.3); 
-        }
-        
-        .btn-purple { 
-            background:var(--purple-bg); 
-            color:var(--purple); 
-            border:1px solid rgba(168, 85, 247, 0.3); 
-        }
-        
-        .btn-danger { 
-            background:var(--danger-bg); 
-            color:var(--danger); 
-            border:1px solid rgba(239, 68, 68, 0.3); 
-        }
-        
-        .btn-sm { 
-            width:auto; 
-            padding:9px 14px; 
-            font-size:.72rem; 
-            min-height:36px; 
-        }
-        
-        .row { 
-            display:flex; 
-            justify-content:space-between; 
-            align-items:center; 
-            padding:12px 0; 
-            border-bottom:1px solid var(--card-border); 
-        }
-        
-        .row:last-child { 
-            border-bottom:none; 
-        }
-        
-        .row-label { 
-            color:var(--text-secondary); 
-            font-size:.78rem; 
-            font-weight:500; 
-            display:flex; 
-            align-items:center; 
-            gap:10px; 
-        }
-        
-        .row-label i { 
-            font-size:1rem; 
-            width:18px; 
-            text-align:center; 
+        .animal-card .weight {
             color:var(--accent);
+            font-weight:800;
+            font-size:.9rem;
+            margin:3px 0 2px;
         }
-        
-        .row-val { 
-            font-weight:700; 
-            font-size:.9rem; 
+        .animal-card .cm {
+            font-size:.6rem;
+            font-weight:600;
         }
-        
-        .stats-grid { 
-            display:grid; 
-            grid-template-columns:1fr 1fr; 
-            gap:12px; 
-            margin-top:12px; 
+        .mini-led {
+            position:absolute;
+            top:8px; right:8px;
+            width:8px; height:8px;
+            border-radius:50%;
+            box-shadow:0 0 8px currentColor;
         }
-        
-        .stat-item { 
-            background:rgba(15, 23, 42, 0.5);
-            backdrop-filter: blur(10px);
-            padding:14px 16px; 
-            border-radius:var(--radius-sm); 
-            border:1px solid var(--card-border);
-            transition:all .3s cubic-bezier(0.16, 1, 0.3, 1);
+        .ml-g { background:#10b981; color:#10b981; }
+        .ml-b { background:#3b82f6; color:#3b82f6; }
+        .ml-o { background:#f59e0b; color:#f59e0b; }
+        .ml-r { background:#ef4444; color:#ef4444; }
+
+        .section-title {
+            display:flex; align-items:center; gap:8px;
+            font-size:.72rem;
+            font-weight:700;
+            letter-spacing:.05em;
+            text-transform:uppercase;
+            color:var(--text-muted);
+            margin:18px 0 10px;
+            padding-bottom:8px;
+            border-bottom:1px solid var(--border);
         }
-        
-        .stat-item:hover {
-            transform:translateY(-2px);
-            box-shadow:var(--shadow-sm);
-        }
-        
-        .alert-item { 
-            display:flex; 
-            align-items:flex-start; 
-            gap:12px; 
-            padding:14px 16px; 
-            border-radius:var(--radius-sm); 
-            margin-bottom:10px; 
-            font-size:.78rem; 
-            font-weight:500; 
-            transition:all .3s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        
-        .alert-item:hover {
-            transform:translateX(4px);
-        }
-        
-        .alert-danger { 
-            background:var(--danger-bg); 
-            border-left:4px solid var(--danger); 
-        }
-        
-        .alert-warning { 
-            background:var(--warning-bg); 
-            border-left:4px solid var(--warning); 
-        }
-        
-        .alert-info { 
-            background:var(--info-bg); 
-            border-left:4px solid var(--info); 
-        }
-        
-        .alert-purple { 
-            background:var(--purple-bg); 
-            border-left:4px solid var(--purple); 
-        }
-        
-        .animal-card { 
-            background:var(--card-bg);
-            backdrop-filter: blur(10px);
-            border:1px solid var(--card-border); 
-            border-radius:var(--radius); 
-            padding:18px 14px 16px; 
-            text-align:center; 
-            cursor:pointer; 
-            position:relative; 
-            transition:all .3s cubic-bezier(0.16, 1, 0.3, 1); 
-        }
-        
-        .animal-card:hover, .animal-card:active { 
-            background:var(--accent-soft);
-            border-color:var(--accent-border);
-            transform:translateY(-4px);
-            box-shadow:var(--shadow-glow);
-        }
-        
-        .animal-card .name { 
-            font-weight:700; 
-            text-transform:uppercase; 
-            font-size:.75rem; 
-            letter-spacing:.03em; 
-        }
-        
-        .etapa-tag { 
-            display:inline-block; 
-            padding:3px 10px; 
-            border-radius:var(--radius-xs); 
-            font-size:.6rem; 
-            font-weight:700; 
-            margin:4px 0; 
-        }
-        
-        .etapa-inicio { 
-            background:var(--accent-soft); 
-            color:var(--accent); 
-            border:1px solid var(--accent-border); 
-        }
-        
-        .etapa-desarrollo { 
-            background:var(--info-bg); 
-            color:var(--info); 
-            border:1px solid rgba(59, 130, 246, 0.3); 
-        }
-        
-        .etapa-ceba { 
-            background:var(--warning-bg); 
-            color:var(--warning); 
-            border:1px solid rgba(245, 158, 11, 0.3); 
-        }
-        
-        .etapa-madurez { 
-            background:var(--danger-bg); 
-            color:var(--danger); 
-            border:1px solid rgba(239, 68, 68, 0.3); 
-        }
-        
-        .animal-card .weight { 
-            color:var(--accent); 
-            font-weight:800; 
-            font-size:1.1rem; 
-            margin:4px 0; 
-        }
-        
-        .animal-card .cm { 
-            font-size:.7rem; 
-            font-weight:600; 
-            margin-top:4px; 
-        }
-        
-        .mini-led { 
-            position:absolute; 
-            top:12px; 
-            right:12px; 
-            width:12px; 
-            height:12px; 
-            border-radius:50%; 
-            box-shadow: 0 0 10px currentColor;
-        }
-        
-        .ml-g { background:#10b981; color:#10b981; } 
-        .ml-b { background:#3b82f6; color:#3b82f6; } 
-        .ml-o { background:#f59e0b; color:#f59e0b; } 
-        .ml-r { background:#ef4444; color:#ef4444; } 
-        .ml-x { background:#94a3b8; color:#94a3b8; }
-        
-        .section-title { 
-            display:flex; 
-            align-items:center; 
-            gap:10px; 
-            font-size:.72rem; 
-            font-weight:700; 
-            letter-spacing:.06em; 
-            text-transform:uppercase; 
-            color:var(--text-secondary); 
-            margin:20px 0 12px; 
-            padding-bottom:8px; 
-            border-bottom:1px solid var(--card-border); 
-        }
-        
-        .modal-overlay { 
-            position:fixed; 
-            top:0; 
-            left:0; 
-            width:100%; 
-            height:100%; 
-            background:rgba(15, 23, 42, 0.9);
+
+        .modal-overlay {
+            position:fixed; top:0; left:0; width:100%; height:100%;
+            background:rgba(0,0,0,.85);
             backdrop-filter:blur(10px);
-            z-index:200; 
-            display:flex; 
-            align-items:center; 
-            justify-content:center; 
-            padding:20px; 
-            animation:fadeIn .3s cubic-bezier(0.16, 1, 0.3, 1); 
+            z-index:200;
+            display:flex; align-items:center; justify-content:center;
+            padding:20px;
+            animation:fadeIn .2s ease;
         }
-        
-        .modal { 
-            background:var(--card-bg);
-            backdrop-filter:blur(20px);
-            border:1px solid var(--card-border); 
-            border-radius:var(--radius); 
-            padding:24px; 
-            width:100%; 
-            max-width:400px; 
-            max-height:85vh; 
-            overflow-y:auto; 
-            box-shadow:var(--shadow-lg); 
+        .modal {
+            background:var(--surface);
+            border:1px solid var(--border-strong);
+            border-radius:var(--radius);
+            padding:22px;
+            width:100%; max-width:400px;
+            max-height:85vh; overflow-y:auto;
+            box-shadow:var(--shadow-lg);
+            animation:slideUp .3s ease;
         }
-        
         .hidden { display:none!important; }
         .flex-col { display:flex; flex-direction:column; }
-        .gap8 { gap:8px; } 
-        .gap10 { gap:10px; } 
-        .mt8 { margin-top:8px; } 
-        .mt12 { margin-top:12px; }
-        
-        .custom-badge { 
-            background:var(--accent); 
-            color:#0f172a; 
-            font-size:.55rem; 
-            padding:2px 8px; 
-            border-radius:var(--radius-xs); 
-            font-weight:700; 
-            margin-left:6px; 
+        .gap8 { gap:8px; } .gap10 { gap:10px; } .mt8 { margin-top:8px; } .mt12 { margin-top:12px; }
+
+        .custom-badge {
+            background:var(--accent);
+            color:#000;
+            font-size:.5rem;
+            padding:1px 5px;
+            border-radius:6px;
+            font-weight:700;
+            margin-left:4px;
         }
-        
-        .sp-container { 
-            background:var(--card-bg);
-            backdrop-filter:blur(10px);
-            border-radius:var(--radius); 
-            overflow:hidden; 
-            border:1px solid var(--card-border); 
-            box-shadow:var(--shadow-md); 
+
+        /* PERFIL DEL ANIMAL */
+        .sp-container {
+            background:var(--surface);
+            border-radius:var(--radius);
+            overflow:hidden;
+            border:1px solid var(--border);
+            box-shadow:var(--shadow);
         }
-        
-        .sp-header { 
-            padding:18px 20px; 
-            display:flex; 
-            justify-content:space-between; 
-            align-items:center; 
-            border-bottom:1px solid var(--card-border); 
+        .sp-header {
+            padding:16px 18px;
+            display:flex; justify-content:space-between; align-items:center;
+            border-bottom:1px solid var(--border);
+            background:var(--bg-secondary);
         }
-        
-        .sp-back { 
-            width:38px; 
-            height:38px; 
-            border-radius:var(--radius-xs); 
-            background:rgba(148, 163, 184, 0.1); 
-            border:none; 
-            color:var(--text-secondary); 
-            display:flex; 
-            align-items:center; 
-            justify-content:center; 
+        .sp-back {
+            width:36px; height:36px;
+            border-radius:var(--radius-xs);
+            background:var(--surface);
+            border:1px solid var(--border);
+            color:var(--text-secondary);
+            display:flex; align-items:center; justify-content:center;
             cursor:pointer;
-            transition:all .3s cubic-bezier(0.16, 1, 0.3, 1);
+            transition:all .2s ease;
         }
-        
-        .sp-back:hover, .sp-back:active {
-            background:var(--accent-soft);
-            color:var(--accent);
-        }
-        
-        .sp-header-title { 
-            font-weight:800; 
-            font-size:1.15rem; 
-            color:var(--text-primary); 
-            flex:1; 
-            text-align:center; 
-            margin:0 10px; 
-            white-space:nowrap; 
-            overflow:hidden; 
-            text-overflow:ellipsis; 
-        }
-        
-        .sp-header-actions { 
-            display:flex; 
-            gap:10px; 
-        }
-        
-        .sp-hero { 
-            padding:24px 20px; 
-            text-align:center; 
-            border-bottom:1px solid var(--card-border); 
-        }
-        
-        .sp-avatar-large { 
-            width:90px; 
-            height:90px; 
-            border-radius:50%; 
-            background:rgba(148, 163, 184, 0.1);
-            margin:0 auto 16px; 
-            display:flex; 
-            align-items:center; 
-            justify-content:center; 
-            font-size:2.8rem; 
-            border:3px solid var(--accent-border); 
-            background-size:cover; 
-            background-position:center; 
-            cursor:pointer;
-            box-shadow:var(--shadow-glow);
-            transition:all .3s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        
-        .sp-avatar-large:hover {
-            transform:scale(1.05);
-        }
-        
-        .sp-avatar-large::after { 
-            content:'📷'; 
-            position:absolute; 
-            bottom:0; 
-            right:0; 
-            background:var(--accent); 
-            width:28px; 
-            height:28px; 
-            border-radius:50%; 
-            display:flex; 
-            align-items:center; 
-            justify-content:center; 
-            font-size:12px; 
-            border:3px solid var(--bg-primary); 
-        }
-        
-        .sp-hero-name { 
-            font-size:1.5rem; 
-            font-weight:800; 
-            color:var(--text-primary); 
-            margin-bottom:6px; 
-        }
-        
-        .sp-hero-badges { 
-            display:flex; 
-            justify-content:center; 
-            gap:8px; 
-            flex-wrap:wrap; 
-            margin-bottom:20px; 
-        }
-        
-        .sp-badge { 
-            font-size:.7rem; 
-            padding:5px 12px; 
-            border-radius:var(--radius-xs); 
-            background:rgba(148, 163, 184, 0.1);
-            border:1px solid var(--card-border); 
-            font-weight:600; 
-        }
-        
-        .sp-metrics { 
-            display:grid; 
-            grid-template-columns:repeat(3,1fr); 
-            gap:14px; 
-            margin-top:16px; 
-        }
-        
-        .sp-metric { 
-            background:rgba(15, 23, 42, 0.5);
-            backdrop-filter:blur(10px);
-            padding:14px 10px; 
-            border-radius:var(--radius-sm); 
+        .sp-back:hover, .sp-back:active { background:var(--primary-glow); color:var(--primary-light); border-color:var(--primary); }
+        .sp-header-title {
+            font-weight:800;
+            font-size:1.1rem;
+            color:var(--text);
+            flex:1;
             text-align:center;
-            border:1px solid var(--card-border);
-            transition:all .3s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        
-        .sp-metric:hover {
-            transform:translateY(-2px);
-        }
-        
-        .sp-metric .val { 
-            font-size:1.1rem; 
-            font-weight:800; 
-            color:var(--accent); 
-            display:block; 
-            margin-bottom:4px; 
-        }
-        
-        .sp-metric .lbl { 
-            font-size:.65rem; 
-            color:var(--text-muted); 
-            text-transform:uppercase; 
-            font-weight:600; 
-        }
-        
-        .sp-content { 
-            max-height:60vh; 
-            overflow-y:auto; 
-            padding:20px; 
-        }
-        
-        .sp-card { 
-            background:rgba(15, 23, 42, 0.5);
-            backdrop-filter:blur(10px);
-            border:1px solid var(--card-border); 
-            border-radius:var(--radius-sm); 
-            padding:18px; 
-            margin-bottom:14px; 
-        }
-        
-        .sp-card-header { 
-            display:flex; 
-            justify-content:space-between; 
-            align-items:center; 
-            margin-bottom:14px; 
-            padding-bottom:10px; 
-            border-bottom:1px solid var(--card-border); 
-        }
-        
-        .sp-card-title { 
-            font-size:.8rem; 
-            font-weight:700; 
-            color:var(--text-primary); 
-            text-transform:uppercase; 
-            letter-spacing:0.05em; 
-            display:flex; 
-            align-items:center; 
-            gap:8px; 
-        }
-        
-        .sp-actions-bar { 
-            position:sticky; 
-            bottom:0; 
-            background:rgba(15, 23, 42, 0.95);
-            backdrop-filter:blur(20px);
-            padding:16px 20px; 
-            border-top:1px solid var(--card-border); 
-            display:flex; 
-            gap:12px; 
-            z-index:10; 
-        }
-        
-        .sp-actions-bar .btn { 
-            flex:1; 
-            margin-bottom:0; 
-            padding:14px; 
-            font-size:.85rem; 
-            border-radius:var(--radius-sm); 
-        }
-        
-        .chart-box { 
-            background:rgba(15, 23, 42, 0.5);
-            backdrop-filter:blur(10px);
-            border-radius:var(--radius-sm); 
-            padding:12px; 
-            margin-top:12px;
-            border:1px solid var(--card-border);
-        }
-        
-        .chart-box svg { 
-            width:100%; 
-            height:auto; 
-            display:block; 
-        }
-        
-        .lote-card { 
-            background:var(--card-bg);
-            backdrop-filter:blur(10px);
-            border:1px solid var(--card-border); 
-            border-radius:var(--radius); 
-            padding:18px; 
-            margin-bottom:12px; 
-            cursor:pointer;
-            transition:all .3s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        
-        .lote-card:hover {
-            transform:translateY(-2px);
-            box-shadow:var(--shadow-md);
-        }
-        
-        .lote-card .lote-name { 
-            font-weight:700; 
-            font-size:.95rem; 
-        }
-        
-        .lote-card .lote-stats { 
-            font-size:.75rem; 
-            color:var(--text-secondary); 
-            margin-top:6px; 
-        }
-        
-        .lote-card .lote-stats b { 
-            color:var(--text-primary); 
-        }
-        
-        .insumos-tabs { 
-            display:flex; 
-            gap:6px; 
-            background:rgba(15, 23, 42, 0.5);
-            backdrop-filter:blur(10px);
-            border-radius:var(--radius); 
-            padding:6px; 
-            margin-bottom:16px;
-            border:1px solid var(--card-border);
-        }
-        
-        .insumo-tab { 
-            flex:1; 
-            padding:11px 8px; 
-            border-radius:var(--radius-sm); 
-            border:none; 
-            background:transparent; 
-            color:var(--text-muted); 
-            font-size:.72rem; 
-            font-weight:600; 
-            cursor:pointer; 
-            transition:all .3s cubic-bezier(0.16, 1, 0.3, 1); 
-        }
-        
-        .insumo-tab.active { 
-            background:var(--accent); 
-            color:#0f172a; 
-        }
-        
-        .config-item { 
-            display:flex; 
-            align-items:center; 
-            justify-content:space-between; 
-            padding:14px 0; 
-            border-bottom:1px solid var(--card-border); 
-            cursor:pointer;
-            transition:all .3s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        
-        .config-item:hover {
-            padding-left:8px;
-        }
-        
-        .config-item:last-child { 
-            border-bottom:none; 
-        }
-        
-        .config-item i { 
-            font-size:1.1rem; 
-            width:28px; 
-            text-align:center; 
-            color:var(--accent); 
-        }
-        
-        .config-item .cfg-text { 
-            flex:1; 
-            margin-left:12px; 
-        }
-        
-        .config-item .cfg-text span { 
-            display:block; 
-            font-size:.85rem; 
-            font-weight:600; 
-        }
-        
-        .config-item .cfg-text small { 
-            font-size:.68rem; 
-            color:var(--text-muted); 
-        }
-        
-        .filter-chips { 
-            display:flex; 
-            gap:8px; 
-            overflow-x:auto; 
-            padding:6px 0 10px; 
-            -webkit-overflow-scrolling:touch; 
-        }
-        
-        .filter-chips::-webkit-scrollbar { 
-            display:none; 
-        }
-        
-        .chip { 
-            padding:8px 14px; 
-            border-radius:var(--radius); 
-            border:1px solid var(--card-border); 
-            background:rgba(15, 23, 42, 0.5);
-            backdrop-filter:blur(10px);
-            font-size:.72rem; 
-            font-weight:600; 
-            color:var(--text-muted); 
-            cursor:pointer; 
+            margin:0 8px;
             white-space:nowrap;
-            transition:all .3s cubic-bezier(0.16, 1, 0.3, 1);
+            overflow:hidden;
+            text-overflow:ellipsis;
         }
-        
-        .chip.active { 
-            background:var(--accent); 
-            color:#0f172a; 
-            border-color:var(--accent-border); 
+        .sp-header-actions { display:flex; gap:8px; }
+        .sp-hero {
+            padding:22px 18px;
+            text-align:center;
+            border-bottom:1px solid var(--border);
+            background:linear-gradient(180deg, var(--bg-secondary) 0%, var(--surface) 100%);
         }
-        
-        .tag-descarte { 
-            background:var(--danger-bg); 
-            color:var(--danger); 
-            padding:2px 8px; 
-            border-radius:var(--radius-xs); 
-            font-size:.65rem; 
-            font-weight:600; 
-            margin-left:6px; 
+        .sp-avatar-large {
+            width:80px; height:80px;
+            border-radius:50%;
+            background:var(--primary-glow);
+            margin:0 auto 14px;
+            display:flex; align-items:center; justify-content:center;
+            font-size:2.5rem;
+            border:3px solid var(--primary);
+            background-size:cover;
+            background-position:center;
+            cursor:pointer;
+            box-shadow:0 8px 24px rgba(99, 102, 241, 0.3);
+            transition:all .2s ease;
+            position:relative;
         }
-        
-        .ms-badge { 
-            background:var(--info-bg); 
-            color:var(--info); 
-            padding:2px 8px; 
-            border-radius:var(--radius-xs); 
-            font-size:.58rem; 
-            font-weight:600; 
-            margin-left:6px; 
+        .sp-avatar-large:hover { transform:scale(1.05); }
+        .sp-avatar-large::after {
+            content:'';
+            position:absolute; bottom:-2px; right:-2px;
+            background:var(--primary);
+            width:26px; height:26px;
+            border-radius:50%;
+            display:flex; align-items:center; justify-content:center;
+            border:3px solid var(--bg);
+            background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z'/%3E%3C/svg%3E");
+            background-size:14px;
+            background-position:center;
+            background-repeat:no-repeat;
         }
-        
-        .trigger-badge { 
-            background:var(--danger-bg); 
-            color:var(--danger); 
-            padding:2px 8px; 
-            border-radius:var(--radius-xs); 
-            font-size:.55rem; 
-            font-weight:600; 
-            margin-left:6px; 
+        .sp-hero-name {
+            font-size:1.4rem;
+            font-weight:800;
+            color:var(--text);
+            margin-bottom:6px;
         }
-        
-        .cf-table { 
-            width:100%; 
-            border-collapse:separate; 
-            border-spacing:0 6px; 
-            margin-top:10px; 
+        .sp-hero-badges {
+            display:flex; justify-content:center; gap:6px;
+            flex-wrap:wrap;
+            margin-bottom:18px;
         }
-        
-        .cf-table th { 
-            background:rgba(15, 23, 42, 0.5);
-            backdrop-filter:blur(10px);
-            padding:10px 6px; 
-            font-weight:700; 
-            text-align:left; 
-            font-size:.65rem; 
-            text-transform:uppercase; 
+        .sp-badge {
+            font-size:.65rem;
+            padding:4px 10px;
+            border-radius:20px;
+            background:var(--bg-secondary);
+            border:1px solid var(--border);
+            font-weight:600;
+            color:var(--text-secondary);
         }
-        
-        .cf-table td { 
-            padding:10px 6px; 
-            font-size:.75rem; 
+        .sp-metrics { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:14px; }
+        .sp-metric {
+            background:var(--bg-secondary);
+            padding:12px 8px;
+            border-radius:var(--radius-sm);
+            text-align:center;
+            border:1px solid var(--border);
         }
-        
-        .cf-neg { color:var(--danger); } 
-        .cf-pos { color:var(--success); }
-        
-        .estado-simple { 
-            display:flex; 
-            gap:10px; 
-            margin:12px 0; 
+        .sp-metric .val {
+            font-size:1rem;
+            font-weight:800;
+            color:var(--accent);
+            display:block;
+            margin-bottom:3px;
         }
-        
-        .estado-pildora { 
-            flex:1; 
-            text-align:center; 
-            padding:12px 8px; 
-            border-radius:var(--radius-sm); 
-            background:rgba(15, 23, 42, 0.5);
-            backdrop-filter:blur(10px);
-            border:1px solid var(--card-border);
-            transition:all .3s cubic-bezier(0.16, 1, 0.3, 1);
+        .sp-metric .lbl {
+            font-size:.58rem;
+            color:var(--text-muted);
+            text-transform:uppercase;
+            font-weight:700;
+            letter-spacing:.03em;
         }
-        
-        .estado-pildora:hover {
-            transform:translateY(-2px);
+        .sp-content { max-height:60vh; overflow-y:auto; padding:18px; }
+        .sp-card {
+            background:var(--bg-secondary);
+            border:1px solid var(--border);
+            border-radius:var(--radius-sm);
+            padding:16px;
+            margin-bottom:12px;
         }
-        
-        .estado-pildora .num { 
-            font-size:1.3rem; 
-            font-weight:800; 
+        .sp-card-header {
+            display:flex; justify-content:space-between; align-items:center;
+            margin-bottom:12px;
+            padding-bottom:10px;
+            border-bottom:1px solid var(--border);
         }
-        
-        .estado-pildora .lbl { 
-            font-size:.6rem; 
-            color:var(--text-muted); 
-            margin-top:4px; 
-            text-transform:uppercase; 
-            font-weight:600; 
+        .sp-card-title {
+            font-size:.75rem;
+            font-weight:700;
+            color:var(--text);
+            text-transform:uppercase;
+            letter-spacing:0.04em;
+            display:flex; align-items:center; gap:8px;
         }
-        
-        .estado-pildora.e .num { color:var(--success); }
+        .sp-card-title i { color:var(--primary-light); }
+        .sp-actions-bar {
+            position:sticky; bottom:0;
+            background:var(--bg);
+            backdrop-filter:blur(20px);
+            padding:14px 18px;
+            border-top:1px solid var(--border);
+            display:flex; gap:10px;
+            z-index:10;
+        }
+        .sp-actions-bar .btn { flex:1; margin-bottom:0; padding:12px; font-size:.78rem; border-radius:var(--radius-sm); }
+
+        .chart-box {
+            background:var(--bg-secondary);
+            border:1px solid var(--border);
+            border-radius:var(--radius-sm);
+            padding:12px;
+            margin-top:10px;
+        }
+        .chart-box svg { width:100%; height:auto; display:block; }
+
+        .lote-card {
+            background:var(--surface);
+            border:1px solid var(--border);
+            border-radius:var(--radius);
+            padding:16px;
+            margin-bottom:10px;
+            cursor:pointer;
+            transition:all .2s ease;
+        }
+        .lote-card:hover { border-color:var(--primary); transform:translateY(-2px); }
+        .lote-card .lote-name { font-weight:700; font-size:.9rem; }
+        .lote-card .lote-stats { font-size:.7rem; color:var(--text-muted); margin-top:4px; }
+        .lote-card .lote-stats b { color:var(--text); }
+
+        .insumos-tabs {
+            display:flex; gap:4px;
+            background:var(--bg-secondary);
+            border-radius:var(--radius);
+            padding:4px;
+            margin-bottom:14px;
+            border:1px solid var(--border);
+        }
+        .insumo-tab {
+            flex:1;
+            padding:10px 6px;
+            border-radius:var(--radius-sm);
+            border:none;
+            background:transparent;
+            color:var(--text-muted);
+            font-size:.7rem;
+            font-weight:600;
+            cursor:pointer;
+            transition:all .2s ease;
+        }
+        .insumo-tab.active { background:var(--primary); color:#fff; }
+
+        .config-item {
+            display:flex; align-items:center; justify-content:space-between;
+            padding:12px 0;
+            border-bottom:1px solid var(--border);
+            cursor:pointer;
+            transition:all .2s ease;
+        }
+        .config-item:hover { padding-left:6px; }
+        .config-item:last-child { border-bottom:none; }
+        .config-item i { font-size:1rem; width:24px; text-align:center; color:var(--primary-light); }
+        .config-item .cfg-text { flex:1; margin-left:10px; }
+        .config-item .cfg-text span { display:block; font-size:.82rem; font-weight:600; }
+        .config-item .cfg-text small { font-size:.65rem; color:var(--text-muted); }
+
+        .filter-chips { display:flex; gap:6px; overflow-x:auto; padding:4px 0 8px; }
+        .filter-chips::-webkit-scrollbar { display:none; }
+        .chip {
+            padding:7px 12px;
+            border-radius:20px;
+            border:1px solid var(--border);
+            background:var(--bg-secondary);
+            font-size:.68rem;
+            font-weight:600;
+            color:var(--text-muted);
+            cursor:pointer;
+            white-space:nowrap;
+            transition:all .2s ease;
+        }
+        .chip.active { background:var(--primary); color:#fff; border-color:var(--primary); }
+
+        .tag-descarte { background:var(--danger-soft); color:var(--danger); padding:2px 6px; border-radius:6px; font-size:.58rem; font-weight:600; margin-left:4px; }
+        .ms-badge { background:var(--info-soft); color:var(--info); padding:2px 6px; border-radius:6px; font-size:.52rem; font-weight:600; margin-left:4px; }
+        .trigger-badge { background:var(--danger-soft); color:var(--danger); padding:2px 6px; border-radius:6px; font-size:.5rem; font-weight:600; margin-left:4px; }
+
+        .cf-table { width:100%; border-collapse:separate; border-spacing:0 4px; margin-top:8px; }
+        .cf-table th { background:var(--bg-secondary); padding:8px 4px; font-weight:700; text-align:left; font-size:.6rem; text-transform:uppercase; color:var(--text-muted); }
+        .cf-table td { padding:8px 4px; font-size:.72rem; }
+        .cf-neg { color:var(--danger); } .cf-pos { color:var(--accent); }
+
+        .estado-simple { display:flex; gap:8px; margin:10px 0; }
+        .estado-pildora {
+            flex:1;
+            text-align:center;
+            padding:10px 4px;
+            border-radius:var(--radius-sm);
+            background:var(--bg-secondary);
+            border:1px solid var(--border);
+        }
+        .estado-pildora .num { font-size:1.15rem; font-weight:800; }
+        .estado-pildora .lbl { font-size:.52rem; color:var(--text-muted); margin-top:2px; text-transform:uppercase; font-weight:700; letter-spacing:.02em; }
+        .estado-pildora.e .num { color:var(--accent); }
         .estado-pildora.b .num { color:var(--info); }
         .estado-pildora.r .num { color:var(--warning); }
         .estado-pildora.m .num { color:var(--danger); }
-        
-        .progress { 
-            width:100%; 
-            height:8px; 
-            background:rgba(15, 23, 42, 0.5);
-            border-radius:4px; 
-            overflow:hidden; 
-            margin:10px 0; 
+
+        .progress { width:100%; height:6px; background:var(--bg-secondary); border-radius:4px; overflow:hidden; margin:8px 0; }
+        .progress-fill { height:100%; border-radius:4px; transition:width .6s ease; background:var(--primary); }
+
+        .insumo-item {
+            background:var(--surface);
+            border:1px solid var(--border);
+            border-radius:var(--radius);
+            padding:14px;
+            margin-bottom:10px;
+            transition:all .2s ease;
         }
-        
-        .progress-fill { 
-            height:100%; 
-            border-radius:4px; 
-            transition:width .6s cubic-bezier(0.16, 1, 0.3, 1); 
+        .insumo-item:hover { border-color:var(--border-strong); }
+        .insumo-item-header { display:flex; align-items:center; gap:10px; margin-bottom:10px; }
+        .insumo-item-header i { font-size:1.1rem; color:var(--primary-light); }
+        .insumo-item-header .info { flex:1; }
+        .insumo-item-header .info .name { font-weight:700; font-size:.82rem; }
+        .insumo-item-header .info .consumo { font-size:.62rem; color:var(--text-muted); }
+
+        .price-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:8px; }
+
+        .empty-state {
+            text-align:center;
+            padding:40px 20px;
+            color:var(--text-muted);
         }
-        
-        .insumo-item { 
-            background:var(--card-bg);
-            backdrop-filter:blur(10px);
-            border:1px solid var(--card-border); 
-            border-radius:var(--radius); 
-            padding:18px; 
-            margin-bottom:12px;
-            transition:all .3s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        
-        .insumo-item:hover {
-            transform:translateY(-2px);
-            box-shadow:var(--shadow-md);
-        }
-        
-        .insumo-item-header { 
-            display:flex; 
-            align-items:center; 
-            gap:12px; 
-            margin-bottom:12px; 
-        }
-        
-        .insumo-item-header i { 
-            font-size:1.2rem; 
-            color:var(--accent); 
-        }
-        
-        .insumo-item-header .info { 
-            flex:1; 
-        }
-        
-        .insumo-item-header .info .name { 
-            font-weight:700; 
-            font-size:.85rem; 
-        }
-        
-        .insumo-item-header .info .consumo { 
-            font-size:.68rem; 
-            color:var(--text-muted); 
-        }
-        
-        .price-grid { 
-            display:grid; 
-            grid-template-columns:1fr 1fr; 
-            gap:10px; 
-            margin-bottom:10px; 
-        }
+        .empty-state i { font-size:3rem; margin-bottom:12px; opacity:0.3; color:var(--primary-light); }
     </style>
 </head>
 <body>
-<div class="aurora"></div>
 <div id="toastContainer"></div>
 <div id="modalContainer"></div>
 
 <div class="app" id="appContainer">
     <header>
         <h1>
-            <i class="fa-solid fa-crown" style="color:var(--accent)"></i>
+            <i class="fa-solid fa-crown"></i>
             GANADERO ÉLITE
             <span class="pro-tag">PRO</span>
         </h1>
@@ -1153,7 +675,6 @@
             <div class="header-btn" onclick="goPage('config')"><i class="fa-solid fa-gear"></i></div>
         </div>
     </header>
-    
     <div id="v-inicio" class="page"></div>
     <div id="v-lotes" class="hidden page"></div>
     <div id="v-animales" class="hidden page"></div>
@@ -1166,18 +687,18 @@
 <nav class="bottom-nav">
     <div class="nav-item" data-p="insumos"><i class="fa-solid fa-boxes-stacked"></i><span>Insumos</span></div>
     <div class="nav-item" data-p="lotes"><i class="fa-solid fa-layer-group"></i><span>Lotes</span></div>
-    <div class="nav-center" onclick="showAddAnimalModal()"><i class="fa-solid fa-plus"></i></div>
+    <button class="nav-center" onclick="showAddAnimalModal()"><i class="fa-solid fa-plus"></i></button>
     <div class="nav-item" data-p="animales"><i class="fa-solid fa-cow"></i><span>Animales</span></div>
     <div class="nav-item active" data-p="inicio"><i class="fa-solid fa-house"></i><span>Inicio</span></div>
 </nav>
 
 <script>
-const APP_VERSION = '5.0.4';
+const APP_VERSION = '6.0.0';
 const STORAGE_KEY = 'ganadero_elite_v' + APP_VERSION.replace('.','_');
 
 let DB = {
     animales: [],
-    lotes: [{id:'lot_general', nombre:'General', color:'#fbbf24'}],
+    lotes: [{id:'lot_general', nombre:'General', color:'#6366f1'}],
     config: {
         precios: {pasto:80, salvado:900, melaza:1400, levadura:9000, bicarb:2500, sal:3000, urea:4000},
         stock: {pasto:500, salvado:200, melaza:50, levadura:10, bicarb:5, sal:2, urea:20},
@@ -1270,7 +791,7 @@ function getDiasDesde(f) {
 }
 
 function randColor() {
-    return ['#fbbf24','#10b981','#3b82f6','#ef4444','#a855f7','#f59e0b'][Math.floor(Math.random()*6)];
+    return ['#6366f1','#10b981','#3b82f6','#ef4444','#a855f7','#f59e0b'][Math.floor(Math.random()*6)];
 }
 
 function formatTimeAgo(ts) {
@@ -1292,9 +813,7 @@ function guardarDatos() {
             saveTimeout = setTimeout(() => el.classList.remove('visible'), 2000);
         }
         lastSaveTime = Date.now();
-    } catch(e) {
-        console.error('Error guardando:', e);
-    }
+    } catch(e) { console.error('Error guardando:', e); }
 }
 
 const TRIGGERS = { ureaMinWeight: 150, pregnancyUreaBlockDay: 210, maxRumenVolumePct: 0.12 };
@@ -1306,7 +825,7 @@ function getInsumoData(id) { return DB.inventario[id] || {}; }
 function getAllSanidad() {
     const nativa = [
         {id:'modificador', nombre:'Modificador Orgánico', dosis:50, diasEfecto:90, retiro:0, icono:'fa-flask', color:'#10b981'},
-        {id:'vitaminaA', nombre:'Vitamina ADE', dosis:50, diasEfecto:60, retiro:30, icono:'fa-sun', color:'#fbbf24'},
+        {id:'vitaminaA', nombre:'Vitamina ADE', dosis:50, diasEfecto:60, retiro:30, icono:'fa-sun', color:'#f59e0b'},
         {id:'complejoB', nombre:'Complejo B (B12)', dosis:50, diasEfecto:20, retiro:0, icono:'fa-capsules', color:'#3b82f6'},
         {id:'ivermectina1', nombre:'Ivermectina 1%', dosis:50, diasEfecto:30, retiro:28, icono:'fa-shield-virus', color:'#ef4444'},
         {id:'ivermectina315', nombre:'Ivermectina 3.15%', dosis:50, diasEfecto:90, retiro:122, icono:'fa-shield-halved', color:'#dc2626'},
@@ -1326,7 +845,6 @@ function getDiet(pv, prop, estado, td = 0, dg = 0) {
     const ureaOk = !(pv < TRIGGERS.ureaMinWeight || dg >= TRIGGERS.pregnancyUreaBlockDay);
     const parts = { pasto: 0.50, salvado: 0.30, melaza: 0.20 };
     const dieta = {};
-    
     getInsumosActivos().forEach(k => {
         const part = parts[k] || (1 / getInsumosActivos().length);
         const ms = baseSup * part;
@@ -1377,7 +895,7 @@ function getRendimiento(h, gmdF = null) {
 
 function calcRepro(a) {
     if (a.proposito !== 'leche' && !a.fechaUltimoParto) return null;
-    if (!a.fechaUltimoParto) return {diasPP:0, diasParaParto:999, fechaProxParto:null, semaforo:{color:'#94a3b8', txt:'📅 Sin registro'}, estadoLactancia:'novilla', avisoSecado:false, diasGestacion:0};
+    if (!a.fechaUltimoParto) return {diasPP:0, diasParaParto:999, fechaProxParto:null, semaforo:{color:'#64748b', txt:'Sin registro'}, estadoLactancia:'novilla', avisoSecado:false, diasGestacion:0};
     const hoy = new Date();
     const parto = new Date(a.fechaUltimoParto.split('/').reverse().join('-'));
     const diasPP = Math.max(0, Math.floor((hoy - parto) / 864e5));
@@ -1390,20 +908,20 @@ function calcRepro(a) {
         dg = Math.max(0, Math.floor((hoy - ins) / 864e5));
     }
     let sem, est = a.estadoReproductivo || 'parida';
-    if (dpp <= 60 && dpp > 0) { sem = {color:'#3b82f6', txt:' Secado (' + dpp + 'd)'}; est = 'seca'; } 
-    else if (diasPP <= 60) { sem = {color:'#10b981', txt:'🟢 Recuperación'}; } 
-    else if (diasPP <= 150) { sem = {color:'#f59e0b', txt:'🟡 Ventana Monta'}; } 
-    else { sem = {color:'#ef4444', txt:'🔴 ALERTA Vacía'}; }
+    if (dpp <= 60 && dpp > 0) { sem = {color:'#3b82f6', txt:'Secado (' + dpp + 'd)'}; est = 'seca'; }
+    else if (diasPP <= 60) { sem = {color:'#10b981', txt:'Recuperación'}; }
+    else if (diasPP <= 150) { sem = {color:'#f59e0b', txt:'Ventana Monta'}; }
+    else { sem = {color:'#ef4444', txt:'ALERTA Vacía'}; }
     return {diasPP, diasParaParto:dpp, fechaProxParto:fpp.toLocaleDateString('es-CO'), semaforo:sem, estadoLactancia:est, avisoSecado:dpp<=60&&dpp>0, diasGestacion:dg};
 }
 
 function getEtapa(pv, rep) {
     const e = rep ? rep.estadoLactancia : 'auto';
-    if (e === 'seca') return {nombre:'Vaca Seca', clase:'etapa-madurez', icono:'', color:'#3b82f6'};
-    if (e === 'parida') return {nombre:'Producción', clase:'etapa-ceba', icono:'', color:'#10b981'};
-    if (pv < 150) return {nombre:'Cría', clase:'etapa-inicio', icono:'', color:'#fbbf24'};
-    if (pv < 350) return {nombre:'Levante', clase:'etapa-desarrollo', icono:'🐂', color:'#3b82f6'};
-    return {nombre:'Ceba', clase:'etapa-madurez', icono:'🐃', color:'#fb923c'};
+    if (e === 'seca') return {nombre:'Vaca Seca', clase:'etapa-madurez', icono:'fa-cow', color:'#3b82f6'};
+    if (e === 'parida') return {nombre:'Producción', clase:'etapa-ceba', icono:'fa-cow', color:'#10b981'};
+    if (pv < 150) return {nombre:'Cría', clase:'etapa-inicio', icono:'fa-baby', color:'#f59e0b'};
+    if (pv < 350) return {nombre:'Levante', clase:'etapa-desarrollo', icono:'fa-cow', color:'#3b82f6'};
+    return {nombre:'Ceba', clase:'etapa-madurez', icono:'fa-cow', color:'#fb923c'};
 }
 
 function getCostoSanidadDiario(aid) {
@@ -1460,33 +978,31 @@ function generarAlertasCompletas() {
         const ing = calcularIngresoDiario(a, gmd, getCfg('precioKG'));
         const roia = cd > 0 ? ing / cd : 0;
         const nombre = a.nombre || 'Animal';
-        
-        if (roia < 1.0 && gmd > 0) alertas.push({id:a.id, nombre, tipo:'critical', mensaje:`📉 ROIA bajo (${roia.toFixed(1)}x). Evaluar descarte.`});
-        if (gmd > 0 && gmd < 0.4) alertas.push({id:a.id, nombre, tipo:'warning', mensaje:`⚠️ GMD bajo (${gmd.toFixed(2)})`});
-        if (a.bloqueadoPorRetiro) alertas.push({id:a.id, nombre, tipo:'critical', mensaje:`🚫 En retiro sanitario`});
-        
+        if (roia < 1.0 && gmd > 0) alertas.push({id:a.id, nombre, tipo:'critical', mensaje:'ROIA bajo (' + roia.toFixed(1) + 'x). Evaluar descarte.'});
+        if (gmd > 0 && gmd < 0.4) alertas.push({id:a.id, nombre, tipo:'warning', mensaje:'GMD bajo (' + gmd.toFixed(2) + ')'});
+        if (a.bloqueadoPorRetiro) alertas.push({id:a.id, nombre, tipo:'critical', mensaje:'En retiro sanitario'});
         const apps = (DB.aplicaciones || []).filter(x => x.animalId === a.id);
         const tiv = apps.some(ap => {
             const prod = getAllSanidad().find(x => x.id === ap.productoId);
             return prod && prod.nombre.toLowerCase().includes('ivermectina') && getDiasDesde(ap.fecha) < (prod.diasEfecto || 30);
         });
-        if (!tiv) alertas.push({id:a.id, nombre, tipo:'critical', mensaje:`🛡️ Desparasitación vencida`});
+        if (!tiv) alertas.push({id:a.id, nombre, tipo:'critical', mensaje:'Desparasitación vencida'});
     });
     const stock = getCfg('stock') || {};
     getInsumosActivos().forEach(k => {
         const s = stock[k] || DB.inventario[k]?.stock || 0;
-        if (s < 10) alertas.push({id:'inv', nombre: DB.inventario[k]?.nombre || k, tipo:'critical', mensaje:`📦 Stock crítico: ${Math.round(s)}`});
+        if (s < 10) alertas.push({id:'inv', nombre: DB.inventario[k]?.nombre || k, tipo:'critical', mensaje:'Stock crítico: ' + Math.round(s)});
     });
     return alertas;
 }
 
 function verificarNotificaciones() {
     const alertas = generarAlertasCompletas().filter(a => a.tipo === 'critical');
-    if (alertas.length) showToast(`⚠️ ${alertas.length} alertas críticas`, 8000);
+    if (alertas.length) showToast('⚠️ ' + alertas.length + ' alertas críticas', 8000);
 }
 
 function renderGraficoEvolucion(historial) {
-    if (historial.length < 2) return '<div style="text-align:center;color:var(--text-muted);padding:16px;font-size:.85rem">Se necesitan ≥2 pesajes</div>';
+    if (historial.length < 2) return '<div class="empty-state"><i class="fa-solid fa-chart-line"></i><div>Se necesitan 2+ pesajes</div></div>';
     const datos = historial.map(h => {
         const p = h.fecha.split('/');
         return {fecha: new Date(p[2], p[1]-1, p[0]), peso: h.peso, fechaStr: h.fecha};
@@ -1503,10 +1019,10 @@ function renderGraficoEvolucion(historial) {
         peso: d.peso,
         fecha: d.fechaStr
     }));
-    const pathD = pts.map((p, i) => `${i===0?'M':'L'}${p.x},${p.y}`).join(' ');
-    const circles = pts.map(p => `<circle cx="${p.x}" cy="${p.y}" r="4" fill="var(--accent)" stroke="#0f172a" stroke-width="2"/>`).join('');
-    const dates = pts.map((p, i) => i % Math.ceil(pts.length/3) === 0 ? `<text x="${p.x}" y="${h-4}" fill="var(--text-muted)" font-size="9" text-anchor="middle">${p.fecha}</text>` : '').join('');
-    return `<div class="chart-box"><svg viewBox="0 0 ${w} ${h}" style="display:block"><path d="${pathD}" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>${circles}${dates}</svg></div>`;
+    const pathD = pts.map((p, i) => (i===0?'M':'L') + p.x + ',' + p.y).join(' ');
+    const circles = pts.map(p => '<circle cx="' + p.x + '" cy="' + p.y + '" r="4" fill="#10b981" stroke="#0a0a12" stroke-width="2"/>').join('');
+    const dates = pts.map((p, i) => i % Math.ceil(pts.length/3) === 0 ? '<text x="' + p.x + '" y="' + (h-4) + '" fill="#64748b" font-size="9" text-anchor="middle">' + p.fecha + '</text>' : '').join('');
+    return '<div class="chart-box"><svg viewBox="0 0 ' + w + ' ' + h + '" style="display:block"><path d="' + pathD + '" fill="none" stroke="#10b981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>' + circles + dates + '</svg></div>';
 }
 
 function goPage(p) {
@@ -1533,7 +1049,6 @@ function renderInicio() {
     const totalDiet = {};
     const insumos = getInsumosActivos();
     insumos.forEach(k => totalDiet[k] = 0);
-    
     DB.animales.forEach(a => {
         if (!a.historial?.length) return;
         const p = a.historial[a.historial.length-1].peso;
@@ -1544,142 +1059,85 @@ function renderInicio() {
         const diet = getDiet(p, a.proposito, rep?.estadoLactancia || 'auto');
         insumos.forEach(k => { if (diet[k]) totalDiet[k] += diet[k]; });
     });
-    
     const prom = ta ? tKg / ta : 0;
     const ab = calcularAutonomiaBodega().autonomia;
-    
-    let html = `<div class="card">
-        <div class="row-label" style="color:var(--accent);margin-bottom:10px"><i class="fa-solid fa-coins"></i> PRECIO KG EN PIE</div>
-        <div style="display:flex;align-items:center;gap:10px">
-            <span style="font-size:1.2rem;font-weight:800;color:var(--accent)">$</span>
-            <input id="inpPKG" type="number" value="${getCfg('precioKG') || 9800}" style="font-size:1.2rem;font-weight:800;text-align:center;background:transparent;border:none;color:var(--accent);padding:10px;width:100%">
-            <span style="font-size:.75rem;color:var(--text-muted)">COP</span>
-        </div>
-        <button class="btn btn-green mt12" onclick="setCfg('precioKG', parseFloat(document.getElementById('inpPKG').value) || 0); renderInicio(); showToast('✅ Actualizado')"><i class="fa-solid fa-check"></i> ACTUALIZAR</button>
-    </div>`;
-    
-    html += `<div class="card">
-        <div class="row-label" style="margin-bottom:10px"><i class="fa-solid fa-chart-pie"></i> RESUMEN</div>
-        <div class="stats-grid">
-            <div class="stat-item"><div class="row-label"><i class="fa-solid fa-users"></i> Cabezas</div><div class="row-val">${ta}</div></div>
-            <div class="stat-item"><div class="row-label"><i class="fa-solid fa-weight-scale"></i> Peso Total</div><div class="row-val">${fm(tKg)} kg</div></div>
-            <div class="stat-item"><div class="row-label"><i class="fa-solid fa-calculator"></i> Promedio</div><div class="row-val">${fm(prom)} kg</div></div>
-            <div class="stat-item"><div class="row-label"><i class="fa-solid fa-sack-dollar"></i> Valor Hato</div><div class="row-val" style="color:var(--accent)">$${fm(tKg * (getCfg('precioKG') || 9800))}</div></div>
-        </div>
-    </div>`;
-    
+    let html = '<div class="card">';
+    html += '<div class="row-label" style="color:var(--primary-light);margin-bottom:10px"><i class="fa-solid fa-coins"></i> PRECIO KG EN PIE</div>';
+    html += '<div style="display:flex;align-items:center;gap:10px"><span style="font-size:1.1rem;font-weight:800;color:var(--accent)">$</span>';
+    html += '<input id="inpPKG" type="number" value="' + (getCfg('precioKG') || 9800) + '" style="font-size:1.1rem;font-weight:800;text-align:center;background:transparent;border:none;color:var(--accent);padding:8px;width:100%">';
+    html += '<span style="font-size:.7rem;color:var(--text-muted)">COP</span></div>';
+    html += '<button class="btn btn-accent mt8" onclick="setCfg(\'precioKG\', parseFloat(document.getElementById(\'inpPKG\').value) || 0); renderInicio(); showToast(\'✅ Actualizado\')"><i class="fa-solid fa-check"></i> ACTUALIZAR</button></div>';
+    html += '<div class="card"><div class="row-label" style="margin-bottom:10px"><i class="fa-solid fa-chart-pie"></i> RESUMEN</div><div class="stats-grid">';
+    html += '<div class="stat-item"><div class="row-label"><i class="fa-solid fa-users"></i> Cabezas</div><div class="row-val">' + ta + '</div></div>';
+    html += '<div class="stat-item"><div class="row-label"><i class="fa-solid fa-weight-scale"></i> Peso Total</div><div class="row-val">' + fm(tKg) + ' kg</div></div>';
+    html += '<div class="stat-item"><div class="row-label"><i class="fa-solid fa-calculator"></i> Promedio</div><div class="row-val">' + fm(prom) + ' kg</div></div>';
+    html += '<div class="stat-item"><div class="row-label"><i class="fa-solid fa-sack-dollar"></i> Valor Hato</div><div class="row-val" style="color:var(--accent)">$' + fm(tKg * (getCfg('precioKG') || 9800)) + '</div></div>';
+    html += '</div></div>';
     if (ta > 0) {
-        html += `<div class="card">
-            <div style="font-weight:700;font-size:.85rem;margin-bottom:12px;color:var(--text-secondary)"><i class="fa-solid fa-warehouse"></i> AUTONOMÍA BODEGA</div>
-            <div class="stats-grid">`;
+        html += '<div class="card"><div style="font-weight:700;font-size:.8rem;margin-bottom:10px;color:var(--text-secondary)"><i class="fa-solid fa-warehouse"></i> AUTONOMÍA BODEGA</div><div class="stats-grid">';
         insumos.slice(0, 4).forEach(k => {
             const days = ab[k];
-            const color = days < 7 ? 'var(--danger)' : days < 14 ? 'var(--warning)' : 'var(--success)';
-            html += `<div class="stat-item"><div class="row-label">${DB.inventario[k]?.nombre || k}</div><div class="row-val" style="color:${color}">${days === 999 ? '∞' : days}d</div></div>`;
+            const color = days < 7 ? 'var(--danger)' : days < 14 ? 'var(--warning)' : 'var(--accent)';
+            html += '<div class="stat-item"><div class="row-label">' + (DB.inventario[k]?.nombre || k) + '</div><div class="row-val" style="color:' + color + '">' + (days === 999 ? '∞' : days) + 'd</div></div>';
         });
-        html += `</div></div>`;
-        
-        html += `<div class="card">
-            <div style="font-weight:700;font-size:.85rem;margin-bottom:12px;color:var(--text-secondary)"><i class="fa-solid fa-chart-simple"></i> ESTADO HATO</div>
-            <div class="estado-simple">
-                <div class="estado-pildora e"><div class="num">${est.verde}</div><div class="lbl">Excelente</div></div>
-                <div class="estado-pildora b"><div class="num">${est.azul}</div><div class="lbl">Bueno</div></div>
-                <div class="estado-pildora r"><div class="num">${est.naranja}</div><div class="lbl">Regular</div></div>
-                <div class="estado-pildora m"><div class="num">${est.rojo}</div><div class="lbl">Bajo</div></div>
-            </div>
-        </div>`;
+        html += '</div></div>';
+        html += '<div class="card"><div style="font-weight:700;font-size:.8rem;margin-bottom:10px;color:var(--text-secondary)"><i class="fa-solid fa-chart-simple"></i> ESTADO HATO</div><div class="estado-simple">';
+        html += '<div class="estado-pildora e"><div class="num">' + est.verde + '</div><div class="lbl">Excelente</div></div>';
+        html += '<div class="estado-pildora b"><div class="num">' + est.azul + '</div><div class="lbl">Bueno</div></div>';
+        html += '<div class="estado-pildora r"><div class="num">' + est.naranja + '</div><div class="lbl">Regular</div></div>';
+        html += '<div class="estado-pildora m"><div class="num">' + est.rojo + '</div><div class="lbl">Bajo</div></div>';
+        html += '</div></div>';
     }
-    
     const criticas = generarAlertasCompletas().filter(a => a.tipo === 'critical');
     if (criticas.length) {
-        html += `<div class="card">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-                <span style="font-weight:700;font-size:.85rem;color:var(--danger)"><i class="fa-solid fa-triangle-exclamation"></i> ALERTAS CRÍTICAS</span>
-                <button class="btn btn-sm btn-gray" style="width:auto;margin:0" onclick="goPage('alertas')">Ver todas</button>
-            </div>`;
+        html += '<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><span style="font-weight:700;font-size:.8rem;color:var(--danger)"><i class="fa-solid fa-triangle-exclamation"></i> ALERTAS CRÍTICAS</span>';
+        html += '<button class="btn btn-sm btn-ghost" style="width:auto;margin:0" onclick="goPage(\'alertas\')">Ver</button></div>';
         criticas.slice(0, 3).forEach(a => {
-            html += `<div class="alert-item alert-danger"><div style="flex:1"><b>${a.nombre}</b>: ${a.mensaje}</div></div>`;
+            html += '<div class="alert-item alert-danger"><div style="flex:1"><b>' + a.nombre + '</b>: ' + a.mensaje + '</div></div>';
         });
-        html += `</div>`;
+        html += '</div>';
     }
-    
-    html += `<div class="section-title"><i class="fa-solid fa-layer-group"></i> MIS LOTES</div><div class="grid">`;
+    html += '<div class="section-title"><i class="fa-solid fa-layer-group"></i> MIS LOTES</div><div class="grid" style="grid-template-columns:1fr 1fr;gap:10px">';
     DB.lotes.forEach(l => {
         const na = getAnimalesByLote(l.id).length;
         const pt = getAnimalesByLote(l.id).reduce((s, a) => s + (a.historial?.[a.historial.length-1]?.peso || 0), 0);
-        html += `<div class="lote-card" onclick="animalFilterLote='${l.id}'; goPage('animales')">
-            <div class="lote-name">${l.nombre}</div>
-            <div class="lote-stats"><b>${na}</b> animales · <b>${fm(pt)}</b> kg</div>
-        </div>`;
+        html += '<div class="lote-card" onclick="animalFilterLote=\'' + l.id + '\'; goPage(\'animales\')"><div class="lote-name">' + l.nombre + '</div><div class="lote-stats"><b>' + na + '</b> animales · <b>' + fm(pt) + '</b> kg</div></div>';
     });
-    html += `</div>`;
-    
+    html += '</div>';
     if (ta === 0) {
-        html += `<div class="card" style="text-align:center;padding:40px 24px">
-            <div style="font-size:3.5rem;margin-bottom:16px">🐄</div>
-            <h3 style="margin-bottom:10px;font-size:1.1rem">Sin animales</h3>
-            <p style="color:var(--text-muted);margin-bottom:20px">Registra tu primer animal</p>
-            <button class="btn btn-gold" onclick="showAddAnimalModal()"><i class="fa-solid fa-plus"></i> AGREGAR</button>
-        </div>`;
+        html += '<div class="empty-state"><i class="fa-solid fa-cow"></i><h3 style="margin-bottom:8px;font-size:1rem">Sin animales</h3><p style="color:var(--text-muted);margin-bottom:16px">Registra tu primer animal</p><button class="btn btn-primary" onclick="showAddAnimalModal()"><i class="fa-solid fa-plus"></i> AGREGAR</button></div>';
     }
     document.getElementById('v-inicio').innerHTML = html;
 }
 
 function renderLotes() {
-    let h = `<div class="card">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
-            <span style="font-weight:800;font-size:1.05rem"><i class="fa-solid fa-layer-group"></i> LOTES</span>
-            <button class="btn btn-sm btn-gold" style="width:auto" onclick="showAddLoteModal()"><i class="fa-solid fa-plus"></i> Crear</button>
-        </div>`;
-    if (!DB.lotes?.length) h += '<div style="text-align:center;padding:24px;color:var(--text-muted)">Sin lotes</div>';
+    let h = '<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><span style="font-weight:800;font-size:1rem"><i class="fa-solid fa-layer-group"></i> LOTES</span>';
+    h += '<button class="btn btn-sm btn-accent" style="width:auto" onclick="showAddLoteModal()"><i class="fa-solid fa-plus"></i> Crear</button></div>';
+    if (!DB.lotes?.length) h += '<div class="empty-state"><i class="fa-solid fa-layer-group"></i><div>Sin lotes</div></div>';
     DB.lotes.forEach(l => {
         const na = getAnimalesByLote(l.id).length;
         const pt = getAnimalesByLote(l.id).reduce((s, a) => s + (a.historial?.[a.historial.length-1]?.peso || 0), 0);
-        h += `<div class="lote-card" onclick="animalFilterLote='${l.id}'; goPage('animales')">
-            <div style="display:flex;justify-content:space-between;align-items:center">
-                <div>
-                    <div class="lote-name">${l.nombre}</div>
-                    <div class="lote-stats"><b>${na}</b> animales · <b>${fm(pt)}</b> kg</div>
-                </div>
-                <div style="display:flex;gap:8px" onclick="event.stopPropagation()">
-                    <button class="btn btn-sm btn-gray" style="width:36px;height:36px;padding:0" onclick="showEditLoteColor('${l.id}')"><i class="fa-solid fa-palette"></i></button>
-                    <button class="btn btn-sm btn-danger" style="width:36px;height:36px;padding:0" onclick="deleteLote('${l.id}')"><i class="fa-solid fa-trash"></i></button>
-                </div>
-            </div>
-        </div>`;
+        h += '<div class="lote-card" onclick="animalFilterLote=\'' + l.id + '\'; goPage(\'animales\')"><div style="display:flex;justify-content:space-between;align-items:center"><div><div class="lote-name">' + l.nombre + '</div><div class="lote-stats"><b>' + na + '</b> animales · <b>' + fm(pt) + '</b> kg</div></div><div style="display:flex;gap:6px" onclick="event.stopPropagation()">';
+        h += '<button class="btn btn-sm btn-ghost" style="width:34px;height:34px;padding:0" onclick="showEditLoteColor(\'' + l.id + '\')"><i class="fa-solid fa-palette"></i></button>';
+        h += '<button class="btn btn-sm btn-danger" style="width:34px;height:34px;padding:0" onclick="deleteLote(\'' + l.id + '\')"><i class="fa-solid fa-trash"></i></button></div></div></div>';
     });
-    h += `</div>`;
+    h += '</div>';
     document.getElementById('v-lotes').innerHTML = h;
 }
 
 function renderAnimales() {
     if (!DB.animales || !DB.animales.length) {
-        document.getElementById('v-animales').innerHTML = `<div style="text-align:center;padding:48px 24px;color:var(--text-muted)">
-            <div style="font-size:3.5rem;margin-bottom:16px"></div>
-            <div style="font-size:1.05rem;font-weight:700">No hay animales</div>
-            <button class="btn btn-gold mt12" style="width:auto" onclick="showAddAnimalModal()">+ Agregar</button>
-        </div>`;
+        document.getElementById('v-animales').innerHTML = '<div class="empty-state"><i class="fa-solid fa-cow"></i><div style="font-size:1rem;font-weight:700">No hay animales</div><button class="btn btn-primary mt12" style="width:auto" onclick="showAddAnimalModal()">+ Agregar</button></div>';
         return;
     }
     let f = DB.animales;
     if (animalFilterLote !== 'all') f = f.filter(a => a.loteId === animalFilterLote);
     if (animalSearch) f = f.filter(a => (a.nombre || '').toLowerCase().includes(animalSearch.toLowerCase()));
-    
-    let h = `<div class="card" style="padding:14px">
-        <input id="animSearch" type="text" placeholder="🔍 Buscar..." value="${animalSearch}" style="padding:12px 16px">
-    </div>`;
-    h += `<div class="filter-chips">
-        <div class="chip ${animalFilterLote === 'all' ? 'active' : ''}" onclick="animalFilterLote='all'; renderAnimales()">Todos</div>`;
-    DB.lotes.forEach(l => h += `<div class="chip ${animalFilterLote === l.id ? 'active' : ''}" onclick="animalFilterLote='${l.id}'; renderAnimales()">${l.nombre}</div>`);
-    h += `</div><div class="grid">`;
-    
-    if (f.length === 0) {
-        h += `<div style="grid-column:1/-1;text-align:center;padding:48px;color:var(--text-muted)">
-            <div style="font-size:2.5rem;margin-bottom:12px">🔍</div>
-            <div style="font-size:1rem;font-weight:700">Ningún animal coincide</div>
-        </div>`;
-    }
-    
+    let h = '<div class="card" style="padding:12px"><input id="animSearch" type="text" placeholder="Buscar..." value="' + animalSearch + '" style="padding:10px 14px"></div>';
+    h += '<div class="filter-chips"><div class="chip ' + (animalFilterLote === 'all' ? 'active' : '') + '" onclick="animalFilterLote=\'all\'; renderAnimales()">Todos</div>';
+    DB.lotes.forEach(l => h += '<div class="chip ' + (animalFilterLote === l.id ? 'active' : '') + '" onclick="animalFilterLote=\'' + l.id + '\'; renderAnimales()">' + l.nombre + '</div>');
+    h += '</div><div class="animal-grid">';
+    if (f.length === 0) h += '<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--text-muted)"><i class="fa-solid fa-filter" style="font-size:2rem;margin-bottom:10px;opacity:0.3"></i><div style="font-size:.9rem;font-weight:700">Ningún animal coincide</div></div>';
     f.forEach(a => {
         if (!a.historial?.length) return;
         const p = a.historial[a.historial.length-1].peso;
@@ -1687,17 +1145,15 @@ function renderAnimales() {
         const et = getEtapa(p, rep);
         const r = getRendimiento(a.historial, getGMD(a.historial));
         const lm = {verde:'ml-g', azul:'ml-b', naranja:'ml-o', rojo:'ml-r'};
-        h += `<div class="animal-card" onclick="showProfile(${a.id})">
-            <div class="mini-led ${lm[r.nivel]}"></div>
-            <div style="font-size:2.2rem;margin-bottom:8px">${et.icono}</div>
-            <div class="name">${a.nombre}</div>
-            <span class="etapa-tag ${et.clase}">${et.nombre}</span>
-            <div style="font-size:.65rem;color:var(--text-muted);margin-top:4px">${getLoteName(a.loteId)}</div>
-            <div class="weight">${fm(p)} kg</div>
-            <div class="cm" style="color:${r.cm >= 0 ? 'var(--success)' : 'var(--danger)'}">${r.cm >= 0 ? '+' : ''}${r.cm.toFixed(1)}%</div>
-        </div>`;
+        h += '<div class="animal-card" onclick="showProfile(' + a.id + ')">';
+        h += '<div class="mini-led ' + lm[r.nivel] + '"></div>';
+        h += '<div class="icon-wrap"><i class="fa-solid ' + et.icono + '"></i></div>';
+        h += '<div class="name">' + a.nombre + '</div>';
+        h += '<span class="etapa-tag">' + et.nombre + '</span>';
+        h += '<div class="weight">' + fm(p) + ' kg</div>';
+        h += '<div class="cm" style="color:' + (r.cm >= 0 ? 'var(--accent)' : 'var(--danger)') + '">' + (r.cm >= 0 ? '+' : '') + r.cm.toFixed(1) + '%</div></div>';
     });
-    h += `</div>`;
+    h += '</div>';
     document.getElementById('v-animales').innerHTML = h;
     const si = document.getElementById('animSearch');
     if (si) {
@@ -1712,10 +1168,7 @@ function renderAnimales() {
 }
 
 function renderInsumos() {
-    const h = `<div class="insumos-tabs">
-        <button class="insumo-tab ${insumoTab === 'alimentos' ? 'active' : ''}" onclick="insumoTab='alimentos'; renderInsumos()"><i class="fa-solid fa-wheat-awn"></i> Alimentos</button>
-        <button class="insumo-tab ${insumoTab === 'sanidad' ? 'active' : ''}" onclick="insumoTab='sanidad'; renderInsumos()"><i class="fa-solid fa-syringe"></i> Sanidad</button>
-    </div><div id="insumoContent"></div>`;
+    const h = '<div class="insumos-tabs"><button class="insumo-tab ' + (insumoTab === 'alimentos' ? 'active' : '') + '" onclick="insumoTab=\'alimentos\'; renderInsumos()"><i class="fa-solid fa-wheat-awn"></i> Alimentos</button><button class="insumo-tab ' + (insumoTab === 'sanidad' ? 'active' : '') + '" onclick="insumoTab=\'sanidad\'; renderInsumos()"><i class="fa-solid fa-syringe"></i> Sanidad</button></div><div id="insumoContent"></div>';
     document.getElementById('v-insumos').innerHTML = h;
     if (insumoTab === 'alimentos') renderInsumoAlimentos();
     else renderInsumoSanidad();
@@ -1724,109 +1177,55 @@ function renderInsumos() {
 function renderInsumoAlimentos() {
     const {autonomia} = calcularAutonomiaBodega();
     const insumos = getInsumosActivos();
-    let h = `<div class="card">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
-            <span style="font-weight:800;font-size:1.05rem"><i class="fa-solid fa-warehouse"></i> INVENTARIO</span>
-            <button class="btn btn-sm btn-green" style="width:auto" onclick="showModalGestionAlimentos()"><i class="fa-solid fa-plus"></i> Nuevo</button>
-        </div>`;
+    let h = '<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><span style="font-weight:800;font-size:1rem"><i class="fa-solid fa-warehouse"></i> INVENTARIO</span>';
+    h += '<button class="btn btn-sm btn-accent" style="width:auto" onclick="showModalGestionAlimentos()"><i class="fa-solid fa-plus"></i> Nuevo</button></div>';
     insumos.forEach(k => {
         const data = DB.inventario[k] || {nombre: k, icono: 'fa-seedling', unidad: 'kg'};
         const st = getCfg('stock')?.[k] || data.stock || 0;
         const pr = getCfg('precios')?.[k] || data.precioUnitario || 0;
         const au = autonomia[k] || 999;
-        const dc = au < 7 ? 'var(--danger)' : au < 14 ? 'var(--warning)' : 'var(--success)';
+        const dc = au < 7 ? 'var(--danger)' : au < 14 ? 'var(--warning)' : 'var(--accent)';
         const esNativo = data.esNativo || ['pasto','salvado','melaza','levadura','bicarb','sal','urea'].includes(k);
-        h += `<div class="insumo-item">
-            <div class="insumo-item-header">
-                <i class="fa-solid ${data.icono || 'fa-seedling'}"></i>
-                <div class="info">
-                    <div class="name">${data.nombre} ${esNativo ? '' : '<span class="custom-badge">CUST</span>'}</div>
-                    <div class="consumo">Autonomía: <span style="color:${dc};font-weight:700">${au === 999 ? '∞' : au + 'd'}</span></div>
-                </div>
-                ${esNativo ? 
-                    `<button class="btn btn-sm btn-gray" style="width:36px;height:36px;padding:0" onclick="toggleInsumoNativo('${k}')"><i class="fa-solid fa-eye-slash"></i></button>` :
-                    `<button class="btn btn-sm btn-danger" style="width:36px;height:36px;padding:0" onclick="deleteAlimentoCustom('${k}')"><i class="fa-solid fa-trash"></i></button>`
-                }
-            </div>
-            <div class="price-grid">
-                <div>
-                    <div style="font-size:.65rem;color:var(--text-muted);margin-bottom:6px">PRECIO</div>
-                    <input id="pr-${k}" type="number" value="${pr}" style="padding:10px">
-                </div>
-                <div>
-                    <div style="font-size:.65rem;color:var(--text-muted);margin-bottom:6px">STOCK</div>
-                    <input id="st-${k}" type="number" value="${Math.round(st)}" style="padding:10px">
-                </div>
-            </div>
-        </div>`;
+        h += '<div class="insumo-item"><div class="insumo-item-header"><i class="fa-solid ' + (data.icono || 'fa-seedling') + '"></i><div class="info"><div class="name">' + data.nombre + (esNativo ? '' : ' <span class="custom-badge">CUST</span>') + '</div><div class="consumo">Autonomía: <span style="color:' + dc + ';font-weight:700">' + (au === 999 ? '∞' : au + 'd') + '</span></div></div>';
+        if (esNativo) h += '<button class="btn btn-sm btn-ghost" style="width:34px;height:34px;padding:0" onclick="toggleInsumoNativo(\'' + k + '\')"><i class="fa-solid fa-eye-slash"></i></button>';
+        else h += '<button class="btn btn-sm btn-danger" style="width:34px;height:34px;padding:0" onclick="deleteAlimentoCustom(\'' + k + '\')"><i class="fa-solid fa-trash"></i></button>';
+        h += '</div><div class="price-grid"><div><div style="font-size:.6rem;color:var(--text-muted);margin-bottom:4px">PRECIO</div><input id="pr-' + k + '" type="number" value="' + pr + '" style="padding:9px"></div>';
+        h += '<div><div style="font-size:.6rem;color:var(--text-muted);margin-bottom:4px">STOCK</div><input id="st-' + k + '" type="number" value="' + Math.round(st) + '" style="padding:9px"></div></div></div>';
     });
-    h += `<button class="btn btn-gold mt12" onclick="saveInventario()"><i class="fa-solid fa-check"></i> GUARDAR</button></div>`;
+    h += '<button class="btn btn-primary mt8" onclick="saveInventario()"><i class="fa-solid fa-check"></i> GUARDAR</button></div>';
     document.getElementById('insumoContent').innerHTML = h;
 }
 
 function renderInsumoSanidad() {
-    let h = `<div class="card">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
-            <span style="font-weight:800;font-size:1.05rem"><i class="fa-solid fa-kit-medical"></i> SANIDAD</span>
-            <button class="btn btn-sm btn-green" style="width:auto" onclick="showModalGestionSanidad()"><i class="fa-solid fa-plus"></i> Nuevo</button>
-        </div>`;
+    let h = '<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><span style="font-weight:800;font-size:1rem"><i class="fa-solid fa-kit-medical"></i> SANIDAD</span>';
+    h += '<button class="btn btn-sm btn-accent" style="width:auto" onclick="showModalGestionSanidad()"><i class="fa-solid fa-plus"></i> Nuevo</button></div>';
     getAllSanidad().forEach(p => {
         const esNativo = !p.esCustom;
         const st = p.esBase ? (getCfg('stockSanidad') || {})[p.id] || 0 : (p.stockML || 0);
         const pr = p.esBase ? (getCfg('preciosSanidad') || {})[p.id] || 0 : (p.precioML || 0);
-        h += `<div class="insumo-item">
-            <div class="insumo-item-header">
-                <i class="fa-solid ${p.icono}" style="color:${p.color}"></i>
-                <div class="info">
-                    <div class="name">${p.nombre} ${esNativo ? '' : '<span class="custom-badge">CUST</span>'}</div>
-                    <div class="consumo">${p.diasEfecto}d efecto · ${p.retiro}d retiro</div>
-                </div>
-                ${esNativo ? 
-                    `<button class="btn btn-sm btn-gray" style="width:36px;height:36px;padding:0" onclick="toggleSanidadNativa('${p.id}')"><i class="fa-solid fa-eye-slash"></i></button>` :
-                    `<button class="btn btn-sm btn-danger" style="width:36px;height:36px;padding:0" onclick="deleteSanidadCustom('${p.id}')"><i class="fa-solid fa-trash"></i></button>`
-                }
-            </div>
-            <div class="price-grid">
-                <div>
-                    <div style="font-size:.65rem;color:var(--text-muted);margin-bottom:6px">PRECIO ($/ml)</div>
-                    <input id="pr-${p.id}" type="number" value="${pr}" style="padding:10px">
-                </div>
-                <div>
-                    <div style="font-size:.65rem;color:var(--text-muted);margin-bottom:6px">STOCK (ml)</div>
-                    <input id="st-${p.id}" type="number" value="${Math.round(st)}" style="padding:10px">
-                </div>
-            </div>
-        </div>`;
+        h += '<div class="insumo-item"><div class="insumo-item-header"><i class="fa-solid ' + p.icono + '" style="color:' + p.color + '"></i><div class="info"><div class="name">' + p.nombre + (esNativo ? '' : ' <span class="custom-badge">CUST</span>') + '</div><div class="consumo">' + p.diasEfecto + 'd efecto · ' + p.retiro + 'd retiro</div></div>';
+        if (esNativo) h += '<button class="btn btn-sm btn-ghost" style="width:34px;height:34px;padding:0" onclick="toggleSanidadNativa(\'' + p.id + '\')"><i class="fa-solid fa-eye-slash"></i></button>';
+        else h += '<button class="btn btn-sm btn-danger" style="width:34px;height:34px;padding:0" onclick="deleteSanidadCustom(\'' + p.id + '\')"><i class="fa-solid fa-trash"></i></button>';
+        h += '</div><div class="price-grid"><div><div style="font-size:.6rem;color:var(--text-muted);margin-bottom:4px">PRECIO ($/ml)</div><input id="pr-' + p.id + '" type="number" value="' + pr + '" style="padding:9px"></div>';
+        h += '<div><div style="font-size:.6rem;color:var(--text-muted);margin-bottom:4px">STOCK (ml)</div><input id="st-' + p.id + '" type="number" value="' + Math.round(st) + '" style="padding:9px"></div></div></div>';
     });
-    h += `<button class="btn btn-gold mt12" onclick="saveInventarioSanidad()"><i class="fa-solid fa-check"></i> GUARDAR</button></div>`;
+    h += '<button class="btn btn-primary mt8" onclick="saveInventarioSanidad()"><i class="fa-solid fa-check"></i> GUARDAR</button></div>';
     document.getElementById('insumoContent').innerHTML = h;
 }
 
 function toggleInsumoNativo(id) {
     const isActive = getInsumosActivos().includes(id);
-    if (isActive) {
-        DB.config.insumosActivos = DB.config.insumosActivos.filter(x => x !== id);
-        showToast('️ Insumo ocultado');
-    } else {
-        DB.config.insumosActivos.push(id);
-        showToast('✅ Insumo agregado');
-    }
-    guardarDatos();
-    renderInsumos();
+    if (isActive) { DB.config.insumosActivos = DB.config.insumosActivos.filter(x => x !== id); showToast('Insumo ocultado'); }
+    else { DB.config.insumosActivos.push(id); showToast('Insumo agregado'); }
+    guardarDatos(); renderInsumos();
 }
 
 function toggleSanidadNativa(id) {
     if (!DB.config.sanidadNativaOcultada) DB.config.sanidadNativaOcultada = [];
     const idx = DB.config.sanidadNativaOcultada.indexOf(id);
-    if (idx === -1) {
-        DB.config.sanidadNativaOcultada.push(id);
-        showToast('👁️ Producto ocultado');
-    } else {
-        DB.config.sanidadNativaOcultada.splice(idx, 1);
-        showToast('✅ Producto visible');
-    }
-    guardarDatos();
-    renderInsumos();
+    if (idx === -1) { DB.config.sanidadNativaOcultada.push(id); showToast('Producto ocultado'); }
+    else { DB.config.sanidadNativaOcultada.splice(idx, 1); showToast('Producto visible'); }
+    guardarDatos(); renderInsumos();
 }
 
 function saveInventario() {
@@ -1834,158 +1233,101 @@ function saveInventario() {
     const pr = getCfg('precios') || {};
     const insumos = getInsumosActivos();
     insumos.forEach(id => {
-        const prEl = document.getElementById(`pr-${id}`);
-        const stEl = document.getElementById(`st-${id}`);
+        const prEl = document.getElementById('pr-' + id);
+        const stEl = document.getElementById('st-' + id);
         if (prEl) pr[id] = parseFloat(prEl.value) || 0;
         if (stEl) st[id] = parseFloat(stEl.value) || 0;
-        if (DB.inventario[id]) {
-            DB.inventario[id].precioUnitario = pr[id];
-            DB.inventario[id].stock = st[id];
-        }
+        if (DB.inventario[id]) { DB.inventario[id].precioUnitario = pr[id]; DB.inventario[id].stock = st[id]; }
     });
-    setCfg('stock', st);
-    setCfg('precios', pr);
-    guardarDatos();
-    showToast('✅ Inventario actualizado');
+    setCfg('stock', st); setCfg('precios', pr); guardarDatos(); showToast('Inventario actualizado');
 }
 
 function saveInventarioSanidad() {
     const stS = getCfg('stockSanidad') || {};
     const prS = getCfg('preciosSanidad') || {};
     getAllSanidad().forEach(p => {
-        const prEl = document.getElementById(`pr-${p.id}`);
-        const stEl = document.getElementById(`st-${p.id}`);
-        if (prEl) {
-            prS[p.id] = parseFloat(prEl.value) || 0;
-            if (p.esCustom) {
-                const c = DB.sanidad[p.id];
-                if (c) c.precioML = prS[p.id];
-            }
-        }
+        const prEl = document.getElementById('pr-' + p.id);
+        const stEl = document.getElementById('st-' + p.id);
+        if (prEl) { prS[p.id] = parseFloat(prEl.value) || 0; if (p.esCustom) { const c = DB.sanidad[p.id]; if (c) c.precioML = prS[p.id]; } }
         if (stEl) stS[p.id] = parseFloat(stEl.value) || 0;
     });
-    setCfg('stockSanidad', stS);
-    setCfg('preciosSanidad', prS);
-    guardarDatos();
-    showToast('✅ Sanidad actualizada');
+    setCfg('stockSanidad', stS); setCfg('preciosSanidad', prS); guardarDatos(); showToast('Sanidad actualizada');
 }
 
 function renderAlertas() {
     const todas = generarAlertasCompletas();
-    let html = `<div class="card">
-        <div style="font-weight:800;font-size:1.05rem;margin-bottom:10px"><i class="fa-solid fa-bell"></i> NOTIFICACIONES</div>
-        <div style="font-size:.8rem;color:var(--text-secondary);margin-bottom:14px">Monitoreo automático</div>`;
-    if (!todas.length) {
-        html += `<div style="text-align:center;padding:36px;color:var(--success)">✅ Todo en orden</div>`;
-    } else {
+    let html = '<div class="card"><div style="font-weight:800;font-size:1rem;margin-bottom:8px"><i class="fa-solid fa-bell"></i> NOTIFICACIONES</div><div style="font-size:.75rem;color:var(--text-secondary);margin-bottom:12px">Monitoreo automático</div>';
+    if (!todas.length) html += '<div class="empty-state"><i class="fa-solid fa-check-circle"></i><div>Todo en orden</div></div>';
+    else {
         ['critical', 'warning', 'info'].forEach(tipo => {
             const filtradas = todas.filter(a => a.tipo === tipo);
             if (filtradas.length) {
-                const titulo = tipo === 'critical' ? '🔴 Críticas' : tipo === 'warning' ? '🟡 Advertencias' : '🔵 Info';
-                html += `<div style="margin-top:14px;font-size:.8rem;font-weight:700;color:var(--text-secondary);margin-bottom:10px">${titulo} (${filtradas.length})</div>`;
+                const titulo = tipo === 'critical' ? 'Críticas' : tipo === 'warning' ? 'Advertencias' : 'Info';
+                html += '<div style="margin-top:12px;font-size:.75rem;font-weight:700;color:var(--text-secondary);margin-bottom:8px">' + titulo + ' (' + filtradas.length + ')</div>';
                 filtradas.forEach(a => {
                     const cls = tipo === 'critical' ? 'alert-danger' : tipo === 'warning' ? 'alert-warning' : 'alert-info';
-                    html += `<div class="alert-item ${cls}"><div style="flex:1"><b>${a.nombre}</b>: ${a.mensaje}</div></div>`;
+                    html += '<div class="alert-item ' + cls + '"><div style="flex:1"><b>' + a.nombre + '</b>: ' + a.mensaje + '</div></div>';
                 });
             }
         });
     }
-    html += `</div>`;
+    html += '</div>';
     document.getElementById('v-alertas').innerHTML = html;
 }
 
 function renderConfig() {
     const ls = lastSaveTime ? formatTimeAgo(lastSaveTime) : 'Nunca';
-    document.getElementById('v-config').innerHTML = `<div class="card">
-        <div class="config-item" onclick="exportData()">
-            <i class="fa-solid fa-download"></i>
-            <div class="cfg-text"><span>Exportar Respaldo</span><small>JSON completo</small></div>
-        </div>
-        <div class="config-item" onclick="importData()">
-            <i class="fa-solid fa-upload"></i>
-            <div class="cfg-text"><span>Importar Datos</span><small>Restaurar archivo</small></div>
-        </div>
-        <div class="config-item" onclick="if(confirm('⚠️ ¿Borrar TODO?')){clearAllData();}">
-            <i class="fa-solid fa-trash-can" style="color:var(--danger)"></i>
-            <div class="cfg-text"><span style="color:var(--danger)">Borrar Todo</span><small>Reiniciar app</small></div>
-        </div>
-        <div class="row">
-            <span class="row-label"><i class="fa-solid fa-floppy-disk"></i> Auto-guardado</span>
-            <span style="color:var(--success)">✅ Activo</span>
-        </div>
-        <div class="row">
-            <span class="row-label"><i class="fa-solid fa-clock"></i> Último guardado</span>
-            <span>${ls}</span>
-        </div>
-    </div>
-    <div class="card" style="text-align:center;padding:28px 20px">
-        <div style="font-size:2.5rem;margin-bottom:10px"><i class="fa-solid fa-crown" style="color:var(--accent)"></i></div>
-        <div style="font-weight:800;color:var(--text-primary)">GANADERO ÉLITE</div>
-        <div style="font-size:.7rem;color:var(--text-muted);margin-top:6px">v${APP_VERSION}</div>
-        <input type="file" id="importFile" accept=".json" style="display:none" onchange="handleImport(event)">
-    </div>`;
+    let html = '<div class="card">';
+    html += '<div class="config-item" onclick="exportData()"><i class="fa-solid fa-download"></i><div class="cfg-text"><span>Exportar Respaldo</span><small>JSON completo</small></div></div>';
+    html += '<div class="config-item" onclick="importData()"><i class="fa-solid fa-upload"></i><div class="cfg-text"><span>Importar Datos</span><small>Restaurar archivo</small></div></div>';
+    html += '<div class="config-item" onclick="if(confirm(\'¿Borrar TODO?\')){clearAllData();}"><i class="fa-solid fa-trash-can" style="color:var(--danger)"></i><div class="cfg-text"><span style="color:var(--danger)">Borrar Todo</span><small>Reiniciar app</small></div></div>';
+    html += '<div class="row"><span class="row-label"><i class="fa-solid fa-floppy-disk"></i> Auto-guardado</span><span style="color:var(--accent)">Activo</span></div>';
+    html += '<div class="row"><span class="row-label"><i class="fa-solid fa-clock"></i> Último guardado</span><span>' + ls + '</span></div></div>';
+    html += '<div class="card" style="text-align:center;padding:24px 18px"><div style="font-size:2rem;margin-bottom:8px;color:var(--primary-light)"><i class="fa-solid fa-crown"></i></div><div style="font-weight:800;color:var(--text)">GANADERO ÉLITE</div><div style="font-size:.65rem;color:var(--text-muted);margin-top:4px">v' + APP_VERSION + '</div><input type="file" id="importFile" accept=".json" style="display:none" onchange="handleImport(event)"></div>';
+    document.getElementById('v-config').innerHTML = html;
 }
 
 function exportData() {
     const b = new Blob([JSON.stringify(DB)], {type: 'application/json'});
     const u = URL.createObjectURL(b);
     const a = document.createElement('a');
-    a.href = u;
-    a.download = `ganadero_backup_${new Date().toISOString().slice(0,10)}.json`;
-    a.click();
-    showToast('✅ Respaldo descargado');
+    a.href = u; a.download = 'ganadero_backup_' + new Date().toISOString().slice(0,10) + '.json';
+    a.click(); showToast('Respaldo descargado');
 }
 
 function importData() { document.getElementById('importFile').click(); }
 
 function handleImport(e) {
-    const f = e.target.files[0];
-    if (!f) return;
+    const f = e.target.files[0]; if (!f) return;
     const r = new FileReader();
     r.onload = ev => {
         try {
             const d = JSON.parse(ev.target.result);
-            if (d.animales && d.lotes) {
-                DB = d;
-                guardarDatos();
-                showToast('✅ Importado');
-                renderInicio();
-            } else {
-                showToast('⚠️ Archivo inválido');
-            }
-        } catch {
-            showToast('️ Error al leer');
-        }
+            if (d.animales && d.lotes) { DB = d; guardarDatos(); showToast('Importado'); renderInicio(); }
+            else showToast('Archivo inválido');
+        } catch { showToast('Error al leer'); }
     };
     r.readAsText(f);
 }
 
-function clearAllData() {
-    localStorage.clear();
-    location.reload();
-}
+function clearAllData() { localStorage.clear(); location.reload(); }
 
 function showAddAnimalModal() {
-    let opts = DB.lotes.map(l => `<option value="${l.id}">${l.nombre}</option>`).join('');
+    let opts = DB.lotes.map(l => '<option value="' + l.id + '">' + l.nombre + '</option>').join('');
     let moms = '<option value="">-- Sin Madre --</option>';
-    DB.animales.forEach(a => { if (a.proposito === 'leche') moms += `<option value="${a.id}">${a.nombre}</option>`; });
-    showModal(`<div style="font-weight:800;margin-bottom:16px"><i class="fa-solid fa-cow"></i> NUEVO ANIMAL</div>
-    <div class="flex-col gap10">
-        <input id="addN" type="text" placeholder="Nombre">
-        <input id="addW" type="number" placeholder="Peso (kg)" min="20" max="2000">
-        <select id="addLote">${opts}</select>
-        <div class="grid">
-            <select id="addProp"><option value="carne">🥩 CARNE</option><option value="leche">🥛 LECHE</option></select>
-            <select id="addOrig" onchange="toggleOrigenFields()"><option value="nacimiento">🐄 Nacimiento</option><option value="comprado">💰 Comprado</option></select>
-        </div>
-        <div id="nacimientoFields" class="flex-col gap8">
-            <div class="row-label">Fecha Nacimiento</div><input id="addFechaNac" type="date">
-            <div class="row-label">Madre</div><select id="addMama">${moms}</select>
-        </div>
-        <div id="compradoFields" class="hidden"><input id="addPrice" type="number" placeholder="Valor compra ($)"></div>
-        <button class="btn btn-gold mt12" onclick="guardarNuevoAnimal()"><i class="fa-solid fa-check"></i> REGISTRAR</button>
-        <button class="btn btn-gray" onclick="document.querySelector('.modal-overlay').remove()">CANCELAR</button>
-    </div>`);
+    DB.animales.forEach(a => { if (a.proposito === 'leche') moms += '<option value="' + a.id + '">' + a.nombre + '</option>'; });
+    let html = '<div style="font-weight:800;margin-bottom:14px"><i class="fa-solid fa-cow"></i> NUEVO ANIMAL</div>';
+    html += '<div class="flex-col gap10"><input id="addN" type="text" placeholder="Nombre">';
+    html += '<input id="addW" type="number" placeholder="Peso (kg)" min="20" max="2000">';
+    html += '<select id="addLote">' + opts + '</select>';
+    html += '<div class="grid"><select id="addProp"><option value="carne">Carne</option><option value="leche">Leche</option></select>';
+    html += '<select id="addOrig" onchange="toggleOrigenFields()"><option value="nacimiento">Nacimiento</option><option value="comprado">Comprado</option></select></div>';
+    html += '<div id="nacimientoFields" class="flex-col gap8"><div class="row-label">Fecha Nacimiento</div><input id="addFechaNac" type="date">';
+    html += '<div class="row-label">Madre</div><select id="addMama">' + moms + '</select></div>';
+    html += '<div id="compradoFields" class="hidden"><input id="addPrice" type="number" placeholder="Valor compra ($)"></div>';
+    html += '<button class="btn btn-primary mt12" onclick="guardarNuevoAnimal()"><i class="fa-solid fa-check"></i> REGISTRAR</button>';
+    html += '<button class="btn btn-ghost" onclick="document.querySelector(\'.modal-overlay\').remove()">CANCELAR</button></div>';
+    showModal(html);
 }
 
 function toggleOrigenFields() {
@@ -2005,7 +1347,7 @@ function guardarNuevoAnimal() {
     const fn = document.getElementById('addFechaNac')?.value;
     const mi = document.getElementById('addMama')?.value;
     const pr = parseFloat(document.getElementById('addPrice')?.value) || 0;
-    if (!n || isNaN(w) || w < 20 || w > 2000) { showToast('️ Verifica datos'); return; }
+    if (!n || isNaN(w) || w < 20 || w > 2000) { showToast('Verifica datos'); return; }
     const fh = new Date().toLocaleDateString();
     const fr = (orig === 'nacimiento' && fn) ? fn.split('-').reverse().join('/') : fh;
     const newAnimal = {
@@ -2017,65 +1359,47 @@ function guardarNuevoAnimal() {
     DB.animales.push(newAnimal);
     guardarDatos();
     document.querySelector('.modal-overlay').remove();
-    showToast(`✅ ${n} registrado`);
+    showToast(n + ' registrado');
     renderAnimales();
 }
 
 function showAddLoteModal() {
-    showModal(`<div style="font-weight:800;margin-bottom:14px"><i class="fa-solid fa-plus"></i> NUEVO LOTE</div>
-    <div class="flex-col gap10">
-        <input id="nlNombre" type="text" placeholder="Nombre">
-        <input id="nlColor" type="color" value="${randColor()}" style="width:100%;height:44px">
-        <button class="btn btn-gold mt12" onclick="guardarLote()"><i class="fa-solid fa-check"></i> CREAR</button>
-        <button class="btn btn-gray" onclick="document.querySelector('.modal-overlay').remove()">CANCELAR</button>
-    </div>`);
+    showModal('<div style="font-weight:800;margin-bottom:12px"><i class="fa-solid fa-plus"></i> NUEVO LOTE</div><div class="flex-col gap10"><input id="nlNombre" type="text" placeholder="Nombre"><input id="nlColor" type="color" value="' + randColor() + '" style="width:100%;height:42px"><button class="btn btn-primary mt8" onclick="guardarLote()"><i class="fa-solid fa-check"></i> CREAR</button><button class="btn btn-ghost" onclick="document.querySelector(\'.modal-overlay\').remove()">CANCELAR</button></div>');
 }
 
 function guardarLote() {
     const n = document.getElementById('nlNombre').value.trim();
     const c = document.getElementById('nlColor').value;
-    if (!n) { showToast('️ Ingresa nombre'); return; }
+    if (!n) { showToast('Ingresa nombre'); return; }
     const l = {id: 'lot_' + Date.now(), nombre: n, color: c};
-    DB.lotes.push(l);
-    guardarDatos();
+    DB.lotes.push(l); guardarDatos();
     document.querySelector('.modal-overlay').remove();
-    showToast(`✅ Lote "${n}" creado`);
+    showToast('Lote "' + n + '" creado');
     renderLotes();
 }
 
 function showEditLoteColor(lid) {
-    const l = DB.lotes.find(x => x.id === lid);
-    if (!l) return;
-    showModal(`<div style="font-weight:800;margin-bottom:14px"><i class="fa-solid fa-palette"></i> COLOR</div>
-    <div class="flex-col gap10">
-        <input id="elColor" type="color" value="${l.color}" style="width:100%;height:48px">
-        <button class="btn btn-green mt12" onclick="guardarColorLote('${lid}')"><i class="fa-solid fa-check"></i> GUARDAR</button>
-        <button class="btn btn-gray" onclick="document.querySelector('.modal-overlay').remove()">CANCELAR</button>
-    </div>`);
+    const l = DB.lotes.find(x => x.id === lid); if (!l) return;
+    showModal('<div style="font-weight:800;margin-bottom:12px"><i class="fa-solid fa-palette"></i> COLOR</div><div class="flex-col gap10"><input id="elColor" type="color" value="' + l.color + '" style="width:100%;height:42px"><button class="btn btn-accent mt8" onclick="guardarColorLote(\'' + lid + '\')"><i class="fa-solid fa-check"></i> GUARDAR</button><button class="btn btn-ghost" onclick="document.querySelector(\'.modal-overlay\').remove()">CANCELAR</button></div>');
 }
 
 function guardarColorLote(lid) {
     const l = DB.lotes.find(x => x.id === lid);
     if (l) { l.color = document.getElementById('elColor').value; guardarDatos(); }
-    document.querySelector('.modal-overlay').remove();
-    renderLotes();
-    showToast('✅ Color actualizado');
+    document.querySelector('.modal-overlay').remove(); renderLotes(); showToast('Color actualizado');
 }
 
 function deleteLote(lid) {
-    if (lid === 'lot_general') { showToast('⚠️ No eliminar General'); return; }
+    if (lid === 'lot_general') { showToast('No eliminar General'); return; }
     if (!confirm('¿Eliminar? Animales a General')) return;
     DB.animales.forEach(a => { if (a.loteId === lid) a.loteId = 'lot_general'; });
     DB.lotes = DB.lotes.filter(l => l.id !== lid);
-    guardarDatos();
-    renderLotes();
-    showToast('✅ Lote eliminado');
+    guardarDatos(); renderLotes(); showToast('Lote eliminado');
 }
 
 function showProfile(id) {
     const a = DB.animales.find(x => x.id === id);
     if (!a) return;
-    
     const p = a.historial[a.historial.length-1].peso;
     const rep = calcRepro(a);
     const et = getEtapa(p, rep);
@@ -2085,10 +1409,10 @@ function showProfile(id) {
     let etxt = '--';
     if (a.fechaNacimiento) {
         const n = new Date(a.fechaNacimiento), h = new Date(), d = Math.ceil(Math.abs(h - n) / 864e5);
-        etxt = d > 60 ? `${Math.floor(d/30)}m` : `${d}d`;
+        etxt = d > 60 ? Math.floor(d/30) + 'm' : d + 'd';
     }
     const mama = a.madreId ? (DB.animales.find(x => x.id == a.madreId)?.nombre || '--') : '--';
-    const fotoStyle = a.foto ? `background-image:url('${a.foto}')` : '';
+    const fotoStyle = a.foto ? 'background-image:url(\'' + a.foto + '\')' : '';
     const gv = gmd > 0 ? gmd : 0;
     const cd = getCostoDiario(p, a.proposito, rep?.estadoLactancia || 'auto');
     const csd = getCostoSanidadDiario(id);
@@ -2097,78 +1421,65 @@ function showProfile(id) {
     const mgDiario = ingresoDiario - costoDiarioTotal;
     const roia = calcularROIA(gv, getCfg('precioKG') || 9800, costoDiarioTotal);
     const ckp = gv > 0 ? costoDiarioTotal / gv : null;
-    const gmdColor = gmd > 0.3 ? 'var(--success)' : gmd > 0 ? 'var(--warning)' : 'var(--danger)';
-    const mgColor = mgDiario >= 0 ? 'var(--success)' : 'var(--danger)';
+    const gmdColor = gmd > 0.3 ? 'var(--accent)' : gmd > 0 ? 'var(--warning)' : 'var(--danger)';
+    const mgColor = mgDiario >= 0 ? 'var(--accent)' : 'var(--danger)';
     const mgSign = mgDiario >= 0 ? '+' : '-';
-    
-    let html = `<div class="sp-container">
-        <div class="sp-header">
-            <button class="sp-back" onclick="closeProfile()"><i class="fa-solid fa-arrow-left"></i></button>
-            <div class="sp-header-title">${a.nombre}</div>
-            <div class="sp-header-actions">
-                <button class="sp-back" onclick="confirmDeleteAnimal(${id})" style="color:var(--danger)"><i class="fa-solid fa-trash-can"></i></button>
-            </div>
-        </div>
-        <div class="sp-hero">
-            <input type="file" id="photoInput" accept="image/*" style="display:none" onchange="handlePhotoUpload(this.files[0], ${id})">
-            <div class="sp-avatar-large" style="${fotoStyle}" onclick="document.getElementById('photoInput').click()">${!a.foto ? '🐄' : ''}</div>
-            <div class="sp-hero-name">${a.nombre}</div>
-            <div class="sp-hero-badges">
-                <span class="sp-badge" style="border-color:${et.color};color:${et.color}">${et.nombre}</span>
-                <span class="sp-badge">${getLoteName(a.loteId)}</span>
-                <span class="sp-badge">${a.proposito === 'carne' ? '🥩 Carne' : '🥛 Leche'}</span>
-            </div>
-            <div class="sp-metrics">
-                <div class="sp-metric"><span class="val">${fm(p)} kg</span><span class="lbl">Peso</span></div>
-                <div class="sp-metric"><span class="val" style="color:${gmdColor}">${gmd !== 0 ? gmd.toFixed(2) : '--'}</span><span class="lbl">GMD</span></div>
-                <div class="sp-metric"><span class="val" style="color:var(--accent)">$${fm(valA)}</span><span class="lbl">Valor</span></div>
-            </div>
-            <div style="font-size:.75rem;color:var(--text-muted);margin-top:14px">Edad: <b>${etxt}</b> · Mama: <b>${mama}</b></div>
-        </div>
-        <div class="sp-content">
-            ${getAlertasAnimal(a).map(s => `<div class="alert-item alert-${s.t === 'r' ? 'danger' : s.t === 'purple' ? 'purple' : 'warning'}"><div style="flex:1"><b>${a.nombre}</b>: ${s.m}</div></div>`).join('')}
-            <div class="sp-card">
-                <div class="sp-card-header"><div class="sp-card-title"><i class="fa-solid fa-chart-line"></i> Evolución de Peso</div></div>
-                ${renderGraficoEvolucion(a.historial)}
-            </div>
-            <div class="sp-card">
-                <div class="sp-card-header"><div class="sp-card-title"><i class="fa-solid fa-chart-line"></i> RENTABILIDAD</div></div>
-                <div class="sp-metrics">
-                    <div class="sp-metric"><span class="val" style="color:${mgColor}">${mgSign}$${fm(Math.abs(mgDiario))}</span><span class="lbl">Margen/Día</span></div>
-                    <div class="sp-metric"><span class="val">${roia.toFixed(2)}x</span><span class="lbl">ROIA</span></div>
-                    <div class="sp-metric"><span class="val">${ckp !== null ? '$' + fm(ckp) : '--'}</span><span class="lbl">Costo/kg</span></div>
-                </div>
-            </div>
-            <div class="sp-card">
-                <div class="sp-card-header"><div class="sp-card-title"><i class="fa-solid fa-wheat-awn"></i> DIETA & COSTOS</div></div>
-                <div class="row"><span class="row-label"><i class="fa-solid fa-receipt"></i> Costo Diario</span><span class="row-val" style="color:var(--warning)">$ ${fm(costoDiarioTotal)}</span></div>
-                ${getInsumosActivos().map(k => {
-                    const d = getDiet(p, a.proposito, rep?.estadoLactancia || 'auto');
-                    const data = getInsumoData(k);
-                    const v = d[k];
-                    const u = data.unidad || 'kg';
-                    const dp = u === 'kg' ? v.toFixed(1) : Math.round(v);
-                    return `<div class="row"><span class="row-label"><i class="fa-solid ${data.icono || 'fa-seedling'}"></i> ${data.nombre || k}</span><span class="row-val">${dp}${u}</span></div>`;
-                }).join('')}
-            </div>
-            ${a.proposito === 'leche' && rep ? `
-            <div class="sp-card" style="border-left:4px solid ${rep.semaforo.color}">
-                <div class="sp-card-header"><div class="sp-card-title" style="color:${rep.semaforo.color}"><i class="fa-solid fa-heart"></i> REPRODUCTIVO</div></div>
-                <div style="text-align:center;padding:12px;background:rgba(255,255,255,0.03);border-radius:14px;margin-bottom:12px">
-                    <div style="font-size:1.15rem;font-weight:800;color:${rep.semaforo.color}">${rep.semaforo.txt}</div>
-                </div>
-                <div class="row"><span class="row-label"><i class="fa-solid fa-clock"></i> Días Post-Parto</span><span class="row-val">${rep.diasPP}d</span></div>
-                <div class="row"><span class="row-label"><i class="fa-solid fa-baby"></i> Próximo parto</span><span class="row-val">${rep.fechaProxParto || '--'}</span></div>
-                <button class="btn btn-sm btn-purple mt12" onclick="showReproModal(${id})"><i class="fa-solid fa-pen"></i> Registrar</button>
-            </div>` : ''}
-        </div>
-        <div class="sp-actions-bar">
-            <button class="btn btn-gold" onclick="updateWeight(${id})"><i class="fa-solid fa-scale-balanced"></i> Pesaje</button>
-            <button class="btn btn-purple" onclick="openAplicarProducto(${id})"><i class="fa-solid fa-syringe"></i> Sanidad</button>
-        </div>
-    </div>`;
-    
-    // CORRECCIÓN: Ocultar todas las páginas y mostrar solo el perfil
+
+    let html = '<div class="sp-container">';
+    html += '<div class="sp-header"><button class="sp-back" onclick="closeProfile()"><i class="fa-solid fa-arrow-left"></i></button>';
+    html += '<div class="sp-header-title">' + a.nombre + '</div>';
+    html += '<div class="sp-header-actions"><button class="sp-back" onclick="confirmDeleteAnimal(' + id + ')" style="color:var(--danger)"><i class="fa-solid fa-trash-can"></i></button></div></div>';
+
+    html += '<div class="sp-hero"><input type="file" id="photoInput" accept="image/*" style="display:none" onchange="handlePhotoUpload(this.files[0], ' + id + ')">';
+    html += '<div class="sp-avatar-large" style="' + fotoStyle + '" onclick="document.getElementById(\'photoInput\').click()"></div>';
+    html += '<div class="sp-hero-name">' + a.nombre + '</div>';
+    html += '<div class="sp-hero-badges"><span class="sp-badge" style="border-color:' + et.color + ';color:' + et.color + '">' + et.nombre + '</span>';
+    html += '<span class="sp-badge">' + getLoteName(a.loteId) + '</span>';
+    html += '<span class="sp-badge">' + (a.proposito === 'carne' ? 'Carne' : 'Leche') + '</span></div>';
+    html += '<div class="sp-metrics"><div class="sp-metric"><span class="val">' + fm(p) + ' kg</span><span class="lbl">Peso</span></div>';
+    html += '<div class="sp-metric"><span class="val" style="color:' + gmdColor + '">' + (gmd !== 0 ? gmd.toFixed(2) : '--') + '</span><span class="lbl">GMD</span></div>';
+    html += '<div class="sp-metric"><span class="val" style="color:var(--accent)">$' + fm(valA) + '</span><span class="lbl">Valor</span></div></div>';
+    html += '<div style="font-size:.7rem;color:var(--text-muted);margin-top:12px">Edad: <b>' + etxt + '</b> · Mama: <b>' + mama + '</b></div></div>';
+
+    html += '<div class="sp-content">';
+    getAlertasAnimal(a).forEach(s => {
+        const cls = s.t === 'r' ? 'danger' : s.t === 'purple' ? 'purple' : 'warning';
+        html += '<div class="alert-item alert-' + cls + '"><div style="flex:1"><b>' + a.nombre + '</b>: ' + s.m + '</div></div>';
+    });
+
+    html += '<div class="sp-card"><div class="sp-card-header"><div class="sp-card-title"><i class="fa-solid fa-chart-line"></i> Evolución de Peso</div></div>' + renderGraficoEvolucion(a.historial) + '</div>';
+
+    html += '<div class="sp-card"><div class="sp-card-header"><div class="sp-card-title"><i class="fa-solid fa-chart-line"></i> RENTABILIDAD</div></div><div class="sp-metrics">';
+    html += '<div class="sp-metric"><span class="val" style="color:' + mgColor + '">' + mgSign + '$' + fm(Math.abs(mgDiario)) + '</span><span class="lbl">Margen/Día</span></div>';
+    html += '<div class="sp-metric"><span class="val">' + roia.toFixed(2) + 'x</span><span class="lbl">ROIA</span></div>';
+    html += '<div class="sp-metric"><span class="val">' + (ckp !== null ? '$' + fm(ckp) : '--') + '</span><span class="lbl">Costo/kg</span></div></div></div>';
+
+    html += '<div class="sp-card"><div class="sp-card-header"><div class="sp-card-title"><i class="fa-solid fa-wheat-awn"></i> DIETA & COSTOS</div></div>';
+    html += '<div class="row"><span class="row-label"><i class="fa-solid fa-receipt"></i> Costo Diario</span><span class="row-val" style="color:var(--warning)">$ ' + fm(costoDiarioTotal) + '</span></div>';
+    getInsumosActivos().forEach(k => {
+        const d = getDiet(p, a.proposito, rep?.estadoLactancia || 'auto');
+        const data = getInsumoData(k);
+        const v = d[k];
+        const u = data.unidad || 'kg';
+        const dp = u === 'kg' ? v.toFixed(1) : Math.round(v);
+        html += '<div class="row"><span class="row-label"><i class="fa-solid ' + (data.icono || 'fa-seedling') + '"></i> ' + (data.nombre || k) + '</span><span class="row-val">' + dp + u + '</span></div>';
+    });
+    html += '</div>';
+
+    if (a.proposito === 'leche' && rep) {
+        html += '<div class="sp-card" style="border-left:3px solid ' + rep.semaforo.color + '">';
+        html += '<div class="sp-card-header"><div class="sp-card-title" style="color:' + rep.semaforo.color + '"><i class="fa-solid fa-heart"></i> REPRODUCTIVO</div></div>';
+        html += '<div style="text-align:center;padding:10px;background:var(--bg-secondary);border-radius:12px;margin-bottom:10px"><div style="font-size:1rem;font-weight:800;color:' + rep.semaforo.color + '">' + rep.semaforo.txt + '</div></div>';
+        html += '<div class="row"><span class="row-label"><i class="fa-solid fa-clock"></i> Días Post-Parto</span><span class="row-val">' + rep.diasPP + 'd</span></div>';
+        html += '<div class="row"><span class="row-label"><i class="fa-solid fa-baby"></i> Próximo parto</span><span class="row-val">' + (rep.fechaProxParto || '--') + '</span></div>';
+        html += '<button class="btn btn-sm btn-purple mt8" onclick="showReproModal(' + id + ')"><i class="fa-solid fa-pen"></i> Registrar</button></div>';
+    }
+
+    html += '</div><div class="sp-actions-bar">';
+    html += '<button class="btn btn-primary" onclick="updateWeight(' + id + ')"><i class="fa-solid fa-scale-balanced"></i> Pesaje</button>';
+    html += '<button class="btn btn-purple" onclick="openAplicarProducto(' + id + ')"><i class="fa-solid fa-syringe"></i> Sanidad</button>';
+    html += '</div></div>';
+
     document.querySelectorAll('.page').forEach(el => el.classList.add('hidden'));
     document.getElementById('v-perfil').classList.remove('hidden');
     document.getElementById('v-perfil').innerHTML = html;
@@ -2176,13 +1487,7 @@ function showProfile(id) {
 
 function confirmDeleteAnimal(id) {
     const a = DB.animales.find(x => x.id === id);
-    showModal(`<div style="text-align:center;padding:24px">
-        <div style="font-size:3rem;margin-bottom:18px">🗑️</div>
-        <h3 style="margin-bottom:10px">¿Eliminar ${a.nombre}?</h3>
-        <p style="color:var(--text-muted);margin-bottom:20px">Se borrará todo el historial.</p>
-        <button class="btn btn-danger" onclick="deleteAnimal(${id})"><i class="fa-solid fa-trash-can"></i> SÍ</button>
-        <button class="btn btn-gray mt12" onclick="document.querySelector('.modal-overlay').remove()">CANCELAR</button>
-    </div>`);
+    showModal('<div style="text-align:center;padding:20px"><div style="font-size:2.5rem;margin-bottom:14px;color:var(--danger)"><i class="fa-solid fa-trash-can"></i></div><h3 style="margin-bottom:8px">¿Eliminar ' + a.nombre + '?</h3><p style="color:var(--text-muted);margin-bottom:16px">Se borrará todo el historial.</p><button class="btn btn-danger" onclick="deleteAnimal(' + id + ')"><i class="fa-solid fa-trash-can"></i> SÍ</button><button class="btn btn-ghost mt8" onclick="document.querySelector(\'.modal-overlay\').remove()">CANCELAR</button></div>');
 }
 
 function closeProfile() {
@@ -2196,40 +1501,30 @@ function deleteAnimal(id) {
     guardarDatos();
     document.querySelector('.modal-overlay').remove();
     closeProfile();
-    showToast('✅ Eliminado');
+    showToast('Eliminado');
 }
 
 function updateWeight(id) {
-    const a = DB.animales.find(x => x.id === id);
-    if (!a) return;
+    const a = DB.animales.find(x => x.id === id); if (!a) return;
     const ow = a.historial[a.historial.length-1].peso;
-    const p = prompt(`⚖️ Nuevo peso (kg):\nActual: ${ow}kg`, '');
+    const p = prompt('Nuevo peso (kg):\nActual: ' + ow + 'kg', '');
     if (!p) return;
     const peso = parseFloat(p);
-    if (isNaN(peso) || peso < 20 || peso > 2000) { showToast('⚠️ Peso inválido'); return; }
-    if (peso < ow && !confirm('️ Peso menor. ¿Continuar?')) return;
-    const fechaInput = prompt(`📅 Fecha:\nFormato: DD/MM/AAAA`, new Date().toLocaleDateString());
+    if (isNaN(peso) || peso < 20 || peso > 2000) { showToast('Peso inválido'); return; }
+    if (peso < ow && !confirm('Peso menor. ¿Continuar?')) return;
+    const fechaInput = prompt('Fecha:\nFormato: DD/MM/AAAA', new Date().toLocaleDateString());
     const fechaFinal = fechaInput ? fechaInput : new Date().toLocaleDateString();
     const partes = fechaFinal.split('/');
-    if (partes.length !== 3) { showToast('️ Formato inválido'); return; }
+    if (partes.length !== 3) { showToast('Formato inválido'); return; }
     a.historial.push({fecha: fechaFinal, peso: peso});
-    guardarDatos();
-    showProfile(id);
+    guardarDatos(); showProfile(id);
 }
 
 function openAplicarProducto(id) {
-    const a = DB.animales.find(x => x.id === id);
-    if (!a) return;
+    const a = DB.animales.find(x => x.id === id); if (!a) return;
     const p = a.historial[a.historial.length-1].peso;
-    let opts = getAllSanidad().map(pr => `<option value="${pr.id}">${pr.nombre} (${pr.diasEfecto}d)</option>`).join('');
-    showModal(`<div style="font-weight:800;margin-bottom:14px"><i class="fa-solid fa-syringe"></i> APLICAR</div>
-    <div class="flex-col gap10">
-        <select id="aplProducto" onchange="calcDosisModal(${p})">${opts}</select>
-        <div id="dosisInfo" style="font-size:.8rem;color:var(--text-muted);background:rgba(148, 163, 184, 0.1);padding:12px;border-radius:12px">📋 Selecciona</div>
-        <input id="aplML" type="number" placeholder="ml" step=".1">
-        <button class="btn btn-green mt12" onclick="aplicarProducto(${id})"><i class="fa-solid fa-check"></i> CONFIRMAR</button>
-        <button class="btn btn-gray" onclick="document.querySelector('.modal-overlay').remove()">CANCELAR</button>
-    </div>`);
+    let opts = getAllSanidad().map(pr => '<option value="' + pr.id + '">' + pr.nombre + ' (' + pr.diasEfecto + 'd)</option>').join('');
+    showModal('<div style="font-weight:800;margin-bottom:12px"><i class="fa-solid fa-syringe"></i> APLICAR</div><div class="flex-col gap10"><select id="aplProducto" onchange="calcDosisModal(' + p + ')">' + opts + '</select><div id="dosisInfo" style="font-size:.75rem;color:var(--text-muted);background:var(--bg-secondary);padding:10px;border-radius:10px">Selecciona un producto</div><input id="aplML" type="number" placeholder="ml" step=".1"><button class="btn btn-accent mt8" onclick="aplicarProducto(' + id + ')"><i class="fa-solid fa-check"></i> CONFIRMAR</button><button class="btn btn-ghost" onclick="document.querySelector(\'.modal-overlay\').remove()">CANCELAR</button></div>');
     setTimeout(() => calcDosisModal(p), 100);
 }
 
@@ -2238,86 +1533,56 @@ function calcDosisModal(p) {
     const i = document.getElementById('dosisInfo');
     if (!s || !i) return;
     const pr = getAllSanidad().find(x => x.id === s.value);
-    if (pr) i.innerHTML = `📋 Dosis: <b>${(p / pr.dosis).toFixed(1)} ml</b>`;
+    if (pr) i.innerHTML = 'Dosis: <b>' + (p / pr.dosis).toFixed(1) + ' ml</b>';
 }
 
 function aplicarProducto(id) {
     const pid = document.getElementById('aplProducto').value;
     const ml = parseFloat(document.getElementById('aplML').value);
-    if (isNaN(ml) || ml <= 0) { showToast('️ ml inválidos'); return; }
-    const pr = getAllSanidad().find(x => x.id === pid);
-    if (!pr) return;
+    if (isNaN(ml) || ml <= 0) { showToast('ml inválidos'); return; }
+    const pr = getAllSanidad().find(x => x.id === pid); if (!pr) return;
     const stS = getCfg('stockSanidad') || {};
-    if (ml > (stS[pid] || 0)) { showToast('️ Stock insuficiente'); return; }
+    if (ml > (stS[pid] || 0)) { showToast('Stock insuficiente'); return; }
     const cu = pr.precioML || (getCfg('preciosSanidad') || {})[pid] || 0;
     const ct = ml * cu;
     if (!DB.aplicaciones) DB.aplicaciones = [];
     DB.aplicaciones.push({animalId: id, productoId: pid, producto: pr.nombre, ml: ml, costo: ct, fecha: new Date().toLocaleDateString()});
     stS[pid] = Math.max(0, (stS[pid] || 0) - ml);
-    setCfg('stockSanidad', stS);
-    guardarDatos();
+    setCfg('stockSanidad', stS); guardarDatos();
     document.querySelector('.modal-overlay').remove();
-    verificarRetiro(id);
-    showToast('✅ Aplicado');
-    showProfile(id);
+    verificarRetiro(id); showToast('Aplicado'); showProfile(id);
 }
 
 function verificarRetiro(id) {
-    const a = DB.animales.find(x => x.id === id);
-    if (!a) return;
+    const a = DB.animales.find(x => x.id === id); if (!a) return;
     let mx = 0;
     const apps = DB.aplicaciones ? DB.aplicaciones.filter(x => x.animalId === id) : [];
     apps.forEach(ap => {
         const pr = getAllSanidad().find(x => x.id === ap.productoId);
-        if (pr && pr.retiro > 0) {
-            const d = getDiasDesde(ap.fecha);
-            const r = pr.retiro - d;
-            if (r > mx) mx = r;
-        }
+        if (pr && pr.retiro > 0) { const d = getDiasDesde(ap.fecha), r = pr.retiro - d; if (r > mx) mx = r; }
     });
-    if (mx > 0) { a.bloqueadoPorRetiro = true; guardarDatos(); showToast(`️ Retiro: ${mx}d`); } 
-    else { a.bloqueadoPorRetiro = false; }
+    if (mx > 0) { a.bloqueadoPorRetiro = true; guardarDatos(); showToast('Retiro: ' + mx + 'd'); }
+    else a.bloqueadoPorRetiro = false;
 }
 
 function showReproModal(id) {
-    showModal(`<div style="font-weight:800;margin-bottom:14px"><i class="fa-solid fa-calendar-check"></i> REGISTRO</div>
-    <div class="flex-col gap10">
-        <select id="reTipo"><option value="parto">🐣 Parto</option><option value="insem">🐄 Inseminación</option><option value="secado">🛑 Secado</option></select>
-        <input id="reFecha" type="date">
-        <button class="btn btn-green" onclick="guardarRepro(${id})"><i class="fa-solid fa-check"></i> GUARDAR</button>
-        <button class="btn btn-gray" onclick="document.querySelector('.modal-overlay').remove()">CANCELAR</button>
-    </div>`);
+    showModal('<div style="font-weight:800;margin-bottom:12px"><i class="fa-solid fa-calendar-check"></i> REGISTRO</div><div class="flex-col gap10"><select id="reTipo"><option value="parto">Parto</option><option value="insem">Inseminación</option><option value="secado">Secado</option></select><input id="reFecha" type="date"><button class="btn btn-accent" onclick="guardarRepro(' + id + ')"><i class="fa-solid fa-check"></i> GUARDAR</button><button class="btn btn-ghost" onclick="document.querySelector(\'.modal-overlay\').remove()">CANCELAR</button></div>');
 }
 
 function guardarRepro(id) {
     const t = document.getElementById('reTipo').value;
     const f = document.getElementById('reFecha').value;
-    if (!f) { showToast('⚠️ Selecciona fecha'); return; }
+    if (!f) { showToast('Selecciona fecha'); return; }
     const fd = f.split('-').reverse().join('/');
     const a = DB.animales.find(x => x.id === id);
     if (t === 'parto') { a.fechaUltimoParto = fd; a.estadoReproductivo = 'parida'; a.diasGestacion = 0; }
     if (t === 'insem') { a.fechaUltimaInseminacion = fd; a.estadoReproductivo = 'gestando'; }
     if (t === 'secado') { a.estadoReproductivo = 'seca'; }
-    guardarDatos();
-    document.querySelector('.modal-overlay').remove();
-    showToast('✅ Registrado');
+    guardarDatos(); document.querySelector('.modal-overlay').remove(); showToast('Registrado');
 }
 
 function showModalGestionAlimentos() {
-    showModal(`<div style="font-weight:800;margin-bottom:14px"><i class="fa-solid fa-plus"></i> NUEVO ALIMENTO</div>
-    <div class="flex-col gap8">
-        <input id="acNombre" type="text" placeholder="Nombre">
-        <div class="grid">
-            <select id="acIcono"><option value="fa-wheat-awn"> Grano</option><option value="fa-seedling">🌱 Forraje</option></select>
-            <select id="acUnidad"><option value="kg">Kilogramos</option><option value="g">Gramos</option></select>
-        </div>
-        <div class="grid">
-            <input id="acDosis" type="number" step="0.001" placeholder="Dosis/kg">
-            <input id="acPrecioTotal" type="number" placeholder="Precio $">
-        </div>
-        <div class="grid"><input id="acCantidadTotal" type="number" step="0.1" placeholder="Cantidad"></div>
-        <button class="btn btn-green" onclick="guardarAlimentoCustom()"><i class="fa-solid fa-check"></i> GUARDAR</button>
-    </div>`);
+    showModal('<div style="font-weight:800;margin-bottom:12px"><i class="fa-solid fa-plus"></i> NUEVO ALIMENTO</div><div class="flex-col gap8"><input id="acNombre" type="text" placeholder="Nombre"><div class="grid"><select id="acIcono"><option value="fa-wheat-awn">Grano</option><option value="fa-seedling">Forraje</option></select><select id="acUnidad"><option value="kg">Kilogramos</option><option value="g">Gramos</option></select></div><div class="grid"><input id="acDosis" type="number" step="0.001" placeholder="Dosis/kg"><input id="acPrecioTotal" type="number" placeholder="Precio $"></div><div class="grid"><input id="acCantidadTotal" type="number" step="0.1" placeholder="Cantidad"></div><button class="btn btn-accent" onclick="guardarAlimentoCustom()"><i class="fa-solid fa-check"></i> GUARDAR</button></div>');
 }
 
 function guardarAlimentoCustom() {
@@ -2325,44 +1590,23 @@ function guardarAlimentoCustom() {
     const d = parseFloat(document.getElementById('acDosis').value);
     const pt = parseFloat(document.getElementById('acPrecioTotal').value);
     const ct = parseFloat(document.getElementById('acCantidadTotal').value);
-    if (!n || isNaN(d) || isNaN(pt) || isNaN(ct)) { showToast('⚠️ Completa todos los campos'); return; }
+    if (!n || isNaN(d) || isNaN(pt) || isNaN(ct)) { showToast('Completa todos los campos'); return; }
     const id = 'ac_' + Date.now();
     const item = {id: id, nombre: n, icono: document.getElementById('acIcono').value, unidad: document.getElementById('acUnidad').value, dosisPorKg: d, precioUnitario: pt / ct, stock: ct, esNativo: false};
     DB.inventario[id] = item;
     if (!DB.config.insumosActivos.includes(id)) DB.config.insumosActivos.push(id);
-    guardarDatos();
-    document.querySelector('.modal-overlay').remove();
-    showToast('✅ Agregado');
-    renderInsumos();
+    guardarDatos(); document.querySelector('.modal-overlay').remove(); showToast('Agregado'); renderInsumos();
 }
 
 function deleteAlimentoCustom(id) {
     if (!confirm('¿Eliminar?')) return;
     delete DB.inventario[id];
     DB.config.insumosActivos = DB.config.insumosActivos.filter(x => x !== id);
-    guardarDatos();
-    renderInsumos();
+    guardarDatos(); renderInsumos();
 }
 
 function showModalGestionSanidad() {
-    showModal(`<div style="font-weight:800;margin-bottom:14px"><i class="fa-solid fa-plus"></i> NUEVO PRODUCTO</div>
-    <div class="flex-col gap8">
-        <input id="scNombre" type="text" placeholder="Nombre">
-        <div class="grid">
-            <select id="scIcono"><option value="fa-syringe">💉</option><option value="fa-pills">💊</option></select>
-            <input id="scColor" type="color" value="#a855f7" style="width:100%;height:42px">
-        </div>
-        <input id="scDosis" type="number" step="0.01" placeholder="ml/kg">
-        <div class="grid">
-            <input id="scEfecto" type="number" placeholder="Días efecto">
-            <input id="scRetiro" type="number" placeholder="Días retiro">
-        </div>
-        <div class="grid">
-            <input id="scPrecioTotal" type="number" placeholder="Precio $">
-            <input id="scMlTotal" type="number" placeholder="Mililitros">
-        </div>
-        <button class="btn btn-green" onclick="guardarSanidadCustom()"><i class="fa-solid fa-check"></i> GUARDAR</button>
-    </div>`);
+    showModal('<div style="font-weight:800;margin-bottom:12px"><i class="fa-solid fa-plus"></i> NUEVO PRODUCTO</div><div class="flex-col gap8"><input id="scNombre" type="text" placeholder="Nombre"><div class="grid"><select id="scIcono"><option value="fa-syringe">Inyección</option><option value="fa-pills">Pastilla</option></select><input id="scColor" type="color" value="#a855f7" style="width:100%;height:38px"></div><input id="scDosis" type="number" step="0.01" placeholder="ml/kg"><div class="grid"><input id="scEfecto" type="number" placeholder="Días efecto"><input id="scRetiro" type="number" placeholder="Días retiro"></div><div class="grid"><input id="scPrecioTotal" type="number" placeholder="Precio $"><input id="scMlTotal" type="number" placeholder="Mililitros"></div><button class="btn btn-accent" onclick="guardarSanidadCustom()"><i class="fa-solid fa-check"></i> GUARDAR</button></div>');
 }
 
 function guardarSanidadCustom() {
@@ -2372,26 +1616,21 @@ function guardarSanidadCustom() {
     const ret = parseInt(document.getElementById('scRetiro').value) || 0;
     const pt = parseFloat(document.getElementById('scPrecioTotal').value);
     const ml = parseFloat(document.getElementById('scMlTotal').value);
-    if (!n || isNaN(d) || isNaN(pt) || isNaN(ml)) { showToast('️ Completa todos los campos'); return; }
+    if (!n || isNaN(d) || isNaN(pt) || isNaN(ml)) { showToast('Completa todos los campos'); return; }
     const id = 'sc_' + Date.now();
     const item = {id: id, nombre: n, icono: document.getElementById('scIcono').value, color: document.getElementById('scColor').value, dosis: d, diasEfecto: ef, retiro: ret, precioML: pt / ml, stockML: ml, esCustom: true};
     DB.sanidad[id] = item;
-    guardarDatos();
-    document.querySelector('.modal-overlay').remove();
-    showToast('✅ Agregado');
-    renderInsumos();
+    guardarDatos(); document.querySelector('.modal-overlay').remove(); showToast('Agregado'); renderInsumos();
 }
 
 function deleteSanidadCustom(id) {
     if (!confirm('¿Eliminar?')) return;
-    delete DB.sanidad[id];
-    guardarDatos();
-    renderInsumos();
+    delete DB.sanidad[id]; guardarDatos(); renderInsumos();
 }
 
 async function handlePhotoUpload(file, animalId) {
-    if (!file || !file.type.startsWith('image/')) { showToast('️ Solo imágenes'); return; }
-    if (file.size > 5 * 1024 * 1024) { showToast('️ Máximo 5MB'); return; }
+    if (!file || !file.type.startsWith('image/')) { showToast('Solo imágenes'); return; }
+    if (file.size > 5 * 1024 * 1024) { showToast('Máximo 5MB'); return; }
     const img = new Image();
     img.onload = () => {
         const canvas = document.createElement('canvas');
@@ -2401,27 +1640,17 @@ async function handlePhotoUpload(file, animalId) {
         canvas.width = w; canvas.height = h;
         canvas.getContext('2d').drawImage(img, 0, 0, w, h);
         const a = DB.animales.find(x => x.id === animalId);
-        if (a) {
-            a.foto = canvas.toDataURL('image/jpeg', 0.7);
-            guardarDatos();
-            showProfile(animalId);
-            showToast('✅ Foto guardada');
-        }
+        if (a) { a.foto = canvas.toDataURL('image/jpeg', 0.7); guardarDatos(); showProfile(animalId); showToast('Foto guardada'); }
     };
-    img.onerror = () => showToast('️ Error al cargar');
+    img.onerror = () => showToast('Error al cargar');
     img.src = URL.createObjectURL(file);
 }
 
-// Registrar Service Worker
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
         navigator.serviceWorker.register('./sw.js')
-            .then(registration => {
-                console.log('✅ SW registrado:', registration.scope);
-            })
-            .catch(error => {
-                console.log('❌ Error SW:', error);
-            });
+            .then(registration => console.log('SW registrado:', registration.scope))
+            .catch(error => console.log('Error SW:', error));
     });
 }
 
